@@ -104,10 +104,13 @@ onDestroy(() => {
 
 <svelte:window bind:innerWidth bind:outerWidth bind:innerHeight bind:outerHeight />
 
-<main class="min-h-screen w-full relative flex flex-col items-center gap-16 py-8 justify-center" on:mousemove={handleMouseMove} style="background-image: url({bgImg});">
+<main class="min-h-screen w-full relative flex flex-col items-center gap-8 py-8 justify-center" on:mousemove={handleMouseMove} style="background-image: url({bgImg});">
   <div class="bg-[rgba(255,255,255,.3)] w-[32rem] aspect-square rounded-full blur-[256px] absolute -translate-x-1/2 -translate-y-1/2 pointer-events-none" style="left: {mouseX}px; top: {mouseY}px;"></div>
   
-  {#each birds as item }
+  
+
+  <div class="flex flex-col gap-16">
+    {#each birds as item }
     <img class="absolute inset-0 w-8 aspect-square bird" style="
     left: {computedBirdPos+item.pos}px;
     top: 3rem;
@@ -116,44 +119,45 @@ onDestroy(() => {
     scale: {item.scale};
     " src="{bird}" />
   {/each}
-
-  <button class="text-center text-5xl text-orange-50 font-bold" on:click={projectClick}>
-    <h1>Projets SI</h1>
-  </button>
-
-  <div class="w-full flex-1 container h-fit">
-    
-    <ul class="flex flex-wrap gap-6 items-center justify-center" id="website-list">
-      {#each projects as item }
-        <li style="background-image: url('/src/assets/projects-images/{item.img}');" class="z-10">
-          <a href="http://{item.url}">
-            <div class="p-4 text-center text-emerald-50 text-xl font-semibold">
-              {item.name}
-            </div>
-          </a>
-        </li>
-      {/each}
-    </ul>
+    <button class="flex items-center justify-center text-5xl text-orange-50 font-bold" on:click={projectClick}>
+      <h1 class="w-fit">Projets SI</h1>
+    </button>
+  
+    <div class="w-full flex-1 container h-fit">
+      
+      <ul class="flex flex-wrap gap-6 items-center justify-center" id="website-list">
+        {#each projects as item }
+          <li style="background-image: url('/src/assets/projects-images/{item.img}');" class="z-10">
+            <a href="http://{item.url}">
+              <div class="p-4 text-center text-emerald-50 text-xl font-semibold">
+                {item.name}
+              </div>
+            </a>
+          </li>
+        {/each}
+      </ul>
+    </div>
   </div>
+  
 
   <div class="hidden">
     <textarea bind:value={message} placeholder="Type a message"></textarea>
     <button on:click={sendMessage}>Send</button>
   </div>
 
-  <div class="flex flex-col gap-4 p-8 bg-white rounded-lg shadpw-md bg-opacity-20 text-slate-50">
+  <div class="flex flex-col gap-4 sm:p-8 p-3 bg-white rounded-lg shadpw-md bg-opacity-20 text-slate-50">
     <h2 class="text-center pb-4 text-3xl font-semibold">LeaderBoard</h2>
     <ul>
-      <li class='flex gap-4 border-b-2 pb-1 border-slate-50'>
-        <p class="w-[32ch]">Jeu</p>
-        <p class="w-[32ch]">Joueur</p>
+      <li class='flex gap-4 border-b-2 pb-1 border-slate-50 sm:text-base text-sm'>
+        <p class="lg:w-[32ch] md:w-[28ch] sm:w-[24ch] w-[12ch]">Jeu</p>
+        <p class="lg:w-[32ch] md:w-[28ch] sm:w-[24ch] w-[12ch]">Joueur</p>
         <p class="w-[8ch]">Score</p>
       </li>
       {#each scores as s}
-        <li class='flex gap-4 border-b-2 pb-1 pt-2 border-slate-50'>
-          <p class="w-[32ch]">{s.game}</p>
-          <p class="w-[32ch]">{s.player}</p>
-          <p class="w-[8ch]">{s.score}</p>
+        <li class='flex gap-4 border-b-2 pb-1 pt-2 border-slate-50 sm:text-base text-sm'>
+          <p class="lg:w-[32ch] md:w-[28ch] sm:w-[24ch] w-[12ch] overflow-hidden">{s.game}</p>
+          <p class="lg:w-[32ch] md:w-[28ch] sm:w-[24ch] w-[12ch] overflow-hidden">{s.player}</p>
+          <p class="w-[8ch] overflow-hidden">{s.score}</p>
         </li>
       {/each}
     </ul>
