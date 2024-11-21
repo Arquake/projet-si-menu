@@ -13,29 +13,32 @@ const io = socketIo(server, {
 });
 
 currentDiscussion = [
-  'a',
-  'b',
-  'c'
+  {game: 'testGame', player: 'testplayer', score: 10000},
+  {game: 'testGame', player: 'testplayer', score: 10000},
+  {game: 'testGame', player: 'testplayer', score: 10000}
 ];
 
-// Handle client connections
 io.on('connection', (socket) => {
-  console.log('A user connected');
-  
-  // Handle a custom event from the client (Svelte app)
+  console.log('A user connected:', socket.id);
+
+  // Send currentDiscussion only to the newly connected client
+  socket.emit('response', currentDiscussion);
+
+  // Listen for incoming messages from this client
   socket.on('message', (msg) => {
-    currentDiscussion = [msg, ...currentDiscussion];
+    currentDiscussion = [{game: msg, player: 'justetest', score:5000}, ...currentDiscussion];
     console.log('Message received:', msg);
-    
-    // Emit a message to all clients (Svelte clients)
-    io.emit('response', currentDiscussion);  // Sends message to all clients connected to this instance
+
+    // Broadcast updated discussion to all clients
+    io.emit('response', currentDiscussion);
   });
 
   // Handle disconnect
   socket.on('disconnect', () => {
-    console.log('User disconnected');
+    console.log('User disconnected:', socket.id);
   });
 });
+
 
 // Start the server
 const port = process.env.PORT || 3000;

@@ -65,39 +65,40 @@
 
 
   import { onMount, onDestroy } from 'svelte';
-  import { io } from 'socket.io-client';
+import { io } from 'socket.io-client';
 
-  let message = '';
-  let scores = [];
+let message = '';
+let scores = [];
 
-  // Create socket connection
-  let socket;
+// Create socket connection
+let socket;
 
-  onMount(() => {
-    socket = io('http://localhost:3000'); // Replace with your backend URL
+onMount(() => {
+  socket = io('http://localhost:3000'); // Replace with your backend URL
 
-    // Handle connection
-    socket.on('connect', () => {
-      console.log('Connected to server');
-      socket.emit('message', message);
-    });
-
-    // Listen for server responses
-    socket.on('response', (res) => {
-      scores = res;
-    });
+  // Handle connection
+  socket.on('connect', () => {
+    console.log('Connected to server');
   });
 
-  // Emit a message to the server
-  function sendMessage() {
+  // Listen for server responses
+  socket.on('response', (res) => {
+    scores = res; // Update scores when receiving a new response
+    console.log(scores)
+  });
+});
+
+function sendMessage() {
+  if (message.trim() !== '') {
     socket.emit('message', message);
-    message = ''; // Clear message input after sending
+    message = ''; // Clear the input field
   }
+}
 
-  // Cleanup when the component is destroyed
-  onDestroy(() => {
-    socket.disconnect();
-  });
+onDestroy(() => {
+  socket.disconnect(); // Clean up the socket connection
+});
+
 
 </script>
 
@@ -135,16 +136,25 @@
     </ul>
   </div>
 
-  <div>
+  <div class="hidden">
     <textarea bind:value={message} placeholder="Type a message"></textarea>
     <button on:click={sendMessage}>Send</button>
   </div>
 
-  <div>
-    <h2>LeaderBoard</h2>
+  <div class="flex flex-col gap-4 p-8 bg-white rounded-lg shadpw-md bg-opacity-20 text-slate-50">
+    <h2 class="text-center pb-4 text-3xl font-semibold">LeaderBoard</h2>
     <ul>
+      <li class='flex gap-4 border-b-2 pb-1 border-slate-50'>
+        <p class="w-[32ch]">Jeu</p>
+        <p class="w-[32ch]">Joueur</p>
+        <p class="w-[8ch]">Score</p>
+      </li>
       {#each scores as s}
-        <li>{s}</li>
+        <li class='flex gap-4 border-b-2 pb-1 pt-2 border-slate-50'>
+          <p class="w-[32ch]">{s.game}</p>
+          <p class="w-[32ch]">{s.player}</p>
+          <p class="w-[8ch]">{s.score}</p>
+        </li>
       {/each}
     </ul>
   </div>
