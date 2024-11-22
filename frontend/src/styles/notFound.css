@@ -1,0 +1,24 @@
+.left-question-mark {
+    transform: translate(60%,-140%) rotate(30deg) ;
+    scale: .45;
+}
+
+.middle-question-mark {
+transform: translate(0%,-150%);
+scale: .5;
+}
+
+.right-question-mark {
+transform: translate(-60%,-140%) rotate(-30deg);
+scale: .4;
+}
+  
+.question-mark {
+    fill: #fafafa;
+    height: 6rem;
+    width: 6rem;
+    opacity: 0.5;
+    position: absolute;
+    inset: 0;
+    scale: 0.5;
+}

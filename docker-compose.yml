@@ -1,0 +1,61 @@
+services:
+
+  backend-auth:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.backend-auth
+    container_name: auth_backend_menu
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./backend-auth:/auth
+    depends_on:
+      - postgres
+    environment:
+      PORT: 3000
+      DATABASE_URL: "postgres://menu_si_project:menu_si_project@postgres/menu_si_project"
+      REFRESH_TOKEN_KEY: "refresh"
+      JWT_SECRET_KEY: "jwt"
+      REFRESH_EXPIRATION_TIME: "30d"
+      JWT_EXPIRATION_TIME: "15min"
+    networks:
+      - my_network
+
+
+  frontend:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.frontend  # Path to your Dockerfile
+    container_name: react_frontend_menu
+    ports:
+      - "5173:5173"  # Map container port to host port
+    volumes:
+      - ./frontend:/app  # Bind mount the frontend directory to the container
+      - /app/node_modules  # Optional: Prevent the host from using the container's node_modules
+    command: ["yarn", "dev"]  # Start the Vite development server
+    environment:
+      NODE_ENV: development
+      VITE_FETCH_API: "http://localhost:3000"
+    networks:
+      - my_network
+
+
+  postgres:
+    image: postgres:17
+    container_name: postgres_db_menu
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_DB: "menu_si_project"
+      POSTGRES_USER: "menu_si_project"
+      POSTGRES_PASSWORD: "menu_si_project"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - my_network
+
+volumes:
+  pgdata:
+
+networks:
+  my_network:

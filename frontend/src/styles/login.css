@@ -1,0 +1,50 @@
+.form {
+    transition-duration: 600ms;
+    @apply p-3 rounded-lg shadow-xl bg-slate-50 md:w-[80ch] sm:w-[90%] w-[95%] absolute duration-700 flex flex-col gap-3;
+}
+
+.login-to-left {
+    transform: translateX(-100%) scale(.6);
+    opacity: 0;
+}
+
+.register-to-right {
+    transform: translateX(100%) scale(.6);
+    opacity: 0;
+}
+
+.login-submit-btn {
+    @apply mt-2 p-2 bg-fuchsia-700 text-yellow-300 font-bold text-2xl rounded;
+}
+
+.login-form {
+    @apply flex flex-col gap-2;
+
+    & > div {
+        @apply flex flex-col;
+
+        & > input {
+            @apply rounded-md pl-2 p-0.5 border-2;
+        }
+    }
+}
+
+.input-form {
+    @apply rounded-md pl-2 p-0.5 border-2;
+}
+
+
+.error-input {
+    @apply border-red-400 bg-red-100;
+}
+
+
+.password-check-list {
+    & > li {
+        @apply flex gap-2 items-center sm:text-base text-xs;
+
+        & > svg {
+            @apply w-6 aspect-square;
+        }
+    }
+}
