@@ -78,10 +78,11 @@ const verifyJwtToken = (req, res, next) => {
             return res.status(401).send('Unauthorized: No token provided');
         }
 
-        TokenManager.jwtInfo(token)
+        jwtInfo(token)
         next();
     } catch (error) {
-        return res.status(401).send('Unauthorized: Invalid token');
+        console.log(error)
+        return res.status(401).send('Unauthorized: Invalid token '+ error);
     }
 }
 

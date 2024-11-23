@@ -124,12 +124,35 @@ export function useAuth() {
         });
     }, [])
 
+
+
+    const makePostRequest = useCallback((
+        uri: string ='/',
+        bearer: string | null = null,
+        body: object = {},
+        thenRequest: (res:any) => any = (res)=>{if (!res.ok) {throw new Error('Network response was not ok');}return res.json();},
+        catchRequest: (error: any) => any = (error)=>{return error}
+    ) => {
+        return fetch(apiUrl + uri, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${bearer || ''}`
+            },
+            body: JSON.stringify(body)
+        })
+        .then(thenRequest)
+        .catch(catchRequest);
+    }, [] )
+
+
     return {
         account,
         status,
         tokenAuthenticate,
         login,
         logout,
-        register
+        register,
+        makePostRequest
     }
 }

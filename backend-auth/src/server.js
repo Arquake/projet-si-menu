@@ -3,6 +3,7 @@ import TokenManager from "./Managers/TokenManagement/TokenManager.js";
 import TokenModel from "./Models/TokenModel/TokenModel.js";
 import cors from "cors";
 import UserManager from "./Managers/UserManager/UserManager.js";
+import ProjectsManager from "./Managers/ProjectsManager/ProjectsManager.js";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -146,7 +147,7 @@ app.post('/get-client-validity', (req,res) => {
  * take a user id and the application id
  * return a 200 with jwt if valid and a 401 if the credentials aren't valid
  */
-app.post('/generate', TokenManager.verifyJwtToken, (req,res) => {
+app.post('/generate-specific', TokenManager.verifyJwtToken, (req,res) => {
     try {
         const body = req.body;
         const userId = body.userUid;
@@ -154,6 +155,27 @@ app.post('/generate', TokenManager.verifyJwtToken, (req,res) => {
         res.status(200).send({jwt: TokenManager.generateAppJwt(userId, appId)});
     }
     catch (_) {
+        res.status(400).send('Unauthorized');
+    }
+});
+
+
+/**
+ * take a user id and the application id
+ * return a 200 with jwt if valid and a 401 if the credentials aren't valid
+ */
+app.post('/generate-all', TokenManager.verifyJwtToken, async (req,res) => {
+    try {
+        const authHeader = req.headers.authorization;
+        const token = authHeader.split(' ')[1];
+        const user = TokenManager.jwtInfo(token)
+
+        const result = await ProjectsManager.getAllProjectsJwt(user.userUid);
+        /** {jwt: TokenManager.generateAppJwt(userId, appId)} */
+        res.status(200).json(result);
+    }
+    catch (error) {
+        console.log(error)
         res.status(400).send('Unauthorized');
     }
 });
