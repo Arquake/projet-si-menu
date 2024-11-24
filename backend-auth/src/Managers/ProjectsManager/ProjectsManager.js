@@ -8,8 +8,8 @@ async function getAllProjectsJwt(userId) {
         projectsArray = [
             ...projectsArray,
             {jwt: TokenManager.generateAppJwt(userId, item.id), name: item.name, description: item.description, authors: item.authors, url: item.url, placement: item.placement}
-        ]
-    })
+        ];
+    });
     return projectsArray;
 }
 

@@ -3,6 +3,11 @@ import { useAuth } from "../useHook/useAuth";
 
 interface Etape {
     jwt: string;
+    name: string,
+    description: string, 
+    authors: string, 
+    url: string, 
+    placement: string
 }
 
 export default function Game() {
@@ -43,10 +48,17 @@ export default function Game() {
 
     return (
         <>
-            <ul className="flex flex-col gap-4">
+            <ul className="flex flex-col gap-4 container self-center">
                 {etapes.map((item, index) => (
                     <li key={index}>
-                        {item.jwt}
+                        <p>{item.name}</p>
+                        <p>{item.jwt}</p>
+                        <p>{item.url}</p>
+                        <a href={`${item.url}?${
+                            (new URLSearchParams({
+                                appJwt: item.jwt,
+                            })).toString()
+                        }`} className="text-blue-500 underline">url test</a>
                     </li>
                 ))}
             </ul>
