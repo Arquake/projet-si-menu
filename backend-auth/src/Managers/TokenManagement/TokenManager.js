@@ -125,6 +125,17 @@ function appJwtInfo(token) {
     return jwt.verify(token, APP_JWT);
 }
 
+const verifyAppJwt = (req,res,next) => {
+    try {
+        const token = (req.headers.authorization).split(' ')[1];
+        appJwtInfo(token)
+        next();
+    }
+    catch(error) {
+        res.status(400).send("Invalid data")
+    }
+}
+
 
 export default {
     generateJwt,
@@ -134,5 +145,6 @@ export default {
     jwtInfo,
     generateAppJwt,
     appJwtInfo,
-    verifyJwtToken
+    verifyJwtToken,
+    verifyAppJwt
 };

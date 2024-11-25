@@ -15,7 +15,34 @@ async function getAllProjectsId() {
     }
 }
 
+/**
+ * get the project by his ID
+ */
+async function getProjecyById(projectId) {
+    try {
+        return await prisma.projects.findUniqueOrThrow({
+            where: {
+                id: projectId
+            }
+        })
+    }
+    catch(_) {
+        throw Error("query error");
+    }
+}
+
+
+async function getProjectByPlacement(placement) {
+    return await prisma.projects.findFirstOrThrow({
+        where: {
+            placement: placement
+        }
+    })
+}
+
 
 export default {
-    getAllProjectsId
+    getAllProjectsId,
+    getProjecyById,
+    getProjectByPlacement
 }

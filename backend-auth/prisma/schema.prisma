@@ -14,25 +14,44 @@ datasource db {
 }
 
 model User {
-  id            String @id @default(uuid())
-  username      String @unique
-  email         String @unique
+  id            String       @id @default(uuid())
+  username      String       @unique
+  email         String       @unique
   password      String
+  OngoingGame   OngoingGame?
+  finishedGames FinishedGames[]
 }
 
 model Token {
-  id            String   @id @default(uuid())
-  createdAt     DateTime @default(now())
+  id            String    @id @default(uuid())
+  createdAt     DateTime  @default(now())
   userUid       String
 }
 
-
 model Projects {
-  id            Int @id @default(autoincrement())
-  placement     Int @unique
-  url           String @unique
-  name          String @unique
+  id            Int       @id @default(autoincrement())
+  placement     Int       @unique
+  url           String    @unique
+  name          String    @unique
   description   String
   authors       String[]
-  privateKey    String @unique
+  privateKey    String    @unique
+}
+
+model OngoingGame {
+  id              Int        @id @default(autoincrement())
+  currentStageId  Int  
+  startedAt       DateTime   @default(now())
+  user            User       @relation(fields: [userId], references: [id])
+  userId          String     @unique
+}
+
+model FinishedGames {
+  id            Int       @id @default(autoincrement())
+  user          User      @relation(fields: [userId], references: [id])
+  userId        String    @unique
+  registeredAt  DateTime
+  timeSpent     DateTime
+  stage         Int
+  finished      Boolean
 }
