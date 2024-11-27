@@ -7,7 +7,7 @@ const REFRESH_TOKEN_KEY = process.env.REFRESH_TOKEN_KEY || "refresh_token_error"
 const REFRESH_EXPIRATION_TIME = process.env.REFRESH_EXPIRATION_TIME || "30d";
 const JWT_EXPIRATION_TIME = process.env.JWT_EXPIRATION_TIME || "15min";
 const APP_JWT = process.env.APP_JWT || "jwt_app_error"
-const APP_JWT_EXPIRATION_TIME = process.env.APP_JWT_EXPIRATION_TIME || "30min";
+const APP_JWT_EXPIRATION_TIME = process.env.APP_JWT_EXPIRATION_TIME || "60min";
 
 /**
  * generate a jwt with the user uid given
