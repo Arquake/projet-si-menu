@@ -32,6 +32,7 @@ async function getNextGame(userId) {
     return {jwt: TokenManager.generateAppJwt(userId, nextGame.id), name: nextGame.name, description: nextGame.description, authors: nextGame.authors, url: nextGame.url, placement: nextGame.placement}
 }
 
+
 export default {
     getAllProjectsJwt,
     getProjectJwt,

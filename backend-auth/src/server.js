@@ -6,6 +6,7 @@ import UserManager from "./Managers/UserManager/UserManager.js";
 import ProjectsManager from "./Managers/ProjectsManager/ProjectsManager.js";
 import ProjectsModel from './Models/ProjectsModel/ProjectsModel.js';
 import OngoingModel from './Models/OngoingModel/OngoingModel.js';
+import argon2  from 'argon2';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -132,6 +133,7 @@ app.post('/refresh-jwt', TokenManager.verifyRefreshToken, (req, res) => {
 /**
  * take a jwt and the application private key
  * return a 200 if valid and a 401 if the credentials aren't valid
+ * used only by subapps
  */
 app.post('/get-client-validity', TokenManager.verifyAppJwt, (req,res) => {
     res.status(200).send();
@@ -177,18 +179,24 @@ app.post('/generate-all', TokenManager.verifyJwtToken, async (req,res) => {
 
 /**
  * validate that the player has ended his game stage
+ * and sends him a need jwt with the next game
  */
 app.post('/end-stage', TokenManager.verifyAppJwt, async (req,res) => {
     try {
+
+        // verify the project JWT is valid
         const tokenInfo = appJwtInfo((req.headers.authorization).split(' ')[1]);
         const appId = tokenInfo.appId;
-        await ProjectsModel.getProjecyById(appId)
+        const project = await ProjectsModel.getProjecyById(appId);
 
-        res.status(200).send(ProjectsManager.getNextGame(tokenInfo.userUid))
+        // verify the PK of the app is valid
+        argon2.verify(req.body.privateKey, project.privateKey);
+
+        res.status(200).send(ProjectsManager.getNextGame(tokenInfo.userUid));
 
     }
     catch(error) {
-        res.status(400).send();
+        res.status(401).send('Invalid credentials');
     }
 });
 
