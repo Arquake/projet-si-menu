@@ -23,7 +23,7 @@ async function getNextGame(currentGamePlacement) {
 }
 
 async function createNewGame(userId) {
-    return await prisma.ongoingGame.create({
+    await prisma.ongoingGame.create({
         data: {
             currentStage: 1,
             userId: userId

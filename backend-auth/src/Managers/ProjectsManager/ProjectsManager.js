@@ -15,11 +15,11 @@ async function getAllProjectsJwt(userId) {
 }
 
 async function createNewGame(userId) {
-    OngoingModel.createNewGame(userId);
+    await OngoingModel.createNewGame(userId);
 }
 
 async function getProjectJwt(userId) {
-    const currentGame = await OngoingModel.getOngoingGame(userId)
+    const currentGame = await OngoingModel.getOngoingGameByUserId(userId)
     const project = await ProjectsModel.getProjectByPlacement(currentGame.currentStageId)
 
     return {jwt: TokenManager.generateAppJwt(userId, project.id), name: project.name, description: project.description, authors: project.authors, url: project.url, placement: project.placement}

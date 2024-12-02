@@ -158,26 +158,6 @@ app.post('/generate-specific', TokenManager.verifyJwtToken, (req,res) => {
 
 
 /**
- * take a user id and the application id
- * return a 200 with jwt if valid and a 401 if the credentials aren't valid
- */
-app.post('/generate-all', TokenManager.verifyJwtToken, async (req,res) => {
-    try {
-        const authHeader = req.headers.authorization;
-        const token = authHeader.split(' ')[1];
-        const user = TokenManager.jwtInfo(token)
-
-        const result = await ProjectsManager.getAllProjectsJwt(user.userUid);
-        res.status(200).json(result);
-    }
-    catch (error) {
-        console.log(error)
-        res.status(400).send('Unauthorized');
-    }
-});
-
-
-/**
  * validate that the player has ended his game stage
  * and sends him a need jwt with the next game
  */
@@ -185,7 +165,7 @@ app.post('/end-stage', TokenManager.verifyAppJwt, async (req,res) => {
     try {
 
         // verify the project JWT is valid
-        const tokenInfo = appJwtInfo((req.headers.authorization).split(' ')[1]);
+        const tokenInfo = TokenManager.appJwtInfo((req.headers.authorization).split(' ')[1]);
         const appId = tokenInfo.appId;
         const project = await ProjectsModel.getProjecyById(appId);
 
@@ -203,13 +183,13 @@ app.post('/end-stage', TokenManager.verifyAppJwt, async (req,res) => {
 
 app.post('/create-game', TokenManager.verifyJwtToken, async (req,res)=> {
     try {
-        const token = authHeader.split(' ')[1];
-        const tokenInfo = jwtInfo(token);
+        const token = (req.headers.authorization).split(' ')[1];
+        const tokenInfo = TokenManager.jwtInfo(token);
         await ProjectsManager.createNewGame(tokenInfo.uid)
         res.status(200).send(ProjectsManager.getProjectJwt(tokenInfo.uid))
     }
     catch(error) {
-        res.status(400).send()
+        res.status(429).send(error.message)
     }
 })
 

@@ -19,15 +19,17 @@ export default function Game() {
     const [fetchError, setFetchError] = useState(true)
 
     useEffect(() => {
+        let jwt: string | null = localStorage.getItem('jwt')
+        let refreshToken: string | null = localStorage.getItem('refreshToken')
         try {
-            const res = makePostRequest('/generate-all', localStorage.getItem('jwt') || null, {},
+            const res = makePostRequest('/create-game', jwt, {},
                 (res)=>{
                     return res.json()
                 },
                 (_) => {
-                    return makePostRequest('/refresh-jwt', localStorage.getItem('refreshToken') || null, {}, 
+                    return makePostRequest('/refresh-jwt', refreshToken, {}, 
                         (_) => {
-                            return makePostRequest('/generate-all', localStorage.getItem('jwt') || null, {},
+                            return makePostRequest('/create-game', jwt, {},
                             (res)=>{
                                 return res.json()
                             },
