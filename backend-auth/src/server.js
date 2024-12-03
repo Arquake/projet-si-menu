@@ -189,7 +189,7 @@ app.post('/create-game', TokenManager.verifyJwtToken, async (req,res)=> {
         res.status(200).send(ProjectsManager.getProjectJwt(tokenInfo.uid))
     }
     catch(error) {
-        res.status(429).send(error.message)
+        res.status(429).send("Une partie est déjà en cours")
     }
 })
 
