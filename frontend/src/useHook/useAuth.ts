@@ -1,6 +1,5 @@
 import {userStore} from "../store/userStore.ts";
 import {useCallback} from "react";
-import RegisterError from "../Error/RegisterError.ts"
 
 export enum AuthStatus {
     Unknown = 0,
@@ -131,8 +130,8 @@ export function useAuth() {
         bearer: string | null = null,
         body: object = {},
         thenRequest: (res:any) => ResponseType = (res)=>{if (!res.ok) {throw new Error('Network response was not ok');}return res.json() as ResponseType;},
-        catchRequest: (error: any) => any = (error)=>{return error}
-    ) => {
+        catchRequest: (error: any) => any = (error)=>{throw error}
+    ): Promise<ResponseType> => {
         return fetch(apiUrl + uri, {
             method: 'POST',
             headers: {
@@ -146,6 +145,28 @@ export function useAuth() {
     }, [] )
 
 
+    const refreshJwt = useCallback(()=>{
+        makePostRequest('/refresh-jwt', account?.refreshToken, {}, 
+            (res) => {
+                if (res.status === 401) {
+                    setAccount(null);
+                    localStorage.removeItem('jwt');
+                    localStorage.removeItem('refreshToken');
+                    throw new Error('invalid refresh token')
+                }
+                else {
+                    res = res.json();
+                    localStorage.setItem('jwt', res.jwt);
+                    account!.jwt = res.jwt
+                }
+            },
+            (error) => {
+                throw error
+            }
+        )
+    }, [])
+
+
     return {
         account,
         status,
@@ -153,6 +174,7 @@ export function useAuth() {
         login,
         logout,
         register,
-        makePostRequest
+        makePostRequest,
+        refreshJwt
     }
 }

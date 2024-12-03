@@ -15,27 +15,27 @@ async function getAllProjectsJwt(userId) {
 }
 
 async function createNewGame(userId) {
-    await OngoingModel.createNewGame(userId);
+    return await OngoingModel.createNewGame(userId);
 }
 
-async function getProjectJwt(userId) {
+async function getProjectInfo(userId) {
     const currentGame = await OngoingModel.getOngoingGameByUserId(userId)
-    const project = await ProjectsModel.getProjectByPlacement(currentGame.currentStageId)
+    const project = await ProjectsModel.getProjecyById(currentGame.currentStage)
 
-    return {jwt: TokenManager.generateAppJwt(userId, project.id), name: project.name, description: project.description, authors: project.authors, url: project.url, placement: project.placement}
+    return {name: project.name, description: project.description, authors: project.authors, url: project.url, placement: project.placement, gameId:currentGame.id, currentStage:currentGame.currentStage}
 }
 
 async function getNextGame(userId) {
     const currentStage = await OngoingModel.getOngoingGameByUserId(userId).currentStageId
     const nextGame = await OngoingModel.getNextGame(currentStage);
 
-    return {jwt: TokenManager.generateAppJwt(userId, nextGame.id), name: nextGame.name, description: nextGame.description, authors: nextGame.authors, url: nextGame.url, placement: nextGame.placement}
+    return {name: nextGame.name, description: nextGame.description, authors: nextGame.authors, url: nextGame.url, placement: nextGame.placement, gameId:currentGame.id}
 }
 
 
 export default {
     getAllProjectsJwt,
-    getProjectJwt,
+    getProjectInfo,
     getNextGame,
     createNewGame
 }

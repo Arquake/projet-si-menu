@@ -19,16 +19,11 @@ async function getAllProjectsId() {
  * get the project by his ID
  */
 async function getProjecyById(projectId) {
-    try {
-        return await prisma.projects.findUniqueOrThrow({
-            where: {
-                id: projectId
-            }
-        })
-    }
-    catch(_) {
-        throw Error("query error");
-    }
+    return await prisma.projects.findUniqueOrThrow({
+        where: {
+            id: projectId
+        }
+    })
 }
 
 

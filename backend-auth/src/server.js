@@ -157,11 +157,41 @@ app.post('/generate-specific', TokenManager.verifyJwtToken, (req,res) => {
 });
 
 
+app.post('/create-game', TokenManager.verifyJwtToken, async (req,res)=> {
+    try {
+        const token = (req.headers.authorization).split(' ')[1];
+        const tokenInfo = TokenManager.jwtInfo(token);
+        const game = await ProjectsManager.createNewGame(tokenInfo.uid)
+        res.status(200).send(await ProjectsManager.getProjectInfo(tokenInfo.uid))
+    }
+    catch(error) {
+        console.log(error)
+        res.status(429).send("une partie est déjà en cours")
+    }
+})
+
+
+app.post('/get-ongoing-player-game', TokenManager.verifyJwtToken, async(req,res) => {
+    try {
+        const token = (req.headers.authorization).split(' ')[1];
+        const tokenInfo = TokenManager.jwtInfo(token);
+        res.status(200).send(await ProjectsManager.getProjectInfo(tokenInfo.uid))
+    }
+    catch(error) {
+        res.status(400).send({error:error.message})
+    }
+})
+
+
+app.post('/get-end-jwt', (req,res)=>{
+
+})
+
 /**
  * validate that the player has ended his game stage
  * and sends him a need jwt with the next game
  */
-app.post('/end-stage', TokenManager.verifyAppJwt, async (req,res) => {
+app.post('/validate-stage', TokenManager.verifyAppJwt, async (req,res) => {
     try {
 
         // verify the project JWT is valid
@@ -179,20 +209,6 @@ app.post('/end-stage', TokenManager.verifyAppJwt, async (req,res) => {
         res.status(401).send('Invalid credentials');
     }
 });
-
-
-app.post('/create-game', TokenManager.verifyJwtToken, async (req,res)=> {
-    try {
-        const token = (req.headers.authorization).split(' ')[1];
-        const tokenInfo = TokenManager.jwtInfo(token);
-        await ProjectsManager.createNewGame(tokenInfo.uid)
-        res.status(200).send(ProjectsManager.getProjectJwt(tokenInfo.uid))
-    }
-    catch(error) {
-        res.status(429).send("Une partie est déjà en cours")
-    }
-})
-
 
 
 app.listen(PORT, () => {

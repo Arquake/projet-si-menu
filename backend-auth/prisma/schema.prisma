@@ -39,7 +39,7 @@ model Projects {
 }
 
 model OngoingGame {
-  id              Int        @id @default(autoincrement())
+  id              Int        @id @unique
   currentStage    Int  
   startedAt       DateTime   @default(now())
   user            User       @relation(fields: [userId], references: [id])

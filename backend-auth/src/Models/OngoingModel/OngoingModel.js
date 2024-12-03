@@ -23,12 +23,21 @@ async function getNextGame(currentGamePlacement) {
 }
 
 async function createNewGame(userId) {
-    await prisma.ongoingGame.create({
-        data: {
-            currentStage: 1,
-            userId: userId
+    for (let index = 0; index < 5; index++) {
+        try {
+            return await prisma.ongoingGame.create({
+                data: {
+                    id: Math.floor(100000 + Math.random() * 900000),
+                    currentStage: 1,
+                    userId: userId
+                }
+            })
         }
-    })
+        catch(_){}
+    }
+    
+    throw new Error("unable to create game");
+    
 }
 
 export default {

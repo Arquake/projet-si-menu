@@ -32,8 +32,8 @@ CREATE TABLE "Projects" (
 
 -- CreateTable
 CREATE TABLE "OngoingGame" (
-    "id" SERIAL NOT NULL,
-    "currentStageId" INTEGER NOT NULL,
+    "id" INTEGER NOT NULL,
+    "currentStage" INTEGER NOT NULL,
     "startedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "userId" TEXT NOT NULL,
 
@@ -69,6 +69,9 @@ CREATE UNIQUE INDEX "Projects_name_key" ON "Projects"("name");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Projects_privateKey_key" ON "Projects"("privateKey");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "OngoingGame_id_key" ON "OngoingGame"("id");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "OngoingGame_userId_key" ON "OngoingGame"("userId");
