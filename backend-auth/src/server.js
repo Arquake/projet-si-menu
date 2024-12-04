@@ -165,7 +165,6 @@ app.post('/create-game', TokenManager.verifyJwtToken, async (req,res)=> {
         res.status(200).send(await ProjectsManager.getProjectInfo(tokenInfo.uid))
     }
     catch(error) {
-        console.log(error)
         res.status(429).send("une partie est déjà en cours")
     }
 })
@@ -178,37 +177,47 @@ app.post('/get-ongoing-player-game', TokenManager.verifyJwtToken, async(req,res)
         res.status(200).send(await ProjectsManager.getProjectInfo(tokenInfo.uid))
     }
     catch(error) {
-        res.status(400).send({error:error.message})
+        res.status(400).send()
     }
 })
 
-
-app.post('/get-end-jwt', (req,res)=>{
-
-})
 
 /**
  * validate that the player has ended his game stage
  * and sends him a need jwt with the next game
  */
-app.post('/validate-stage', TokenManager.verifyAppJwt, async (req,res) => {
+app.post('/validate-stage', async (req,res) => {
     try {
+        const projectsCredentials = (req.headers.authorization).split(' ');
+        const projectId = projectsCredentials[0]
+        const pk = projectsCredentials[1]
 
-        // verify the project JWT is valid
-        const tokenInfo = TokenManager.appJwtInfo((req.headers.authorization).split(' ')[1]);
-        const appId = tokenInfo.appId;
-        const project = await ProjectsModel.getProjecyById(appId);
+        const project = await ProjectsModel.getProjecyById(projectId);
+        argon2.verify(project.privateKey, pk)
 
-        // verify the PK of the app is valid
-        argon2.verify(req.body.privateKey, project.privateKey);
+        const currentStage = (await OngoingModel.getOngoingGameByUserId(userId)).currentStage
+        if (currentStage === project.placement) {throw new Error()}
 
-        res.status(200).send(ProjectsManager.getNextGame(tokenInfo.userUid));
+        res.status(200).send(ProjectsManager.getNextGame(tokenInfo.userUidnprojectId));
 
     }
     catch(error) {
         res.status(401).send('Invalid credentials');
     }
 });
+
+
+app.post('/get-code-validity', async (req,res) => {
+    try {
+        const code = req.body.code;
+        await OngoingModel.getOngoingGameByCode(code)
+        res.status(200).send()
+    }
+    catch (error) {
+        console.log(error)
+        res.status(401).send()
+    }
+})
 
 
 app.listen(PORT, () => {

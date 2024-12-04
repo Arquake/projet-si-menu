@@ -25,11 +25,11 @@ async function getProjectInfo(userId) {
     return {name: project.name, description: project.description, authors: project.authors, url: project.url, placement: project.placement, gameId:currentGame.id, currentStage:currentGame.currentStage}
 }
 
-async function getNextGame(userId) {
-    const currentStage = await OngoingModel.getOngoingGameByUserId(userId).currentStageId
-    const nextGame = await OngoingModel.getNextGame(currentStage);
+async function getNextGame(userId, projectId) {
+    
+    const nextGame = await OngoingModel.addOneStage(userId)
 
-    return {name: nextGame.name, description: nextGame.description, authors: nextGame.authors, url: nextGame.url, placement: nextGame.placement, gameId:currentGame.id}
+    return {name: nextGame.name, description: nextGame.description, authors: nextGame.authors, url: nextGame.url, placement: nextGame.placement, gameId:nextGame.id}
 }
 
 

@@ -35,13 +35,36 @@ async function createNewGame(userId) {
         }
         catch(_){}
     }
-    
     throw new Error("unable to create game");
-    
+}
+
+async function addOneStage(userId) {
+    return await prisma.ongoingGame.update({
+        where: {
+            userId: userId
+        },
+        data: {
+            currentStage: {
+                increment: 1
+            }
+        }
+    })
+}
+
+
+async function getOngoingGameByCode(code) {
+
+    return await prisma.ongoingGame.findUniqueOrThrow({
+        where: {
+            id: code
+        }
+    })
 }
 
 export default {
     getOngoingGameByUserId,
     getNextGame,
-    createNewGame
+    createNewGame,
+    addOneStage,
+    getOngoingGameByCode
 }
