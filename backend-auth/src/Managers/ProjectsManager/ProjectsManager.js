@@ -44,6 +44,7 @@ async function onGoingGameToFinished(userId, finished, timeSpent) {
         1000,
         timeSpent
     );
+    console.log("id", previousGame.id)
     await OngoingModel.removeOngoingGame(previousGame.id);
 }
 

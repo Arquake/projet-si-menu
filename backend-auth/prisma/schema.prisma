@@ -30,12 +30,14 @@ model Token {
 
 model Projects {
   id            Int       @id @default(autoincrement())
-  placement     Int       @unique
+  placement     String    @unique
+  order         Int       @unique
   url           String    @unique
   name          String    @unique
   description   String
   authors       String[]
   privateKey    String    @unique
+  finishedGames FinishedGames[]
 }
 
 model OngoingGame {
@@ -44,6 +46,7 @@ model OngoingGame {
   startedAt       DateTime   @default(now())
   user            User       @relation(fields: [userId], references: [id])
   userId          String     @unique
+  score           Int
 }
 
 model FinishedGames {
@@ -52,6 +55,7 @@ model FinishedGames {
   userId                String    
   registeredAt          DateTime  @default(now())
   timeSpentSeconds      Int
+  projectModel          Projects  @relation(fields: [stage], references: [order])
   stage                 Int
   score                 Int
   finished              Boolean

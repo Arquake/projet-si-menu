@@ -1,0 +1,257 @@
+{
+  "main": {
+    "id": "7582e9bae42ca7c8",
+    "type": "split",
+    "children": [
+      {
+        "id": "bf0a223143814b03",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "d40a739f618d84c0",
+            "type": "leaf",
+            "state": {
+              "type": "canvas",
+              "state": {
+                "file": "MCD.canvas",
+                "viewState": {
+                  "x": 280.3214211018923,
+                  "y": 661.2047066200571,
+                  "zoom": -0.3333333333333334
+                }
+              },
+              "icon": "lucide-layout-dashboard",
+              "title": "MCD"
+            }
+          },
+          {
+            "id": "7a3ecb6062ebad66",
+            "type": "leaf",
+            "state": {
+              "type": "canvas",
+              "state": {
+                "file": "MOT.canvas",
+                "viewState": {
+                  "x": 0,
+                  "y": 0,
+                  "zoom": 0
+                }
+              },
+              "icon": "lucide-layout-dashboard",
+              "title": "MOT"
+            }
+          },
+          {
+            "id": "9f5e7fc2fbbfe60e",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Ongoing Game.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "Ongoing Game"
+            }
+          },
+          {
+            "id": "5b595671439b1425",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Finished Games.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "Finished Games"
+            }
+          },
+          {
+            "id": "e42dacca0ed39469",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "User.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "User"
+            }
+          },
+          {
+            "id": "f92c6a23336b92ad",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Token.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "Token"
+            }
+          }
+        ],
+        "currentTab": 1
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "aa3a092b2ba70130",
+    "type": "split",
+    "children": [
+      {
+        "id": "6391babc06a97c88",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "3b9f3910cf73b7f4",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-folder-closed",
+              "title": "Files"
+            }
+          },
+          {
+            "id": "736096e48e9cced3",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "Search"
+            }
+          },
+          {
+            "id": "bb43675325b0f16a",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "Bookmarks"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "0a4937adfd6a5e54",
+    "type": "split",
+    "children": [
+      {
+        "id": "58861d5935c121e9",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "ba0c2d205b58eb66",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "MOT.canvas",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Backlinks for MOT"
+            }
+          },
+          {
+            "id": "24632b4d6dd9b4a5",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "MOT.canvas",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Outgoing links from MOT"
+            }
+          },
+          {
+            "id": "ec5e83469523c4e0",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true
+              },
+              "icon": "lucide-tags",
+              "title": "Tags"
+            }
+          },
+          {
+            "id": "bb923c2b64acdb74",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "MOT.canvas"
+              },
+              "icon": "lucide-list",
+              "title": "Outline of MOT"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false
+    }
+  },
+  "active": "7a3ecb6062ebad66",
+  "lastOpenFiles": [
+    "MCT.canvas",
+    "MOT.canvas",
+    "MCD.canvas",
+    "MCC.canvas",
+    "Untitled 1.md",
+    "Untitled.md",
+    "Projects.md",
+    "Ongoing Game.md",
+    "Finished Games.md",
+    "Token.md",
+    "User.md",
+    "Welcome.md"
+  ]
+}

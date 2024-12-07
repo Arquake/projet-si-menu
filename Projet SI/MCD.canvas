@@ -1,0 +1,16 @@
+{
+	"nodes":[
+		{"id":"463d0f0c2389c699","type":"text","text":"User\n- id\n- username\n- email\n- password","x":-75,"y":-30,"width":250,"height":190},
+		{"id":"125bff39d3f9c6d2","type":"text","text":"FinishedGames\n- id\n- userId\n- registeredAt\n- timeSpentSeconds\n- stage\n- score\n- finished","x":-75,"y":580,"width":250,"height":280},
+		{"id":"500c3eb5c7307cf7","type":"text","text":"Ongoing Game\n- id\n- currentStage\n- startedAt\n- userId\n- score","x":440,"y":340,"width":250,"height":220},
+		{"id":"fb8c2e1055fc19be","type":"text","text":"Projects\n- id\n- order\n- placement\n- url\n- name\n- description\n- authors\n- privateKey","x":440,"y":780,"width":250,"height":300},
+		{"id":"868ce83ab228a2f4","type":"text","text":"Token\n- id\n- createdAt\n- userUid\n","x":440,"y":-10,"width":250,"height":150}
+	],
+	"edges":[
+		{"id":"c3a04048f8f222a8","fromNode":"868ce83ab228a2f4","fromSide":"left","toNode":"463d0f0c2389c699","toSide":"right","color":"1","label":"userId -> id\n1,1 - 0,n"},
+		{"id":"e2118eb9dc9e105a","fromNode":"500c3eb5c7307cf7","fromSide":"top","toNode":"463d0f0c2389c699","toSide":"bottom","color":"5","label":"userId -> id\n1,1 - 0,1"},
+		{"id":"dc717cb6f90e6386","fromNode":"125bff39d3f9c6d2","fromSide":"top","toNode":"463d0f0c2389c699","toSide":"bottom","color":"6","label":"userid -> id\n1,1 - 0,n"},
+		{"id":"09cc58e52556a233","fromNode":"500c3eb5c7307cf7","fromSide":"bottom","toNode":"fb8c2e1055fc19be","toSide":"top","color":"4","label":"currentStage -> order\n1,1 - 0,n"},
+		{"id":"31540d2cbb8085b5","fromNode":"125bff39d3f9c6d2","fromSide":"right","toNode":"fb8c2e1055fc19be","toSide":"left","color":"2","label":"stage -> order\n1,1 - 0,n"}
+	]
+}

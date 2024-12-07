@@ -178,12 +178,11 @@ app.post('/get-ongoing-player-game', TokenManager.verifyJwtToken, async(req,res)
         const game = await OngoingModel.getOngoingGameByUserId(tokenInfo.uid)
 
         if (game) {
-            console.log('here', game)
             const currentTime = new Date();
             const oneHourBefore = new Date(currentTime.getTime() - 60 * 60 * 1000);
 
             if (game.startedAt <= oneHourBefore) {
-                ProjectsManager.onGoingGameToFinished(game.userId, false, 3600);
+                await ProjectsManager.onGoingGameToFinished(game.userId, false, 3600);
                 game = await ProjectsManager.createNewGame(tokenInfo.uid);
             }
         }
