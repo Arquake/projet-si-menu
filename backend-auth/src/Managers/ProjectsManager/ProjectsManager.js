@@ -1,14 +1,14 @@
+import FinishedGameModel from "../../Models/FinishedGameModel.js";
 import OngoingModel from "../../Models/OngoingModel/OngoingModel.js";
 import ProjectsModel from "../../Models/ProjectsModel/ProjectsModel.js";
-import TokenManager from "../TokenManagement/TokenManager.js";
 
-async function getAllProjectsJwt(userId) {
-    const projects = await ProjectsModel.getAllProjectsId()
+async function getAllProjects() {
+    const projects = await ProjectsModel.getAllProjects()
     let projectsArray = []
     projects.forEach((item)=> {
         projectsArray = [
             ...projectsArray,
-            {jwt: TokenManager.generateAppJwt(userId, item.id), name: item.name, description: item.description, authors: item.authors, url: item.url, placement: item.placement}
+            {name: item.name, description: item.description, authors: item.authors, url: item.url, placement: item.placement}
         ];
     });
     return projectsArray;
@@ -32,10 +32,25 @@ async function getNextGame(userId, projectId) {
     return {name: nextGame.name, description: nextGame.description, authors: nextGame.authors, url: nextGame.url, placement: nextGame.placement, gameId:nextGame.id}
 }
 
+/**
+ * @param timeSpent Time spent in seconds
+ */
+async function onGoingGameToFinished(userId, finished, timeSpent) {
+    const previousGame = await OngoingModel.getOngoingGameByUserId(userId)
+    await FinishedGameModel.createFinishedGame(
+        userId,
+        previousGame.currentStage,
+        finished,
+        1000,
+        timeSpent
+    );
+    await OngoingModel.removeOngoingGame(previousGame.id);
+}
 
 export default {
-    getAllProjectsJwt,
+    getAllProjects,
     getProjectInfo,
     getNextGame,
-    createNewGame
+    createNewGame,
+    onGoingGameToFinished
 }

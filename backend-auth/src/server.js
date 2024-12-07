@@ -7,6 +7,7 @@ import ProjectsManager from "./Managers/ProjectsManager/ProjectsManager.js";
 import ProjectsModel from './Models/ProjectsModel/ProjectsModel.js';
 import OngoingModel from './Models/OngoingModel/OngoingModel.js';
 import argon2  from 'argon2';
+import FinishedGameModel from './Models/FinishedGameModel.js';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -161,8 +162,8 @@ app.post('/create-game', TokenManager.verifyJwtToken, async (req,res)=> {
     try {
         const token = (req.headers.authorization).split(' ')[1];
         const tokenInfo = TokenManager.jwtInfo(token);
-        const game = await ProjectsManager.createNewGame(tokenInfo.uid)
-        res.status(200).send(await ProjectsManager.getProjectInfo(tokenInfo.uid))
+        game = await ProjectsManager.createNewGame(tokenInfo.uid)
+        res.status(200).send({...await ProjectsManager.getProjectInfo(tokenInfo.uid), time: game.startedAt})
     }
     catch(error) {
         res.status(429).send("une partie est déjà en cours")
@@ -174,7 +175,20 @@ app.post('/get-ongoing-player-game', TokenManager.verifyJwtToken, async(req,res)
     try {
         const token = (req.headers.authorization).split(' ')[1];
         const tokenInfo = TokenManager.jwtInfo(token);
-        res.status(200).send(await ProjectsManager.getProjectInfo(tokenInfo.uid))
+        const game = await OngoingModel.getOngoingGameByUserId(tokenInfo.uid)
+
+        if (game) {
+            console.log('here', game)
+            const currentTime = new Date();
+            const oneHourBefore = new Date(currentTime.getTime() - 60 * 60 * 1000);
+
+            if (game.startedAt <= oneHourBefore) {
+                ProjectsManager.onGoingGameToFinished(game.userId, false, 3600);
+                game = await ProjectsManager.createNewGame(tokenInfo.uid);
+            }
+        }
+
+        res.status(200).send({...await ProjectsManager.getProjectInfo(tokenInfo.uid), time: game.startedAt})
     }
     catch(error) {
         res.status(400).send()
@@ -193,7 +207,7 @@ app.post('/validate-stage', async (req,res) => {
         const pk = projectsCredentials[1]
 
         const project = await ProjectsModel.getProjecyById(projectId);
-        argon2.verify(project.privateKey, pk)
+        // argon2.verify(project.privateKey, pk)
 
         const currentStage = (await OngoingModel.getOngoingGameByUserId(userId)).currentStage
         if (currentStage === project.placement) {throw new Error()}
@@ -219,6 +233,15 @@ app.post('/get-code-validity', async (req,res) => {
     }
 })
 
+
+app.post('/get-all-projects', TokenManager.verifyJwtToken, async (req,res)=> {
+    try {
+        res.status(200).send(await ProjectsManager.getAllProjects())
+    }
+    catch(error) {
+        res.status(429).send("une partie est déjà en cours")
+    }
+})
 
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);

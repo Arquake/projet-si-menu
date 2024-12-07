@@ -61,10 +61,20 @@ async function getOngoingGameByCode(code) {
     })
 }
 
+
+async function removeOngoingGame(code) {
+    await prisma.ongoingGame.delete({
+        where: {
+            id: code
+        }
+    })
+}
+
 export default {
     getOngoingGameByUserId,
     getNextGame,
     createNewGame,
     addOneStage,
-    getOngoingGameByCode
+    getOngoingGameByCode,
+    removeOngoingGame
 }
