@@ -40,7 +40,7 @@ export function useAuth() {
                 return res.json();
             })
             .then((data) => {
-                setAccount(data);
+                setAccount({...data, username: localStorage.getItem("username")});
                 localStorage.setItem('jwt', data.jwt);
                 localStorage.setItem('refreshToken', data.refreshToken);
             })
@@ -71,6 +71,7 @@ export function useAuth() {
         })
         .then((data) => {
             setAccount(data);
+            localStorage.setItem('username', data.username);
             localStorage.setItem('jwt', data.jwt);
             localStorage.setItem('refreshToken', data.refreshToken);
             return true
@@ -114,6 +115,7 @@ export function useAuth() {
         })
         .then((data) => {
             setAccount(data);
+            localStorage.setItem('username', data.username);
             localStorage.setItem('jwt', data.jwt);
             localStorage.setItem('refreshToken', data.refreshToken);
             return true
@@ -147,7 +149,7 @@ export function useAuth() {
 
     const refreshJwt = useCallback(()=>{
         makePostRequest('/refresh-jwt', account?.refreshToken, {}, 
-            (res) => {
+            async (res) => {
                 if (res.status === 401) {
                     setAccount(null);
                     localStorage.removeItem('jwt');
@@ -155,9 +157,9 @@ export function useAuth() {
                     throw new Error('invalid refresh token')
                 }
                 else {
-                    res = res.json();
+                    let result = await res.json();
                     localStorage.setItem('jwt', res.jwt);
-                    account!.jwt = res.jwt
+                    account!.jwt = result.jwt;
                 }
             },
             (error) => {

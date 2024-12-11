@@ -162,10 +162,11 @@ app.post('/create-game', TokenManager.verifyJwtToken, async (req,res)=> {
     try {
         const token = (req.headers.authorization).split(' ')[1];
         const tokenInfo = TokenManager.jwtInfo(token);
-        game = await ProjectsManager.createNewGame(tokenInfo.uid)
+        const game = await ProjectsManager.createNewGame(tokenInfo.uid)
         res.status(200).send({...await ProjectsManager.getProjectInfo(tokenInfo.uid), time: game.startedAt})
     }
     catch(error) {
+        console.log(error)
         res.status(429).send("une partie est déjà en cours")
     }
 })
@@ -177,6 +178,7 @@ app.post('/get-ongoing-player-game', TokenManager.verifyJwtToken, async(req,res)
         const tokenInfo = TokenManager.jwtInfo(token);
         const game = await OngoingModel.getOngoingGameByUserId(tokenInfo.uid)
 
+        console.log(game)
         if (game) {
             const currentTime = new Date();
             const oneHourBefore = new Date(currentTime.getTime() - 60 * 60 * 1000);
@@ -227,7 +229,6 @@ app.post('/get-code-validity', async (req,res) => {
         res.status(200).send()
     }
     catch (error) {
-        console.log(error)
         res.status(401).send()
     }
 })

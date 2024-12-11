@@ -29,7 +29,8 @@ async function createNewGame(userId) {
                 data: {
                     id: Math.floor(100000 + Math.random() * 900000),
                     currentStage: 1,
-                    userId: userId
+                    userId: userId,
+                    score: 1000
                 }
             })
         }

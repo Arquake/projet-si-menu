@@ -37,6 +37,7 @@ async function getNextGame(userId, projectId) {
  */
 async function onGoingGameToFinished(userId, finished, timeSpent) {
     const previousGame = await OngoingModel.getOngoingGameByUserId(userId)
+    const projectId = previousGame.id
     await FinishedGameModel.createFinishedGame(
         userId,
         previousGame.currentStage,
@@ -44,8 +45,7 @@ async function onGoingGameToFinished(userId, finished, timeSpent) {
         1000,
         timeSpent
     );
-    console.log("id", previousGame.id)
-    await OngoingModel.removeOngoingGame(previousGame.id);
+    await OngoingModel.removeOngoingGame(projectId);
 }
 
 export default {

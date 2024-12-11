@@ -87,24 +87,29 @@ export default function Game() {
     }
 
     useEffect(() => {
-        const fetchGameData = async () => {
+        const fetchGameData = async () => {   
             try {
-                // Try to get the ongoing game
                 let res: Etape = await getOngoingGame();
-                setEtape(res)
+                console.log("ongoing", res)
+                setEtape(res);
+    
                 if (fetchErrorRef.current) {
                     await refreshJwt();
-                    let res: Etape = await getOngoingGame();
-                    setEtape(res)
+                    res = await getOngoingGame();
+                    setEtape(res);
+                    console.log("getgoing",res)
+    
                     if (fetchErrorRef.current) {
-                        let res: Etape = await createGame();
-                        setEtape(res)
-                        let allProjects: ProjectsList[] = await getAllGames();
-                        setProjectList(allProjects)
+                        res = await createGame();
+                        console.log("create", res)
+                        setEtape(res);
+    
+                        const allProjects: ProjectsList[] = await getAllGames();
+                        setProjectList(allProjects);
                     }
                 } else {
-                    let allProjects: ProjectsList[] = await getAllGames();
-                    setProjectList(allProjects)
+                    const allProjects: ProjectsList[] = await getAllGames();
+                    setProjectList(allProjects);
                 }
             } catch (error) {
                 fetchErrorRef.current = true;
@@ -114,9 +119,18 @@ export default function Game() {
             }
         };
     
-        fetchGameData();
-    }, []);
+        if (account !== undefined) {
+            console.log("etape", etape)
+            console.log("etape func", ()=>etape)
+            fetchGameData();
+            console.log("etape func", ()=>etape)
+        }
+    }, [account]);
     
+    
+    if (!etape) {
+        return <div>{etape}</div>
+    }
 
     return (
         <>
@@ -141,10 +155,12 @@ export default function Game() {
                     </div>
                 :
                     <>
-                        <aside className="flex flex-col w-fit gap-2">
+                        <aside className="flex flex-col w-fit gap-2 col-span-full">
                             {
                                 
                                 projectList.map((element) => {
+                                    console.log(element)
+                                    console.log("etape", etape)
                                     return (
                                         <div className="py-1 px-4 rounded-full bg-neutral-50 border border-blue-500 flex gap-4 items-center" key={element.name}>
                                             <p className="justify-self-start">
