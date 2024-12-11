@@ -30,15 +30,15 @@
             "state": {
               "type": "canvas",
               "state": {
-                "file": "MOT.canvas",
+                "file": "MCD.canvas",
                 "viewState": {
-                  "x": 0,
-                  "y": 0,
+                  "x": 307.5,
+                  "y": 525,
                   "zoom": 0
                 }
               },
               "icon": "lucide-layout-dashboard",
-              "title": "MOT"
+              "title": "MCD"
             }
           },
           {

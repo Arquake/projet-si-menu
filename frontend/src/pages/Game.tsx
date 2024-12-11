@@ -24,7 +24,7 @@ export default function Game() {
 
     const {makePostRequest, refreshJwt, account} = useAuth();
 
-    const [etape, setEtape] = useState<Etape>({name:"",description:"", authors:"",url:"",placement:0, gameId:"", time: new Date()});
+    const [etape, setEtape] = useState<Etape|null>(null);
     const [projectList, setProjectList] = useState<ProjectsList[]>([])
 
     const [fetchError, setFetchError] = useState<boolean|null>(null);
@@ -90,18 +90,15 @@ export default function Game() {
         const fetchGameData = async () => {   
             try {
                 let res: Etape = await getOngoingGame();
-                console.log("ongoing", res)
                 setEtape(res);
     
                 if (fetchErrorRef.current) {
                     await refreshJwt();
                     res = await getOngoingGame();
                     setEtape(res);
-                    console.log("getgoing",res)
     
                     if (fetchErrorRef.current) {
                         res = await createGame();
-                        console.log("create", res)
                         setEtape(res);
     
                         const allProjects: ProjectsList[] = await getAllGames();
@@ -119,18 +116,10 @@ export default function Game() {
             }
         };
     
-        if (account !== undefined) {
-            console.log("etape", etape)
-            console.log("etape func", ()=>etape)
+        if (account !== undefined && etape === null) {
             fetchGameData();
-            console.log("etape func", ()=>etape)
         }
     }, [account]);
-    
-    
-    if (!etape) {
-        return <div>{etape}</div>
-    }
 
     return (
         <>
@@ -155,21 +144,19 @@ export default function Game() {
                     </div>
                 :
                     <>
-                        <aside className="flex flex-col w-fit gap-2 col-span-full">
+                        <aside className="flex flex-col w-fit gap-2 col-span-1">
                             {
                                 
                                 projectList.map((element) => {
-                                    console.log(element)
-                                    console.log("etape", etape)
                                     return (
                                         <div className="py-1 px-4 rounded-full bg-neutral-50 border border-blue-500 flex gap-4 items-center" key={element.name}>
                                             <p className="justify-self-start">
                                                 {element.name}
                                             </p>
                                             {
-                                                element.placement < etape.placement?
+                                                element.placement < etape!.placement?
                                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="h-5 aspect-square justify-self-end text-blue-600">
-                                                    <g fill="none" fill-rule="evenodd"><path d="m12.593 23.258l-.011.002l-.071.035l-.02.004l-.014-.004l-.071-.035q-.016-.005-.024.005l-.004.01l-.017.428l.005.02l.01.013l.104.074l.015.004l.012-.004l.104-.074l.012-.016l.004-.017l-.017-.427q-.004-.016-.017-.018m.265-.113l-.013.002l-.185.093l-.01.01l-.003.011l.018.43l.005.012l.008.007l.201.093q.019.005.029-.008l.004-.014l-.034-.614q-.005-.018-.02-.022m-.715.002a.02.02 0 0 0-.027.006l-.006.014l-.034.614q.001.018.017.024l.015-.002l.201-.093l.01-.008l.004-.011l.017-.43l-.003-.012l-.01-.01z"/><path fill="currentColor" d="M21.546 5.111a1.5 1.5 0 0 1 0 2.121L10.303 18.475a1.6 1.6 0 0 1-2.263 0L2.454 12.89a1.5 1.5 0 1 1 2.121-2.121l4.596 4.596L19.424 5.111a1.5 1.5 0 0 1 2.122 0"/></g>
+                                                    <g fill="none" fillRule="evenodd"><path d="m12.593 23.258l-.011.002l-.071.035l-.02.004l-.014-.004l-.071-.035q-.016-.005-.024.005l-.004.01l-.017.428l.005.02l.01.013l.104.074l.015.004l.012-.004l.104-.074l.012-.016l.004-.017l-.017-.427q-.004-.016-.017-.018m.265-.113l-.013.002l-.185.093l-.01.01l-.003.011l.018.43l.005.012l.008.007l.201.093q.019.005.029-.008l.004-.014l-.034-.614q-.005-.018-.02-.022m-.715.002a.02.02 0 0 0-.027.006l-.006.014l-.034.614q.001.018.017.024l.015-.002l.201-.093l.01-.008l.004-.011l.017-.43l-.003-.012l-.01-.01z"/><path fill="currentColor" d="M21.546 5.111a1.5 1.5 0 0 1 0 2.121L10.303 18.475a1.6 1.6 0 0 1-2.263 0L2.454 12.89a1.5 1.5 0 1 1 2.121-2.121l4.596 4.596L19.424 5.111a1.5 1.5 0 0 1 2.122 0"/></g>
                                                 </svg>
                                                 :
                                                 <div id="spacePlaceholder" className="h-5 aspect-square">
@@ -182,14 +169,14 @@ export default function Game() {
                             }
                         </aside>
 
-                        <div key={etape.name} className="self-center justify-self-center text-center">
-                            <p>temps restant: <ComputedRemaingTime startDate={etape.time} onRemainingTimeChange={handleRemainingTimeChange}/></p>
+                        <div key={etape!.name} className="self-center justify-self-center text-center">
+                            <p>temps restant: <ComputedRemaingTime startDate={etape!.time} onRemainingTimeChange={handleRemainingTimeChange}/></p>
                             {
                                 remainingTimeFromChild?
                                 <>
-                                    <p className="text-2xl">{etape.name}</p>
-                                    <p className="text-xl">Allez dans la salle {etape.placement}</p>
-                                    <p className="text-blue-500 underline text-3xl">{etape.gameId}</p>
+                                    <p className="text-2xl">{etape!.name}</p>
+                                    <p className="text-xl">Allez dans la salle {etape!.placement}</p>
+                                    <p className="text-blue-500 underline text-3xl">{etape!.gameId}</p>
                                 </>
                                 :
                                 <>

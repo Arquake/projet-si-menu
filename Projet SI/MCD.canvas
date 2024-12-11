@@ -1,8 +1,8 @@
 {
 	"nodes":[
 		{"id":"463d0f0c2389c699","type":"text","text":"User\n- id\n- username\n- email\n- password","x":-75,"y":-30,"width":250,"height":190},
-		{"id":"125bff39d3f9c6d2","type":"text","text":"FinishedGames\n- id\n- userId\n- registeredAt\n- timeSpentSeconds\n- stage\n- score\n- finished","x":-75,"y":580,"width":250,"height":280},
-		{"id":"500c3eb5c7307cf7","type":"text","text":"Ongoing Game\n- id\n- currentStage\n- startedAt\n- userId\n- score","x":440,"y":340,"width":250,"height":220},
+		{"id":"125bff39d3f9c6d2","type":"text","text":"FinishedGames\n- id\n- userId\n- registeredAt\n- timeSpentSeconds\n- stage\n- score\n- finished\n- completedStages","x":-75,"y":580,"width":250,"height":280},
+		{"id":"500c3eb5c7307cf7","type":"text","text":"Ongoing Game\n- id\n- currentStage\n- startedAt\n- userId\n- score\n- completedStages","x":440,"y":340,"width":250,"height":220},
 		{"id":"fb8c2e1055fc19be","type":"text","text":"Projects\n- id\n- order\n- placement\n- url\n- name\n- description\n- authors\n- privateKey","x":440,"y":780,"width":250,"height":300},
 		{"id":"868ce83ab228a2f4","type":"text","text":"Token\n- id\n- createdAt\n- userUid\n","x":440,"y":-10,"width":250,"height":150}
 	],

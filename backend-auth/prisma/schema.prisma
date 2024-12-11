@@ -47,6 +47,7 @@ model OngoingGame {
   user            User       @relation(fields: [userId], references: [id])
   userId          String     @unique
   score           Int
+  completedStages Boolean[]
 }
 
 model FinishedGames {
@@ -59,4 +60,5 @@ model FinishedGames {
   stage                 Int
   score                 Int
   finished              Boolean
+  completedStages       Boolean[]
 }
