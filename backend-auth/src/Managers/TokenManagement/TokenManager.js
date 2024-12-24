@@ -81,7 +81,6 @@ const verifyJwtToken = (req, res, next) => {
         jwtInfo(token)
         next();
     } catch (error) {
-        console.log(error)
         return res.status(401).send('Unauthorized: Invalid token '+ error);
     }
 }

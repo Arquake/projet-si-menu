@@ -8,34 +8,31 @@ async function getAllProjects() {
     projects.forEach((item)=> {
         projectsArray = [
             ...projectsArray,
-            {name: item.name, description: item.description, authors: item.authors, url: item.url, placement: item.placement}
+            {name: item.name, description: item.description, authors: item.authors, url: item.url, placement: item.placement, order: item.order}
         ];
     });
     return projectsArray;
 }
 
-async function createNewGame(userId) {
-    return await OngoingModel.createNewGame(userId);
+async function createNewGame(userId, arrayLength) {
+    return await OngoingModel.createNewGame(userId, arrayLength);
 }
 
 async function getProjectInfo(userId) {
     const currentGame = await OngoingModel.getOngoingGameByUserId(userId)
     const project = await ProjectsModel.getProjecyById(currentGame.currentStage)
 
-    return {name: project.name, description: project.description, authors: project.authors, url: project.url, placement: project.placement, gameId:currentGame.id, currentStage:currentGame.currentStage}
+    return {name: project.name, description: project.description, authors: project.authors, url: project.url, placement: project.placement, order: project.order, gameId:currentGame.id, currentStage:currentGame.currentStage}
 }
 
-async function getNextGame(userId, projectId) {
-    
-    const nextGame = await OngoingModel.addOneStage(userId)
-
-    return {name: nextGame.name, description: nextGame.description, authors: nextGame.authors, url: nextGame.url, placement: nextGame.placement, gameId:nextGame.id}
+async function setNextGame(gameId, completedStages) {
+    await OngoingModel.addOneStage(gameId, completedStages)
 }
 
 /**
  * @param timeSpent Time spent in seconds
  */
-async function onGoingGameToFinished(userId, finished, timeSpent) {
+async function onGoingGameToFinished(userId, finished, timeSpent, completedStages) {
     const previousGame = await OngoingModel.getOngoingGameByUserId(userId)
     const projectId = previousGame.id
     await FinishedGameModel.createFinishedGame(
@@ -43,7 +40,8 @@ async function onGoingGameToFinished(userId, finished, timeSpent) {
         previousGame.currentStage,
         finished,
         1000,
-        timeSpent
+        timeSpent,
+        completedStages
     );
     await OngoingModel.removeOngoingGame(projectId);
 }
@@ -51,7 +49,7 @@ async function onGoingGameToFinished(userId, finished, timeSpent) {
 export default {
     getAllProjects,
     getProjectInfo,
-    getNextGame,
+    setNextGame,
     createNewGame,
     onGoingGameToFinished
 }

@@ -8,12 +8,85 @@ import ProjectsModel from './Models/ProjectsModel/ProjectsModel.js';
 import OngoingModel from './Models/OngoingModel/OngoingModel.js';
 import argon2  from 'argon2';
 import FinishedGameModel from './Models/FinishedGameModel.js';
+import { createServer } from "http";
+import { Server } from "socket.io";
+
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-
 app.use(express.json());
 app.use(cors())
+
+const server = createServer(app);
+const io = new Server(server, {
+    cors: {
+      origin: '*',  // Remplacez par l'URL de votre frontend (si différent)
+      methods: ['GET', 'POST'],
+      allowedHeaders: ['Content-Type'],
+    },
+  });
+
+
+const allOnGoing = await OngoingModel.getAllOnGoing()
+
+const projetQueue = (await ProjectsModel.getAllProjects()).reduce((acc, element) => {
+    acc[element.order] = { id: element.id, current: null, waiting: [] };
+    return acc;
+}, {});
+
+allOnGoing.forEach( game => {
+    if (projetQueue[game.currentStage].current === null) {
+        projetQueue[game.currentStage].current = {id: game.id, score: game.score, socketId: null};
+    }
+    else {
+        projetQueue[game.currentStage].waiting = [...projetQueue[game.currentStage].waiting, {id: game.id, score: game.score, socketId: null}];
+    }
+})
+
+const totalProjectNumber = Object.keys(projetQueue).length;
+
+
+
+// ------------------------------- SOCKET PART -------------------------------
+
+
+io.on('connection', (socket) => {
+  
+    // Emit a message to the client
+    socket.emit('message', 'Welcome to the server!');
+  
+    // Handle messages from the client
+    socket.on('clientMessage', (msg) => {
+      console.log('Message from client:', msg);
+    });
+  
+    // Handle disconnection
+    socket.on('disconnect', () => {
+      console.log('A user disconnected:', socket.id);
+    });
+
+    // Join a room
+    socket.on('joinRoom', (codeId) => {
+        console.log(codeId + ' joined')
+        socket.join(codeId);
+    });
+    
+    // Leave a room
+    socket.on('leaveRoom', (codeId) => {
+        socket.leave(codeId);
+    });
+    
+    // Broadcast changes to a room
+    socket.on('stageChange', (codeId, message) => {
+        io.to(codeId).emit('stageChange', message);
+    });
+
+      // Handle disconnection
+    socket.on('disconnect', () => {});
+});
+
+// ------------------------------- CONVENTIONNAL PART -------------------------------
+
 
 /**
  * essaie de connecter l'utilisateur avec ses crédentiels
@@ -162,11 +235,10 @@ app.post('/create-game', TokenManager.verifyJwtToken, async (req,res)=> {
     try {
         const token = (req.headers.authorization).split(' ')[1];
         const tokenInfo = TokenManager.jwtInfo(token);
-        const game = await ProjectsManager.createNewGame(tokenInfo.uid)
+        const game = await ProjectsManager.createNewGame(tokenInfo.uid, totalProjectNumber)
         res.status(200).send({...await ProjectsManager.getProjectInfo(tokenInfo.uid), time: game.startedAt})
     }
     catch(error) {
-        console.log(error)
         res.status(429).send("une partie est déjà en cours")
     }
 })
@@ -178,14 +250,13 @@ app.post('/get-ongoing-player-game', TokenManager.verifyJwtToken, async(req,res)
         const tokenInfo = TokenManager.jwtInfo(token);
         const game = await OngoingModel.getOngoingGameByUserId(tokenInfo.uid)
 
-        console.log(game)
         if (game) {
             const currentTime = new Date();
             const oneHourBefore = new Date(currentTime.getTime() - 60 * 60 * 1000);
 
             if (game.startedAt <= oneHourBefore) {
                 await ProjectsManager.onGoingGameToFinished(game.userId, false, 3600);
-                game = await ProjectsManager.createNewGame(tokenInfo.uid);
+                game = await ProjectsManager.createNewGame(tokenInfo.uid, totalProjectNumber);
             }
         }
 
@@ -204,16 +275,29 @@ app.post('/get-ongoing-player-game', TokenManager.verifyJwtToken, async(req,res)
 app.post('/validate-stage', async (req,res) => {
     try {
         const projectsCredentials = (req.headers.authorization).split(' ');
-        const projectId = projectsCredentials[0]
-        const pk = projectsCredentials[1]
+        const projectId = parseInt(projectsCredentials[1])
+        const pk = projectsCredentials[2]
+        const currentGameCode = parseInt(projectsCredentials[3])
+
+        const completedStage = req.body.completed || false
 
         const project = await ProjectsModel.getProjecyById(projectId);
         // argon2.verify(project.privateKey, pk)
 
-        const currentStage = (await OngoingModel.getOngoingGameByUserId(userId)).currentStage
-        if (currentStage === project.placement) {throw new Error()}
+        const onGoingGame = await OngoingModel.getOngoingGameByCode(currentGameCode)
+        onGoingGame.completedStages[onGoingGame.currentStage-1] = completedStage
 
-        res.status(200).send(ProjectsManager.getNextGame(tokenInfo.userUidnprojectId));
+        if (onGoingGame.currentStage === totalProjectNumber) {
+            ProjectsManager.onGoingGameToFinished(onGoingGame.userId, true, Date.now()-onGoingGame.startedAt, onGoingGame.completedStages)
+            io.to(onGoingGame.id).emit('endGame');
+        }
+        else {
+            await ProjectsManager.setNextGame(onGoingGame.id, onGoingGame.completedStages);
+            const nextGame = await ProjectsManager.getProjectInfo(onGoingGame.userId)
+            
+            io.to(onGoingGame.id).emit('stageValidation', {name: nextGame.name, description: nextGame.description, authors: nextGame.authors, url: nextGame.url, placement: nextGame.placement, gameId: nextGame.gameId, time: onGoingGame.startedAt});
+        }
+        res.status(200).send()
 
     }
     catch(error) {
@@ -239,10 +323,14 @@ app.post('/get-all-projects', TokenManager.verifyJwtToken, async (req,res)=> {
         res.status(200).send(await ProjectsManager.getAllProjects())
     }
     catch(error) {
-        res.status(429).send("une partie est déjà en cours")
+        res.status(500).send("Internal server error")
     }
 })
 
-app.listen(PORT, () => {
+
+
+
+
+server.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
 });

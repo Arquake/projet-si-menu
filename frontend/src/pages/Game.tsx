@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from "react"
 import { useAuth } from "../useHook/useAuth";
 import ComputedRemaingTime from "../components/ComputedRemainingTime"
+import { io, Socket } from 'socket.io-client';
 
 interface Etape {
     name: string,
@@ -32,10 +33,14 @@ export default function Game() {
     const fetchErrorRef = useRef(true);
     const fetchErrorCode = useRef(500);
 
+    const [gameEnded, setGameEnded] = useState(false);
+
     const [remainingTimeFromChild, setRemainingTimeFromChild] = useState<number>();
 
+    const socketRef = useRef<Socket | null>(null);
+
     const handleRemainingTimeChange = (remainingTime: number) => {
-        setRemainingTimeFromChild(remainingTime); // Update parent state with new remaining time
+        setRemainingTimeFromChild(remainingTime);
     };
 
     const getOngoingGame = () => {
@@ -103,10 +108,12 @@ export default function Game() {
     
                         const allProjects: ProjectsList[] = await getAllGames();
                         setProjectList(allProjects);
+                        socketRef.current!.emit('joinRoom', res.gameId)
                     }
                 } else {
                     const allProjects: ProjectsList[] = await getAllGames();
                     setProjectList(allProjects);
+                    socketRef.current!.emit('joinRoom', res.gameId)
                 }
             } catch (error) {
                 fetchErrorRef.current = true;
@@ -117,9 +124,28 @@ export default function Game() {
         };
     
         if (account !== undefined && etape === null) {
+            if(socketRef.current === null) {
+                initializeSocket()
+            }
             fetchGameData();
         }
     }, [account]);
+  
+    const initializeSocket = () => {
+        if (socketRef.current === null) {
+            socketRef.current = io('http://localhost:3000'); // Replace with your backend URL
+    
+            // Listen for messages from the server
+            socketRef.current.on('stageValidation', (e) => {
+                setEtape(e)
+            });
+
+            socketRef.current.on('endGame', () => {
+              setGameEnded(true)
+            })
+        }
+    };
+  
 
     return (
         <>
@@ -154,7 +180,7 @@ export default function Game() {
                                                 {element.name}
                                             </p>
                                             {
-                                                element.placement < etape!.placement?
+                                                element.placement < etape!.placement || gameEnded?
                                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="h-5 aspect-square justify-self-end text-blue-600">
                                                     <g fill="none" fillRule="evenodd"><path d="m12.593 23.258l-.011.002l-.071.035l-.02.004l-.014-.004l-.071-.035q-.016-.005-.024.005l-.004.01l-.017.428l.005.02l.01.013l.104.074l.015.004l.012-.004l.104-.074l.012-.016l.004-.017l-.017-.427q-.004-.016-.017-.018m.265-.113l-.013.002l-.185.093l-.01.01l-.003.011l.018.43l.005.012l.008.007l.201.093q.019.005.029-.008l.004-.014l-.034-.614q-.005-.018-.02-.022m-.715.002a.02.02 0 0 0-.027.006l-.006.014l-.034.614q.001.018.017.024l.015-.002l.201-.093l.01-.008l.004-.011l.017-.43l-.003-.012l-.01-.01z"/><path fill="currentColor" d="M21.546 5.111a1.5 1.5 0 0 1 0 2.121L10.303 18.475a1.6 1.6 0 0 1-2.263 0L2.454 12.89a1.5 1.5 0 1 1 2.121-2.121l4.596 4.596L19.424 5.111a1.5 1.5 0 0 1 2.122 0"/></g>
                                                 </svg>
@@ -170,9 +196,9 @@ export default function Game() {
                         </aside>
 
                         <div key={etape!.name} className="self-center justify-self-center text-center">
-                            <p>temps restant: <ComputedRemaingTime startDate={etape!.time} onRemainingTimeChange={handleRemainingTimeChange}/></p>
+                            <p>temps restant: <ComputedRemaingTime startDate={etape!.time} onRemainingTimeChange={handleRemainingTimeChange} ticking={gameEnded}/></p>
                             {
-                                remainingTimeFromChild?
+                                remainingTimeFromChild! > 0 && !gameEnded?
                                 <>
                                     <p className="text-2xl">{etape!.name}</p>
                                     <p className="text-xl">Allez dans la salle {etape!.placement}</p>

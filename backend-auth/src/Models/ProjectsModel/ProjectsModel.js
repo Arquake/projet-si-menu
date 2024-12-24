@@ -27,10 +27,10 @@ async function getProjecyById(projectId) {
 }
 
 
-async function getProjectByPlacement(placement) {
+async function getProjectByOrder(order) {
     return await prisma.projects.findFirstOrThrow({
         where: {
-            placement: placement
+            order: order
         }
     })
 }
@@ -39,5 +39,5 @@ async function getProjectByPlacement(placement) {
 export default {
     getAllProjects,
     getProjecyById,
-    getProjectByPlacement
+    getProjectByOrder
 }
