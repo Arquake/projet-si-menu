@@ -11,7 +11,7 @@ export default function ComputedRemainingTime({startDate, ticking, onRemainingTi
 
   useEffect(() => {
     const endTime = new Date(startDate);
-    endTime.setHours(endTime.getHours() + 1); // Add 1 hour to start date
+    endTime.setMinutes(endTime.getMinutes() + 5); // Add 1 hour to start date
 
     const updateRemainingTime = () => {
       if (!ticking) { // Only update if ticking is false

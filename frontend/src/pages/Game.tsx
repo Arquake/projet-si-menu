@@ -39,6 +39,9 @@ export default function Game() {
 
     const socketRef = useRef<Socket | null>(null);
 
+    const [etapeStartTime, setEtapeStartTime] = useState<Date|null>(null);
+    const [playerTurn, setPlayerTurn] = useState<boolean>(false)
+
     const handleRemainingTimeChange = (remainingTime: number) => {
         setRemainingTimeFromChild(remainingTime);
     };
@@ -57,7 +60,7 @@ export default function Game() {
                 }
             }
         )
-    }
+    };
 
     const getAllGames = () => {
         return makePostRequest<ProjectsList[]>('/get-all-projects', account?.jwt, {},
@@ -73,7 +76,7 @@ export default function Game() {
                 }
             }
         )
-    }
+    };
 
     const createGame = () => {
         return makePostRequest<Etape>('/create-game', account?.jwt, {},
@@ -89,46 +92,47 @@ export default function Game() {
                 }
             }
         );
-    }
+    };
 
-    useEffect(() => {
-        const fetchGameData = async () => {   
-            try {
-                let res: Etape = await getOngoingGame();
+    const fetchGameData = async () => {   
+        try {
+            let res: Etape = await getOngoingGame();
+            setEtape(res);
+
+            if (fetchErrorRef.current) {
+                await refreshJwt();
+                res = await getOngoingGame();
                 setEtape(res);
-    
+
                 if (fetchErrorRef.current) {
-                    await refreshJwt();
-                    res = await getOngoingGame();
+                    res = await createGame();
                     setEtape(res);
-    
-                    if (fetchErrorRef.current) {
-                        res = await createGame();
-                        setEtape(res);
-    
-                        const allProjects: ProjectsList[] = await getAllGames();
-                        setProjectList(allProjects);
-                        socketRef.current!.emit('joinRoom', res.gameId)
-                    }
-                } else {
+
                     const allProjects: ProjectsList[] = await getAllGames();
                     setProjectList(allProjects);
                     socketRef.current!.emit('joinRoom', res.gameId)
                 }
-            } catch (error) {
-                fetchErrorRef.current = true;
-            } finally {
-                setFetchError(fetchErrorRef.current);
-                setErrorCode(fetchErrorCode.current);
+            } else {
+                const allProjects: ProjectsList[] = await getAllGames();
+                setProjectList(allProjects);
+                socketRef.current!.emit('joinRoom', res.gameId)
             }
-        };
-    
+        } catch (error) {
+            fetchErrorRef.current = true;
+        } finally {
+            setFetchError(fetchErrorRef.current);
+            setErrorCode(fetchErrorCode.current);
+        }
+    };
+
+    useEffect(() => {
+        
         if (account !== undefined && etape === null) {
             if(socketRef.current === null) {
                 initializeSocket()
             }
-            fetchGameData();
         }
+        fetchGameData()
     }, [account]);
   
     const initializeSocket = () => {
@@ -138,11 +142,21 @@ export default function Game() {
             // Listen for messages from the server
             socketRef.current.on('stageValidation', (e) => {
                 setEtape(e)
+                setEtapeStartTime(null)
             });
 
             socketRef.current.on('endGame', () => {
               setGameEnded(true)
-            })
+            });
+
+            socketRef.current.on('startEtape', (date)=>{
+                setPlayerTurn(false)
+                setEtapeStartTime(new Date(date))
+            });
+
+            socketRef.current.on('playerCanStart',()=>{
+                setPlayerTurn(true)
+            });
         }
     };
   
@@ -196,19 +210,36 @@ export default function Game() {
                         </aside>
 
                         <div key={etape!.name} className="self-center justify-self-center text-center">
-                            <p>temps restant: <ComputedRemaingTime startDate={etape!.time} onRemainingTimeChange={handleRemainingTimeChange} ticking={gameEnded}/></p>
                             {
-                                remainingTimeFromChild! > 0 && !gameEnded?
-                                <>
-                                    <p className="text-2xl">{etape!.name}</p>
-                                    <p className="text-xl">Allez dans la salle {etape!.placement}</p>
-                                    <p className="text-blue-500 underline text-3xl">{etape!.gameId}</p>
-                                </>
-                                :
-                                <>
-                                    <p>Découvrir votre score!</p>
+                                gameEnded?
+                                    <>
+                                        <p>Découvrez votre score !</p>
+                                    </>
+                                : <>
+                                    {
+                                        etapeStartTime !== null?
+                                        <>
+                                            <p>temps restant: <ComputedRemaingTime startDate={etapeStartTime!} onRemainingTimeChange={handleRemainingTimeChange} ticking={gameEnded}/></p>
+                                            <p className="text-2xl">{etape!.name}</p>
+                                            <p className="text-xl">Allez dans la salle {etape!.placement}</p>
+                                            <p className="text-blue-500 underline text-3xl">{etape!.gameId}</p>
+                                        </>
+                                        : playerTurn || remainingTimeFromChild! > 0?
+                                        <>
+                                            <p className="text-2xl">{etape!.name}</p>
+                                            <p className="text-xl">Allez dans la salle {etape!.placement}</p>
+                                            <p className="text-blue-500 underline text-3xl">{etape!.gameId}</p>
+                                        </>
+                                        : !playerTurn?
+                                        <p>
+                                            Vous êtes dans la file d'attente pour la prochaine salle
+                                        </p>
+                                        : <></>
+                                    }
                                 </>
                             }
+                            
+                            
                             
                         </div>
                     </>
