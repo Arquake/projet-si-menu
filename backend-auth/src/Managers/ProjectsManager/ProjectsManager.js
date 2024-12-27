@@ -32,14 +32,14 @@ async function setNextGame(gameId, completedStages) {
 /**
  * @param timeSpent Time spent in seconds
  */
-async function onGoingGameToFinished(userId, finished, timeSpent, completedStages) {
+async function onGoingGameToFinished(userId, finished, score, timeSpent, completedStages) {
     const previousGame = await OngoingModel.getOngoingGameByUserId(userId)
     const projectId = previousGame.id
     await FinishedGameModel.createFinishedGame(
         userId,
         previousGame.currentStage,
         finished,
-        1000,
+        score,
         timeSpent,
         completedStages
     );

@@ -14,6 +14,7 @@ import { Server } from "socket.io";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const devMode = true
 app.use(express.json());
 app.use(cors())
 
@@ -45,7 +46,10 @@ allOnGoing.forEach( game => {
 
 const totalProjectNumber = Object.keys(projetQueue).length;
 
-const moveGameNextStage = (stage) => {
+const moveGameNextStage = async (stage, completedStage) => {
+    if (completedStage) {
+        await updateGameScore(stage);
+    }
     if(stage < totalProjectNumber) {
         if(projetQueue[stage+1].current === null) {
             projetQueue[stage+1].current = projetQueue[stage].current
@@ -78,7 +82,6 @@ const addPlayerToQueue = (gameId) => {
     }
 }
 
-
 const playerIsCurrentInStage = (gameId, stage) => {
     return projetQueue[stage].current.id === gameId
 }
@@ -103,6 +106,17 @@ const getStageByCurrent = (codeId) => {
     return null;
 }
 
+const updateGameScore = async (stage) => {
+    if(projetQueue[stage] !== null) {
+        const endTime = new Date((projetQueue[stage].startedAt) + 5*60*1000)
+        const game = await OngoingModel.incrementScoreBy(projetQueue[stage].current.id, Math.max(
+            Math.floor((endTime - new Date())/1000), 0
+        )*10);
+        projetQueue[stage].current.score = game.score;
+        console.log(projetQueue)
+    }
+}
+
 
 // ------------------------------- SOCKET PART -------------------------------
 
@@ -121,6 +135,7 @@ io.on('connection', (socket) => {
             const stage = getStageByCurrent(codeId)
             if (stage !== null && projetQueue[stage].startedAt !== null) {
                 io.to(codeId).emit('startEtape', getStartDateOrNow(stage));
+                console.log('startedGame : ', codeId)
             }
         }
         
@@ -303,10 +318,10 @@ app.post('/get-ongoing-player-game', TokenManager.verifyJwtToken, async(req,res)
 
         if (game) {
             const currentTime = new Date();
-            const oneHourBefore = new Date(currentTime.getTime() - 2 * 60 * 60 * 1000);
+            const twoHourBefore = new Date(currentTime.getTime() - 2 * 60 * 60 * 1000);
 
-            if (game.startedAt <= oneHourBefore) {
-                await ProjectsManager.onGoingGameToFinished(game.userId, false, 3600);
+            if (game.startedAt <= twoHourBefore) {
+                await ProjectsManager.onGoingGameToFinished(game.userId, false, game.score, 7200);
                 game = await ProjectsManager.createNewGame(tokenInfo.uid, totalProjectNumber);
             }
         }
@@ -315,7 +330,6 @@ app.post('/get-ongoing-player-game', TokenManager.verifyJwtToken, async(req,res)
 
         if( playerIsCurrentInStage(game.id, game.currentStage) ) {
             io.to(game.id).emit('playerCanStart');
-            io.to(code).emit('startEtape', getStartDateOrNow(game.currentStage));
         }
     }
     catch(error) {
@@ -338,18 +352,21 @@ app.post('/validate-stage', async (req,res) => {
         const completedStage = req.body.completed || false;
 
         const project = await ProjectsModel.getProjecyById(projectId);
-        // argon2.verify(project.privateKey, pk)
 
+        if (!devMode) {
+            argon2.verify(project.privateKey, pk)
+        }
 
         const onGoingGame = await OngoingModel.getOngoingGameByCode(currentGameCode);
         if (project.order != onGoingGame.currentStage) {
             throw new Error('Game is not current');
         }
+
         onGoingGame.completedStages[onGoingGame.currentStage-1] = completedStage;
 
-        moveGameNextStage(onGoingGame.currentStage);
+        await moveGameNextStage(onGoingGame.currentStage, completedStage);
         if (onGoingGame.currentStage === totalProjectNumber) {
-            ProjectsManager.onGoingGameToFinished(onGoingGame.userId, true, Date.now()-onGoingGame.startedAt, onGoingGame.completedStages);
+            ProjectsManager.onGoingGameToFinished(onGoingGame.userId, true, await OngoingModel.getOngoingScoreByCode(onGoingGame.id), Date.now()-onGoingGame.startedAt, onGoingGame.completedStages);
             io.to(onGoingGame.id).emit('endGame');
         }
         else {
@@ -381,7 +398,10 @@ app.post('/get-code-validity', async (req,res) => {
         const pk = projectsCredentials[2];
 
         const project = await ProjectsModel.getProjecyById(projectId);
-        // argon2.verify(project.privateKey, pk)
+
+        if (!devMode) {
+            argon2.verify(project.privateKey, pk)
+        }
 
         const code = req.body.code;
         if (!playerIsCurrentInStage(code, project.order)) {

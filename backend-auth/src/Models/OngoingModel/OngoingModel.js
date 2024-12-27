@@ -30,7 +30,7 @@ async function createNewGame(userId, arrayLength) {
                     id: Math.floor(100000 + Math.random() * 900000),
                     currentStage: 1,
                     userId: userId,
-                    score: 1000,
+                    score: 0,
                     completedStages: Array(arrayLength).fill(false)
                 }
             })
@@ -88,6 +88,30 @@ async function getAllOnGoing() {
     })
 }
 
+async function incrementScoreBy(codeId, scoreToAdd) {
+    return await prisma.ongoingGame.update({
+        where: {
+            id: codeId
+        },
+        data: {
+            score: {
+                increment: scoreToAdd
+            }
+        }
+    })
+}
+
+async function getOngoingScoreByCode(codeId) {
+    return (await prisma.ongoingGame.findUniqueOrThrow({
+        where: {
+            id: codeId
+        },
+        select: {
+            score: true
+        }
+    })).score
+}
+
 export default {
     getOngoingGameByUserId,
     getNextGame,
@@ -95,5 +119,7 @@ export default {
     addOneStage,
     getOngoingGameByCode,
     removeOngoingGame,
-    getAllOnGoing
+    getAllOnGoing,
+    incrementScoreBy,
+    getOngoingScoreByCode
 }
