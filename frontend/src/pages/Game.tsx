@@ -143,8 +143,10 @@ export default function Game() {
     
             // Listen for messages from the server
             socketRef.current.on('stageValidation', (e) => {
+                console.log('stage validation')
                 setEtape(e)
                 setEtapeStartTime(null)
+                setPlayerTurn(false)
             });
 
             socketRef.current.on('endGame', () => {
@@ -157,6 +159,7 @@ export default function Game() {
             });
 
             socketRef.current.on('playerCanStart',()=>{
+                console.log('player can start')
                 setPlayerTurn(true)
             });
 
@@ -236,17 +239,16 @@ export default function Game() {
                                             <p className="text-xl">Allez dans la salle {etape!.placement}</p>
                                             <p className="text-blue-500 underline text-3xl">{etape!.gameId}</p>
                                         </>
-                                        : playerTurn || remainingTimeFromChild! > 0?
+                                        : playerTurn?
                                         <>
                                             <p className="text-2xl">{etape!.name}</p>
                                             <p className="text-xl">Allez dans la salle {etape!.placement}</p>
                                             <p className="text-blue-500 underline text-3xl">{etape!.gameId}</p>
                                         </>
-                                        : !playerTurn?
+                                        : 
                                         <p>
                                             Vous êtes dans la file d'attente pour la prochaine salle
                                         </p>
-                                        : <></>
                                     }
                                 </>
                             }

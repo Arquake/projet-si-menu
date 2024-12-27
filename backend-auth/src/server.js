@@ -61,7 +61,7 @@ function playerTimeout(stage) {
             }
             else {
                 projetQueue[stage].current = projetQueue[stage].waiting[0]
-                io.to(projetQueue[stage].current).emit('playerCanStart');
+                io.to(projetQueue[stage].current.id).emit('playerCanStart');
                 projetQueue[stage].waiting = projetQueue[stage].waiting.slice(1)
                 projetQueue[stage].timeout = playerTimeout(stage)
             }
@@ -78,7 +78,7 @@ const moveGameNextStage = async (stage, completedStage) => {
             projetQueue[stage+1].current = projetQueue[stage].current
             projetQueue[stage+1].startedAt = null
             projetQueue[stage+1].timeout = playerTimeout(stage+1)
-            io.to(projetQueue[stage+1].current).emit('playerCanStart');
+            io.to(projetQueue[stage+1].current.id).emit('playerCanStart');
         }
         else {
             projetQueue[stage+1].waiting = [...projetQueue[stage+1].waiting, projetQueue[stage].current]
@@ -91,7 +91,7 @@ const moveGameNextStage = async (stage, completedStage) => {
     }
     else {
         projetQueue[stage].current = projetQueue[stage].waiting[0]
-        io.to(projetQueue[stage].current).emit('playerCanStart');
+        io.to(projetQueue[stage].current.id).emit('playerCanStart');
         projetQueue[stage].waiting = projetQueue[stage].waiting.slice(1)
         projetQueue[stage].timeout = playerTimeout(stage)
     }
@@ -401,8 +401,8 @@ app.post('/validate-stage', async (req,res) => {
             const nextGame = await ProjectsManager.getProjectInfo(onGoingGame.userId);
             io.to(onGoingGame.id).emit('stageValidation', {name: nextGame.name, description: nextGame.description, authors: nextGame.authors, url: nextGame.url, placement: nextGame.placement, gameId: nextGame.gameId, time: onGoingGame.startedAt});
             
-            if( playerIsCurrentInStage(nextGame.id, nextGame.currentStage) ) {
-                io.to(nextGame.id).emit('playerCanStart');
+            if( playerIsCurrentInStage(onGoingGame.id, nextGame.currentStage) ) {
+                io.to(onGoingGame.id).emit('playerCanStart');
             }
         }
         res.status(200).send();
