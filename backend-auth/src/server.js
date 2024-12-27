@@ -14,7 +14,8 @@ import { Server } from "socket.io";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const devMode = true
+const DEVMODE = process.env.DEVMODE || true
+const TIMEOUT_INTERVAL = process.env.TIMEOUT_INTERVAL || 15*60*1000
 app.use(express.json());
 app.use(cors())
 
@@ -31,13 +32,14 @@ const io = new Server(server, {
 const allOnGoing = await OngoingModel.getAllOnGoing()
 
 const projetQueue = (await ProjectsModel.getAllProjects()).reduce((acc, element) => {
-    acc[element.order] = { id: element.id, current: null, waiting: [], startedAt: null };
+    acc[element.order] = { id: element.id, current: null, waiting: [], startedAt: null, timeout: null };
     return acc;
 }, {});
 
 allOnGoing.forEach( game => {
     if (projetQueue[game.currentStage].current === null) {
         projetQueue[game.currentStage].current = {id: game.id, score: game.score};
+        projetQueue[game.currentStage].timeout = playerTimeout(game.currentStage);
     }
     else {
         projetQueue[game.currentStage].waiting = [...projetQueue[game.currentStage].waiting, {id: game.id, score: game.score}];
@@ -45,6 +47,27 @@ allOnGoing.forEach( game => {
 })
 
 const totalProjectNumber = Object.keys(projetQueue).length;
+
+function playerTimeout(stage) {
+    return (
+        setTimeout(async ()=> {
+            const onGoingGame = await OngoingModel.getOngoingGameByCode(projetQueue[stage].current.id);
+            ProjectsManager.onGoingGameToFinished(onGoingGame.userId, false, onGoingGame.score, Date.now()-onGoingGame.startedAt, onGoingGame.completedStages);
+            io.to(projetQueue[stage].current.id).emit('timeout');
+            projetQueue[stage].startedAt = null;
+
+            if(projetQueue[stage].waiting.length === 0) {
+                projetQueue[stage].current = null
+            }
+            else {
+                projetQueue[stage].current = projetQueue[stage].waiting[0]
+                io.to(projetQueue[stage].current).emit('playerCanStart');
+                projetQueue[stage].waiting = projetQueue[stage].waiting.slice(1)
+                projetQueue[stage].timeout = playerTimeout(stage)
+            }
+        }, TIMEOUT_INTERVAL)
+    )
+}
 
 const moveGameNextStage = async (stage, completedStage) => {
     if (completedStage) {
@@ -54,6 +77,7 @@ const moveGameNextStage = async (stage, completedStage) => {
         if(projetQueue[stage+1].current === null) {
             projetQueue[stage+1].current = projetQueue[stage].current
             projetQueue[stage+1].startedAt = null
+            projetQueue[stage+1].timeout = playerTimeout(stage+1)
             io.to(projetQueue[stage+1].current).emit('playerCanStart');
         }
         else {
@@ -63,11 +87,13 @@ const moveGameNextStage = async (stage, completedStage) => {
 
     if(projetQueue[stage].waiting.length === 0) {
         projetQueue[stage].current = null
+        projetQueue[stage].timeout = null
     }
     else {
         projetQueue[stage].current = projetQueue[stage].waiting[0]
         io.to(projetQueue[stage].current).emit('playerCanStart');
         projetQueue[stage].waiting = projetQueue[stage].waiting.slice(1)
+        projetQueue[stage].timeout = playerTimeout(stage)
     }
     projetQueue[stage].startedAt = null
 }
@@ -76,6 +102,7 @@ const addPlayerToQueue = (gameId) => {
     if (projetQueue[1].current === null) {
         projetQueue[1].current = {id: gameId, score: 0};
         projetQueue[1].startedAt = null
+        projetQueue[1].timeout = playerTimeout(1)
     }
     else {
         projetQueue[1].waiting = [...projetQueue[1].waiting, {id: gameId, score: 0}];
@@ -93,6 +120,7 @@ const playerCurrentInAStage = (codeId) => {
 const getStartDateOrNow = (stage) => {
     if (projetQueue[stage].startedAt === null) {
         projetQueue[stage].startedAt = Date.now();
+        clearTimeout(projetQueue[stage].timeout);
     }
     return projetQueue[stage].startedAt;
 }
@@ -113,7 +141,6 @@ const updateGameScore = async (stage) => {
             Math.floor((endTime - new Date())/1000), 0
         )*10);
         projetQueue[stage].current.score = game.score;
-        console.log(projetQueue)
     }
 }
 
@@ -353,7 +380,7 @@ app.post('/validate-stage', async (req,res) => {
 
         const project = await ProjectsModel.getProjecyById(projectId);
 
-        if (!devMode) {
+        if (!DEVMODE) {
             argon2.verify(project.privateKey, pk)
         }
 
@@ -381,7 +408,6 @@ app.post('/validate-stage', async (req,res) => {
         res.status(200).send();
     }
     catch(error) {
-        console.log(error)
         res.status(401).send('Invalid credentials');
     }
 });
@@ -399,7 +425,7 @@ app.post('/get-code-validity', async (req,res) => {
 
         const project = await ProjectsModel.getProjecyById(projectId);
 
-        if (!devMode) {
+        if (!DEVMODE) {
             argon2.verify(project.privateKey, pk)
         }
 

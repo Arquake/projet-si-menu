@@ -42,6 +42,8 @@ export default function Game() {
     const [etapeStartTime, setEtapeStartTime] = useState<Date|null>(null);
     const [playerTurn, setPlayerTurn] = useState<boolean>(false)
 
+    const [playerTimedOut, setPlayerTimedOut] = useState<boolean>(false)
+
     const handleRemainingTimeChange = (remainingTime: number) => {
         setRemainingTimeFromChild(remainingTime);
     };
@@ -157,6 +159,11 @@ export default function Game() {
             socketRef.current.on('playerCanStart',()=>{
                 setPlayerTurn(true)
             });
+
+            socketRef.current.on('timeout', () => {
+                setPlayerTimedOut(true);
+                setGameEnded(true);
+            });
         }
     };
   
@@ -211,8 +218,13 @@ export default function Game() {
 
                         <div key={etape!.name} className="self-center justify-self-center text-center">
                             {
-                                gameEnded?
+                                gameEnded || playerTimedOut?
                                     <>
+                                        {
+                                            playerTimedOut?
+                                            <p>Vous avez été TO</p>
+                                            : <></>
+                                        }
                                         <p>Découvrez votre score !</p>
                                     </>
                                 : <>
