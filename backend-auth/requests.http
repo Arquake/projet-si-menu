@@ -1,5 +1,0 @@
-@BASE_URL=http://localhost:3000
-
-@POST{{BASE_URL}}/token-login
-User-Agent: rest-client
-Content-Type: application/json

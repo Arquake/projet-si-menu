@@ -336,7 +336,9 @@ app.post('/create-game', TokenManager.verifyJwtToken, async (req,res)=> {
     }
 })
 
-
+/**
+ * send the ongoin player game to the client
+ */
 app.post('/get-ongoing-player-game', TokenManager.verifyJwtToken, async(req,res) => {
     try {
         const token = (req.headers.authorization).split(' ')[1];
@@ -345,9 +347,9 @@ app.post('/get-ongoing-player-game', TokenManager.verifyJwtToken, async(req,res)
 
         if (game) {
             const currentTime = new Date();
-            const twoHourBefore = new Date(currentTime.getTime() - 2 * 60 * 60 * 1000);
+            const fiveHourBefore = new Date(currentTime.getTime() - 5 * 60 * 60 * 1000);
 
-            if (game.startedAt <= twoHourBefore) {
+            if (game.startedAt <= fiveHourBefore) {
                 await ProjectsManager.onGoingGameToFinished(game.userId, false, game.score, 7200);
                 game = await ProjectsManager.createNewGame(tokenInfo.uid, totalProjectNumber);
             }
@@ -435,14 +437,16 @@ app.post('/get-code-validity', async (req,res) => {
         }
         await OngoingModel.getOngoingGameByCode(code)
         io.to(code).emit('startEtape', getStartDateOrNow(project.order));
-        res.status(200).send()
+        res.status(200).send({})
     }
     catch (error) {
         res.status(401).send()
     }
 })
 
-
+/**
+ * send all projects the app knows
+ */
 app.post('/get-all-projects', TokenManager.verifyJwtToken, async (req,res) => {
     try {
         res.status(200).send(await ProjectsManager.getAllProjects())
