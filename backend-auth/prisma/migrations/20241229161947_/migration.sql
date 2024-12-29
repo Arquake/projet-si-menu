@@ -20,7 +20,8 @@ CREATE TABLE "Token" (
 -- CreateTable
 CREATE TABLE "Projects" (
     "id" SERIAL NOT NULL,
-    "placement" INTEGER NOT NULL,
+    "placement" TEXT NOT NULL,
+    "order" INTEGER NOT NULL,
     "url" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "description" TEXT NOT NULL,
@@ -36,6 +37,8 @@ CREATE TABLE "OngoingGame" (
     "currentStage" INTEGER NOT NULL,
     "startedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "userId" TEXT NOT NULL,
+    "score" INTEGER NOT NULL,
+    "completedStages" BOOLEAN[],
 
     CONSTRAINT "OngoingGame_pkey" PRIMARY KEY ("id")
 );
@@ -44,10 +47,12 @@ CREATE TABLE "OngoingGame" (
 CREATE TABLE "FinishedGames" (
     "id" SERIAL NOT NULL,
     "userId" TEXT NOT NULL,
-    "registeredAt" TIMESTAMP(3) NOT NULL,
-    "timeSpent" TIMESTAMP(3) NOT NULL,
+    "registeredAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "timeSpentSeconds" INTEGER NOT NULL,
     "stage" INTEGER NOT NULL,
+    "score" INTEGER NOT NULL,
     "finished" BOOLEAN NOT NULL,
+    "completedStages" BOOLEAN[],
 
     CONSTRAINT "FinishedGames_pkey" PRIMARY KEY ("id")
 );
@@ -60,6 +65,9 @@ CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Projects_placement_key" ON "Projects"("placement");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Projects_order_key" ON "Projects"("order");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Projects_url_key" ON "Projects"("url");
@@ -76,11 +84,11 @@ CREATE UNIQUE INDEX "OngoingGame_id_key" ON "OngoingGame"("id");
 -- CreateIndex
 CREATE UNIQUE INDEX "OngoingGame_userId_key" ON "OngoingGame"("userId");
 
--- CreateIndex
-CREATE UNIQUE INDEX "FinishedGames_userId_key" ON "FinishedGames"("userId");
-
 -- AddForeignKey
 ALTER TABLE "OngoingGame" ADD CONSTRAINT "OngoingGame_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "FinishedGames" ADD CONSTRAINT "FinishedGames_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "FinishedGames" ADD CONSTRAINT "FinishedGames_stage_fkey" FOREIGN KEY ("stage") REFERENCES "Projects"("order") ON DELETE RESTRICT ON UPDATE CASCADE;

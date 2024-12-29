@@ -1,0 +1,66 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model finished_games {
+  id                 Int       @id @default(autoincrement())
+  user_id            String    @db.Uuid
+  registered_at      DateTime  @default(now()) @db.Timestamp(6)
+  time_spent_seconds Int
+  stage              Int
+  score              Int
+  finished           Boolean
+  completed_stages   Boolean[]
+  projects           projects  @relation(fields: [stage], references: [order], onDelete: NoAction, onUpdate: NoAction)
+  users              users     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model ongoing_games {
+  id              Int       @id @default(dbgenerated("generate_ongoing_game_id()"))
+  currentstage    Int?
+  startedat       DateTime? @default(now()) @db.Timestamp(6)
+  userid          String?   @db.Uuid
+  score           Int?
+  completedstages Boolean[]
+  projects        projects? @relation(fields: [currentstage], references: [order], onDelete: Cascade, onUpdate: NoAction, map: "fk_currentstage")
+  users           users?    @relation(fields: [userid], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_user")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model projects {
+  id             Int              @id @default(autoincrement())
+  placement      String           @unique @db.VarChar(255)
+  order          Int              @unique
+  url            String           @unique @db.VarChar(255)
+  name           String           @unique @db.VarChar(255)
+  description    String
+  authors        String[]         @db.VarChar(255)
+  privatekey     String           @unique @db.VarChar(255)
+  finished_games finished_games[]
+  ongoing_games  ongoing_games[]
+}
+
+model tokens {
+  id        String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  createdat DateTime? @default(now()) @db.Timestamp(6)
+  useruid   String?   @db.Uuid
+  users     users?    @relation(fields: [useruid], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_user")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model users {
+  id             String           @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  username       String           @unique @db.VarChar(32)
+  email          String           @unique @db.VarChar(256)
+  password       String           @db.VarChar(256)
+  finished_games finished_games[]
+  ongoing_games  ongoing_games[]
+  tokens         tokens[]
+}

@@ -341,9 +341,10 @@ app.post('/create-game', TokenManager.verifyJwtToken, async (req,res)=> {
  */
 app.post('/get-ongoing-player-game', TokenManager.verifyJwtToken, async(req,res) => {
     try {
+        console.log(projetQueue)
         const token = (req.headers.authorization).split(' ')[1];
         const tokenInfo = TokenManager.jwtInfo(token);
-        const game = await OngoingModel.getOngoingGameByUserId(tokenInfo.uid)
+        let game = await OngoingModel.getOngoingGameByUserId(tokenInfo.uid)
 
         if (game) {
             const currentTime = new Date();
