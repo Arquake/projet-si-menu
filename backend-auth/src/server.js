@@ -6,15 +6,12 @@ import UserManager from "./Managers/UserManager/UserManager.js";
 import ProjectsManager from "./Managers/ProjectsManager/ProjectsManager.js";
 import ProjectsModel from './Models/ProjectsModel/ProjectsModel.js';
 import OngoingModel from './Models/OngoingModel/OngoingModel.js';
-import argon2  from 'argon2';
-import FinishedGameModel from './Models/FinishedGameModel.js';
 import { createServer } from "http";
 import { Server } from "socket.io";
 
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const DEVMODE = process.env.DEVMODE || true
 const TIMEOUT_INTERVAL = process.env.TIMEOUT_INTERVAL || 15*60*1000
 app.use(express.json());
 app.use(cors())
@@ -32,17 +29,17 @@ const io = new Server(server, {
 const allOnGoing = await OngoingModel.getAllOnGoing()
 
 const projetQueue = (await ProjectsModel.getAllProjects()).reduce((acc, element) => {
-    acc[element.order] = { id: element.id, current: null, waiting: [], startedAt: null, timeout: null };
+    acc[element.order] = { id: element.id, current: null, waiting: [], startedat: null, timeout: null };
     return acc;
 }, {});
 
 allOnGoing.forEach( game => {
-    if (projetQueue[game.currentStage].current === null) {
-        projetQueue[game.currentStage].current = {id: game.id, score: game.score};
-        projetQueue[game.currentStage].timeout = playerTimeout(game.currentStage);
+    if (projetQueue[game.currentstage].current === null) {
+        projetQueue[game.currentstage].current = {id: game.id, score: game.score};
+        projetQueue[game.currentstage].timeout = playerTimeout(game.currentstage);
     }
     else {
-        projetQueue[game.currentStage].waiting = [...projetQueue[game.currentStage].waiting, {id: game.id, score: game.score}];
+        projetQueue[game.currentstage].waiting = [...projetQueue[game.currentstage].waiting, {id: game.id, score: game.score}];
     }
 })
 
@@ -52,9 +49,9 @@ function playerTimeout(stage) {
     return (
         setTimeout(async ()=> {
             const onGoingGame = await OngoingModel.getOngoingGameByCode(projetQueue[stage].current.id);
-            ProjectsManager.onGoingGameToFinished(onGoingGame.userId, false, onGoingGame.score, Date.now()-onGoingGame.startedAt, onGoingGame.completedStages);
+            ProjectsManager.onGoingGameToFinished(onGoingGame.userid, false, onGoingGame.score, Date.now()-onGoingGame.startedat, onGoingGame.completedstages);
             io.to(projetQueue[stage].current.id).emit('timeout');
-            projetQueue[stage].startedAt = null;
+            projetQueue[stage].startedat = null;
 
             if(projetQueue[stage].waiting.length === 0) {
                 projetQueue[stage].current = null
@@ -76,7 +73,7 @@ const moveGameNextStage = async (stage, completedStage) => {
     if(stage < totalProjectNumber) {
         if(projetQueue[stage+1].current === null) {
             projetQueue[stage+1].current = projetQueue[stage].current
-            projetQueue[stage+1].startedAt = null
+            projetQueue[stage+1].startedat = null
             projetQueue[stage+1].timeout = playerTimeout(stage+1)
             io.to(projetQueue[stage+1].current.id).emit('playerCanStart');
         }
@@ -95,13 +92,13 @@ const moveGameNextStage = async (stage, completedStage) => {
         projetQueue[stage].waiting = projetQueue[stage].waiting.slice(1)
         projetQueue[stage].timeout = playerTimeout(stage)
     }
-    projetQueue[stage].startedAt = null
+    projetQueue[stage].startedat = null
 }
 
 const addPlayerToQueue = (gameId) => {
     if (projetQueue[1].current === null) {
         projetQueue[1].current = {id: gameId, score: 0};
-        projetQueue[1].startedAt = null
+        projetQueue[1].startedat = null
         projetQueue[1].timeout = playerTimeout(1)
     }
     else {
@@ -118,11 +115,11 @@ const playerCurrentInAStage = (codeId) => {
 }
 
 const getStartDateOrNow = (stage) => {
-    if (projetQueue[stage].startedAt === null) {
-        projetQueue[stage].startedAt = Date.now();
+    if (projetQueue[stage].startedat === null) {
+        projetQueue[stage].startedat = Date.now();
         clearTimeout(projetQueue[stage].timeout);
     }
-    return projetQueue[stage].startedAt;
+    return projetQueue[stage].startedat;
 }
 
 const getStageByCurrent = (codeId) => {
@@ -136,7 +133,7 @@ const getStageByCurrent = (codeId) => {
 
 const updateGameScore = async (stage) => {
     if(projetQueue[stage] !== null) {
-        const endTime = new Date((projetQueue[stage].startedAt) + 5*60*1000)
+        const endTime = new Date((projetQueue[stage].startedat) + 5*60*1000)
         const game = await OngoingModel.incrementScoreBy(projetQueue[stage].current.id, Math.max(
             Math.floor((endTime - new Date())/1000), 0
         )*10);
@@ -160,7 +157,7 @@ io.on('connection', (socket) => {
         if(playerCurrentInAStage(codeId)) {
             io.to(codeId).emit('playerCanStart');
             const stage = getStageByCurrent(codeId)
-            if (stage !== null && projetQueue[stage].startedAt !== null) {
+            if (stage !== null && projetQueue[stage].startedat !== null) {
                 io.to(codeId).emit('startEtape', getStartDateOrNow(stage));
                 console.log('startedGame : ', codeId)
             }
@@ -199,7 +196,7 @@ app.post('/token-login', TokenManager.verifyRefreshToken, async (req, res) => {
     try {
         const refreshToken = (req.headers.authorization).split(' ')[1];
         const tokenInfo = TokenManager.refreshTokenInfo(refreshToken);
-        TokenModel.invalidateToken(tokenInfo.tokenUid);
+        await TokenModel.invalidateToken(tokenInfo.tokenUid);
         const newJwt = TokenManager.generateJwt(tokenInfo.userUid);
         const newRefreshToken = await TokenManager.generateRefreshToken(tokenInfo.userUid);
         res.status(200).send(
@@ -284,8 +281,8 @@ app.post('/jwt-validation', TokenManager.verifyJwtToken, (req, res) => {
 app.post('/refresh-jwt', TokenManager.verifyRefreshToken, (req, res) => {
     try {
         const refreshToken = (req.headers.authorization).split(' ')[1];
-        const userId = TokenManager.refreshTokenInfo(refreshToken).userUid;
-        res.status(200).send({jwt: TokenManager.generateJwt(userId)});
+        const userid = TokenManager.refreshTokenInfo(refreshToken).userUid;
+        res.status(200).send({jwt: TokenManager.generateJwt(userid)});
     }
     catch (_) {
         res.status(401).send('Unauthorized');
@@ -310,7 +307,7 @@ app.post('/get-client-validity', TokenManager.verifyAppJwt, (req,res) => {
 app.post('/generate-specific', TokenManager.verifyJwtToken, (req,res) => {
     try {
         const body = req.body;
-        const userId = body.userUid;
+        const userId = body.useruid;
         const appId = body.appId;
         res.status(200).send({jwt: TokenManager.generateAppJwt(userId, appId)});
     }
@@ -325,13 +322,14 @@ app.post('/create-game', TokenManager.verifyJwtToken, async (req,res)=> {
         const token = (req.headers.authorization).split(' ')[1];
         const tokenInfo = TokenManager.jwtInfo(token);
         const game = await ProjectsManager.createNewGame(tokenInfo.uid, totalProjectNumber)
-        res.status(200).send({...await ProjectsManager.getProjectInfo(tokenInfo.uid), time: game.startedAt})
+        res.status(200).send({...await ProjectsManager.getProjectInfo(game.userid), time: game.startedat})
         addPlayerToQueue(game.id)
-        if( playerIsCurrentInStage(game.id, game.currentStage) ) {
+        if( playerIsCurrentInStage(game.id, game.currentstage) ) {
             io.to(game.id).emit('playerCanStart');
         }
     }
     catch(error) {
+        console.log("create game", error)
         res.status(429).send("une partie est déjà en cours")
     }
 })
@@ -341,7 +339,6 @@ app.post('/create-game', TokenManager.verifyJwtToken, async (req,res)=> {
  */
 app.post('/get-ongoing-player-game', TokenManager.verifyJwtToken, async(req,res) => {
     try {
-        console.log(projetQueue)
         const token = (req.headers.authorization).split(' ')[1];
         const tokenInfo = TokenManager.jwtInfo(token);
         let game = await OngoingModel.getOngoingGameByUserId(tokenInfo.uid)
@@ -350,19 +347,19 @@ app.post('/get-ongoing-player-game', TokenManager.verifyJwtToken, async(req,res)
             const currentTime = new Date();
             const fiveHourBefore = new Date(currentTime.getTime() - 5 * 60 * 60 * 1000);
 
-            if (game.startedAt <= fiveHourBefore) {
-                await ProjectsManager.onGoingGameToFinished(game.userId, false, game.score, 7200);
+            if (game.startedat <= fiveHourBefore) {
+                await ProjectsManager.onGoingGameToFinished(game.userid, false, game.score, 7200);
                 game = await ProjectsManager.createNewGame(tokenInfo.uid, totalProjectNumber);
             }
         }
 
-        res.status(200).send({...await ProjectsManager.getProjectInfo(tokenInfo.uid), time: game.startedAt})
+        res.status(200).send({...await ProjectsManager.getProjectInfo(tokenInfo.uid), time: game.startedat})
 
-        if( playerIsCurrentInStage(game.id, game.currentStage) ) {
+        if( playerIsCurrentInStage(game.id, game.currentstage) ) {
             io.to(game.id).emit('playerCanStart');
         }
     }
-    catch(error) {
+    catch(_) {
         res.status(400).send()
     }
 })
@@ -381,30 +378,38 @@ app.post('/validate-stage', async (req,res) => {
 
         const completedStage = req.body.completed || false;
 
-        const project = await ProjectsModel.getProjecyById(projectId);
-
-        if (!DEVMODE) {
-            argon2.verify(project.privateKey, pk)
-        }
+        const project = await ProjectsManager.verifyProjectPk(projectId, pk)
 
         const onGoingGame = await OngoingModel.getOngoingGameByCode(currentGameCode);
-        if (project.order != onGoingGame.currentStage) {
+        if (project.order != onGoingGame.currentstage) {
             throw new Error('Game is not current');
         }
 
-        onGoingGame.completedStages[onGoingGame.currentStage-1] = completedStage;
+        onGoingGame.completedstages[onGoingGame.currentstage-1] = completedStage;
 
-        await moveGameNextStage(onGoingGame.currentStage, completedStage);
-        if (onGoingGame.currentStage === totalProjectNumber) {
-            ProjectsManager.onGoingGameToFinished(onGoingGame.userId, true, await OngoingModel.getOngoingScoreByCode(onGoingGame.id), Date.now()-onGoingGame.startedAt, onGoingGame.completedStages);
+        await moveGameNextStage(onGoingGame.currentstage, completedStage);
+        if (onGoingGame.currentstage === totalProjectNumber) {
+            ProjectsManager.onGoingGameToFinished(onGoingGame.userid, true, await OngoingModel.getOngoingScoreByCode(onGoingGame.id), Date.now()-onGoingGame.startedat, onGoingGame.completedstages);
             io.to(onGoingGame.id).emit('endGame');
         }
         else {
-            await ProjectsManager.setNextGame(onGoingGame.id, onGoingGame.completedStages);
-            const nextGame = await ProjectsManager.getProjectInfo(onGoingGame.userId);
-            io.to(onGoingGame.id).emit('stageValidation', {name: nextGame.name, description: nextGame.description, authors: nextGame.authors, url: nextGame.url, placement: nextGame.placement, gameId: nextGame.gameId, time: onGoingGame.startedAt});
+            await ProjectsManager.setNextGame(onGoingGame.id, onGoingGame.completedstages);
+            const nextGame = await ProjectsManager.getProjectInfo(onGoingGame.userid);
+            io.to(onGoingGame.id).emit(
+                'stageValidation', 
+                {
+                    name: nextGame.name, 
+                    description: nextGame.description, 
+                    authors: nextGame.authors, 
+                    url: nextGame.url, 
+                    placement: nextGame.placement, 
+                    gameId: nextGame.gameId, 
+                    time: onGoingGame.startedat,
+                    order: nextGame.order
+                }
+            );
             
-            if( playerIsCurrentInStage(onGoingGame.id, nextGame.currentStage) ) {
+            if( playerIsCurrentInStage(onGoingGame.id, nextGame.currentstage) ) {
                 io.to(onGoingGame.id).emit('playerCanStart');
             }
         }
@@ -426,11 +431,7 @@ app.post('/get-code-validity', async (req,res) => {
         const projectId = parseInt(projectsCredentials[1]);
         const pk = projectsCredentials[2];
 
-        const project = await ProjectsModel.getProjecyById(projectId);
-
-        if (!DEVMODE) {
-            argon2.verify(project.privateKey, pk)
-        }
+        const project = await ProjectsManager.verifyProjectPk(projectId, pk)
 
         const code = req.body.code;
         if (!playerIsCurrentInStage(code, project.order)) {

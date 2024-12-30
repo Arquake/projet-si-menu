@@ -2,6 +2,9 @@ import FinishedGameModel from "../../Models/FinishedGameModel.js";
 import OngoingModel from "../../Models/OngoingModel/OngoingModel.js";
 import ProjectsModel from "../../Models/ProjectsModel/ProjectsModel.js";
 
+
+const DEVMODE = process.env.DEVMODE || true
+
 async function getAllProjects() {
     const projects = await ProjectsModel.getAllProjects()
     let projectsArray = []
@@ -20,9 +23,9 @@ async function createNewGame(userId, arrayLength) {
 
 async function getProjectInfo(userId) {
     const currentGame = await OngoingModel.getOngoingGameByUserId(userId)
-    const project = await ProjectsModel.getProjecyById(currentGame.currentStage)
+    const project = await ProjectsModel.getProjecyById(currentGame.currentstage)
 
-    return {name: project.name, description: project.description, authors: project.authors, url: project.url, placement: project.placement, order: project.order, gameId:currentGame.id, currentStage:currentGame.currentStage}
+    return {name: project.name, description: project.description, authors: project.authors, url: project.url, placement: project.placement, order: project.order, gameId:currentGame.id, currentstage:currentGame.currentstage}
 }
 
 async function setNextGame(gameId, completedStages) {
@@ -37,7 +40,7 @@ async function onGoingGameToFinished(userId, finished, score, timeSpent, complet
     const projectId = previousGame.id
     await FinishedGameModel.createFinishedGame(
         userId,
-        previousGame.currentStage,
+        previousGame.currentstage,
         finished,
         score,
         timeSpent,
@@ -46,10 +49,23 @@ async function onGoingGameToFinished(userId, finished, score, timeSpent, complet
     await OngoingModel.removeOngoingGame(projectId);
 }
 
+
+async function verifyProjectPk(projectId, pk) {
+
+    const project = await ProjectsModel.getProjecyById(projectId)
+
+    if (!DEVMODE) {
+        argon2.verify(project.privatekey, pk);
+    }
+
+    return project
+}
+
 export default {
     getAllProjects,
     getProjectInfo,
     setNextGame,
     createNewGame,
-    onGoingGameToFinished
+    onGoingGameToFinished,
+    verifyProjectPk
 }

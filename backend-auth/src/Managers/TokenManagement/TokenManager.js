@@ -24,9 +24,7 @@ function generateJwt(userUid) {
  * @return the refresh token
  */
 async function generateRefreshToken(userUid) {
-    let tokenUid = '';
-    let i = 0;
-    tokenUid = await TokenModel.registerToken(userUid);
+    let tokenUid = await TokenModel.registerToken(userUid);
 
     return jwt.sign({userUid: userUid, iat: Date.now(), tokenUid: tokenUid}, REFRESH_TOKEN_KEY, { expiresIn: REFRESH_EXPIRATION_TIME });
 }

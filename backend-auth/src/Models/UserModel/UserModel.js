@@ -4,7 +4,7 @@ const prisma = new PrismaClient();
 
 async function createUser(username, email, password) {
     try {
-        return await prisma.user.create({
+        return await prisma.users.create({
             data: {
                 username,
                 email,
@@ -20,7 +20,7 @@ async function createUser(username, email, password) {
 
 async function getUserByEmail(email) {
     try {
-        return await prisma.user.findUniqueOrThrow({
+        return await prisma.users.findUniqueOrThrow({
             where: {
                 email,
             }

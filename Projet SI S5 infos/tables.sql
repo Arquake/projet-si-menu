@@ -51,8 +51,8 @@ CREATE TABLE Projects (
 
 CREATE TABLE Tokens (
     id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-    createdAt TIMESTAMP DEFAULT now(),
-    userUid UUID,
+    createdAt TIMESTAMP DEFAULT now() NOT NULL,
+    userUid UUID NOT NULL,
     CONSTRAINT fk_user FOREIGN KEY (userUid)
         REFERENCES users(id) ON DELETE CASCADE
 );
@@ -60,11 +60,11 @@ CREATE TABLE Tokens (
 
 CREATE TABLE OngoingGames (
     id INTEGER PRIMARY KEY,
-    currentStage INTEGER,
-    startedAt TIMESTAMP DEFAULT now(),
-    userId UUID,
-    score INTEGER CHECK(score >= 0),
-    completedStages BOOLEAN[],
+    currentStage INTEGER NOT NULL,
+    startedAt TIMESTAMP DEFAULT now() NOT NULL,
+    userId UUID UNIQUE NOT NULL,
+    score INTEGER CHECK(score >= 0) NOT NULL,
+    completedStages BOOLEAN[] NOT NULL,
     CONSTRAINT fk_user FOREIGN KEY (userId)
         REFERENCES users(id) ON DELETE CASCADE,
     CONSTRAINT fk_currentStage FOREIGN KEY (currentStage)

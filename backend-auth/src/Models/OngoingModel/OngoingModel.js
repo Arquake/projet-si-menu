@@ -7,9 +7,9 @@ const prisma = new PrismaClient();
  * get the project by his ID
  */
 async function getOngoingGameByUserId(userId) {
-    return await prisma.ongoingGame.findUniqueOrThrow({
+    return await prisma.ongoinggames.findUniqueOrThrow({
         where: {
-            userId: userId
+            userid: userId
         }
     })
 }
@@ -23,33 +23,31 @@ async function getNextGame(currentGameOrder) {
 }
 
 async function createNewGame(userId, arrayLength) {
-    for (let index = 0; index < 5; index++) {
-        try {
-            return await prisma.ongoingGame.create({
-                data: {
-                    id: Math.floor(100000 + Math.random() * 900000),
-                    currentStage: 1,
-                    userId: userId,
-                    score: 0,
-                    completedStages: Array(arrayLength).fill(false)
-                }
-            })
-        }
-        catch(_){}
+    try {
+        return await prisma.ongoinggames.create({
+            data: {
+                currentstage: 1,
+                userid: userId,
+                score: 0,
+                completedstages: Array(arrayLength).fill(false)
+            }
+        })
     }
-    throw new Error("unable to create game");
+    catch(_){
+        throw new Error("unable to create game");
+    }
 }
 
-async function addOneStage(gameId, completedStages) {
-    await prisma.ongoingGame.update({
+async function addOneStage(gameId, completedstages) {
+    await prisma.ongoinggames.update({
         where: {
             id: gameId
         },
         data: {
-            currentStage: {
+            currentstage: {
                 increment: 1
             },
-            completedStages
+            completedstages
         }
     })
 }
@@ -57,7 +55,7 @@ async function addOneStage(gameId, completedStages) {
 
 async function getOngoingGameByCode(code) {
 
-    return await prisma.ongoingGame.findUniqueOrThrow({
+    return await prisma.ongoinggames.findUniqueOrThrow({
         where: {
             id: code
         }
@@ -66,7 +64,7 @@ async function getOngoingGameByCode(code) {
 
 
 async function removeOngoingGame(code) {
-    await prisma.ongoingGame.delete({
+    await prisma.ongoinggames.delete({
         where: {
             id: code
         }
@@ -74,14 +72,14 @@ async function removeOngoingGame(code) {
 }
 
 async function getAllOnGoing() {
-    return await prisma.ongoingGame.groupBy({
-        by: ['currentStage', 'startedAt', 'id', 'score'],
+    return await prisma.ongoinggames.groupBy({
+        by: ['currentstage', 'startedat', 'id', 'score'],
         _min: {
-            startedAt: true
+            startedat: true
         },
         orderBy: {
             _min: {
-                startedAt: 'asc'
+                startedat: 'asc'
             }
         },
         
@@ -89,7 +87,7 @@ async function getAllOnGoing() {
 }
 
 async function incrementScoreBy(codeId, scoreToAdd) {
-    return await prisma.ongoingGame.update({
+    return await prisma.ongoinggames.update({
         where: {
             id: codeId
         },
@@ -102,7 +100,7 @@ async function incrementScoreBy(codeId, scoreToAdd) {
 }
 
 async function getOngoingScoreByCode(codeId) {
-    return (await prisma.ongoingGame.findUniqueOrThrow({
+    return (await prisma.ongoinggames.findUniqueOrThrow({
         where: {
             id: codeId
         },

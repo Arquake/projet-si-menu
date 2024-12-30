@@ -11,7 +11,7 @@ const prisma = new PrismaClient();
  */
 async function verifyTokenExistence(tokenUid) {
     try {
-        await prisma.token.findUniqueOrThrow({
+        await prisma.tokens.findUniqueOrThrow({
             where: {
                 id: tokenUid,
             }
@@ -29,9 +29,9 @@ async function verifyTokenExistence(tokenUid) {
  */
 async function registerToken(userUid) {
     try {
-        return (await prisma.token.create({
+        return (await prisma.tokens.create({
             data: {
-                userUid: userUid,
+                useruid: userUid,
             }
         })).id;
     }
@@ -44,8 +44,8 @@ async function registerToken(userUid) {
  * delete the uuid given from the database
  * @param tokenUid the token uid to be deleted
  */
-function invalidateToken(tokenUid) {
-    prisma.token.delete({
+async function invalidateToken(tokenUid) {
+    await prisma.tokens.delete({
         where: {
             id: tokenUid
         }

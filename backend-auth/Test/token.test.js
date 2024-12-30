@@ -9,6 +9,6 @@ describe('Token Manager - vérification de token', () => {
   
     it('Le refresh token devrait être valide', () => {
       const token = TokenManager.generateRefreshToken(3);
-      expect((TokenManager.refreshTokenInfo(token)).userUid).toBe(3);
+      expect((TokenManager.refreshTokenInfo(token)).useruid).toBe(3);
     });
   });
