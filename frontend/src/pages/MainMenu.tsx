@@ -1,4 +1,5 @@
 import Hero from "../components/HomePage/Hero";
+import Scoreboard from "../components/HomePage/Scoreboard";
 
 
 
@@ -6,8 +7,9 @@ export default function MainMenu() {
 
     return (
         <>
-            <main className="flex-1 bg-neutral-50 flex justify-center">
+            <main className="bg-neutral-50 flex flex-col items-center justify-center">
                 <Hero />
+                <Scoreboard />
             </main>
         </>
     )

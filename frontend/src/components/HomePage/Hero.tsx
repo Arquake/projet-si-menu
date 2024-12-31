@@ -4,7 +4,7 @@ import lipstick from "./../../assets/lipstick.svg"
 export default function Hero () {
     return (
         <>
-            <div className="container pt-16">
+            <div className="container pt-0 pb-8">
                 <div className="creacosm font-light relative p-4">
                     <div className="absolute grid grid-cols-8 grid-rows-8 w-full h-full">
                         <div className="sm:space-y-1 col-span-4 col-start-2 row-start-2

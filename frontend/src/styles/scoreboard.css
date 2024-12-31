@@ -1,0 +1,121 @@
+.blob-images {
+    @apply bg-white w-full h-full;
+    clip-path: url(#svg-clip);
+    scale: 1;
+}
+
+.blob-bg {
+    transform: translateY(-10rem) translateX(-10rem);
+    scale: .375;
+}
+
+.human-left {
+    @apply absolute;
+    scale: -.3;
+    transform: rotateX(180deg);
+}
+
+.human-right {
+    @apply absolute;
+    scale: .3;
+}
+
+@media screen(sm) {
+    .blob-images {
+        transform: translateY(6rem) translateX(4rem);
+        scale: 1.4;
+    }
+}
+
+@keyframes textToLeft {
+    from {
+        @apply translate-x-0 opacity-100
+    }
+
+    to {
+        @apply -translate-x-24 opacity-0
+    }
+}
+
+.text-left-out {
+    animation: forwards 800ms textToLeft;
+    animation-delay: 4s
+}
+
+@keyframes toudoum {
+    from {
+        opacity: 0;
+        scale: 3;
+    }
+
+    to {
+        opacity: 1;
+        scale: 1;
+    }
+}
+
+.text-netflix-in {
+    animation: forwards 2s toudoum;
+}
+
+
+@keyframes fadeOutScene {
+    from {
+        opacity: 1;
+    }
+
+    to {
+        opacity: 0;
+    }
+}
+
+.fade-out-scene {
+    animation: 500ms forwards fadeOutScene;
+    animation-delay: 200ms;
+}
+
+
+@keyframes sceneFromRight {
+    from {
+        @apply translate-x-[18.5rem];
+        opacity: 0;
+    }
+
+    to {
+        @apply translate-x-0;
+        opacity: 1;
+    }
+}
+
+.scene-from-right {
+    animation: 1s forwards sceneFromRight;
+    animation-delay: 200ms;
+    @apply translate-x-[18.5rem]
+}
+
+
+@keyframes crashInPanel {
+    from {
+        opacity: 0;
+        scale: 0;
+        @apply -translate-y-16 tracking-[.25em]
+    }
+
+    40% {
+        @apply translate-y-12
+    }
+
+    90% {
+        @apply -translate-y-2
+    }
+
+    to {
+        opacity: 1;
+        scale: 1;
+        @apply tracking-tight translate-y-0
+    }
+}
+
+.text-crash-in-panel {
+    animation: forwards 2s crashInPanel;
+}
