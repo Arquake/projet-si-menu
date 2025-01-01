@@ -4,6 +4,10 @@
     scale: 1;
 }
 
+.path-svg {
+    
+}
+
 .blob-bg {
     transform: translateY(-10rem) translateX(-10rem);
     scale: .375;

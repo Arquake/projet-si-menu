@@ -101,14 +101,13 @@
 }
 
 .escape-lips {
-    @apply absolute z-0 
+    @apply absolute z-0 opacity-0
     top-0 translate-y-3 left-[12.25rem] h-5
     sm:top-1 sm:translate-y-3 sm:h-7 sm:left-[19.75rem]
     md:-translate-x-10 md:left-[22.25rem]
     lg:top-4 lg:translate-x-0 lg:h-9 lg:left-[29.5rem]
     xl:top-8 xl:h-12 xl:left-[39.25rem]
     2xl:top-7 2xl:left-[39.5rem];
-    @apply opacity-0;
     animation: forwards ease-in-out escapeLips 600ms;
     animation-delay: 1s;
 }

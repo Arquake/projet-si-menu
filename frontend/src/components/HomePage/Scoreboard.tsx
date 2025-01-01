@@ -90,7 +90,8 @@ export default function Scoreboard () {
             <svg xmlns="http://www.w3.org/2000/svg" width="0" height="0" className="absolute">
                 <defs>
                     <clipPath id="svg-clip">
-                        <path fill="#474bff" d="M393,308.5Q319,377,238,380.5Q157,384,114,312Q71,240,102,147Q133,54,230.5,71Q328,88,397.5,164Q467,240,393,308.5Z" />
+                        <path className="scale-75"
+                        fill="#474bff" d="M393,308.5Q319,377,238,380.5Q157,384,114,312Q71,240,102,147Q133,54,230.5,71Q328,88,397.5,164Q467,240,393,308.5Z" />
                     </clipPath>
                 </defs>
             </svg>

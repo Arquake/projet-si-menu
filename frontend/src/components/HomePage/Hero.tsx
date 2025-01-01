@@ -23,7 +23,7 @@ export default function Hero () {
                     
                     <div className="bg-polygon w-full">
                         <div className="absolute overlap-bg h-full w-full" />
-                        <img src="/creacosm_picture.png" className="w-full"/>
+                        <img src="/creacosm_picture.png" className="w-full z-0"/>
                     </div>
                 </div>
             </div>

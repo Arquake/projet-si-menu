@@ -80,7 +80,7 @@ export default function NavBar() {
                                 <ProfileArrowSvg extendMenu={!showProfileMenu} />
                             </div>
                             
-                            <div className={(showProfileMenu? "profile-open":"profile-close") + " profile-bar"}>
+                            <div className={(showProfileMenu? "profile-open":"profile-close") + " profile-bar z-20"}>
                                 {
                                     showProfileMenu?
                                     <>
