@@ -4,9 +4,23 @@
     scale: 1;
 }
 
-.path-svg {
+.scoreboard-tab  > div {
+    @apply border-2 border-b-0 border-neutral-300 w-fit px-2 skew-x-12;
     
+    &.active {
+        @apply bg-blue-600 text-neutral-50;
+        height: 110%;
+    }
+
+    &:not(.active) {
+        @apply text-neutral-900 bg-neutral-300
+    }
+
+    & > p {
+        @apply -skew-x-12
+    }
 }
+
 
 .blob-bg {
     transform: translateY(-10rem) translateX(-10rem);

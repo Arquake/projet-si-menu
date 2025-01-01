@@ -10,8 +10,13 @@ export function useRouting() {
         window.history.pushState({}, "", "/parameter")
     }, [])
 
+    const toMainMenu = useCallback(()=> {
+        window.history.pushState({}, "", "/")
+    }, [])
+
     return {
         toGame,
-        toParameter
+        toParameter,
+        toMainMenu
     }
 }

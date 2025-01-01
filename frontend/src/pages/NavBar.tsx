@@ -7,7 +7,7 @@ import { useRouting } from "../useHook/useRouting";
 export default function NavBar() {
 
     const {logout} = useAuth();
-    const {toGame, toParameter} = useRouting();
+    const {toGame, toParameter, toMainMenu} = useRouting();
 
     const handleLogout = () => {
         if (showProfileMenu) {
@@ -35,9 +35,9 @@ export default function NavBar() {
             const optionsDiv = document.getElementById('options');
             const clickedElement = event.target as HTMLElement;
       
-        if (!(optionsDiv && optionsDiv.contains(clickedElement)) && showProfileMenu === true) {
-            setShowProfileMenu(false)
-          }
+            if (!(optionsDiv && optionsDiv.contains(clickedElement)) && showProfileMenu === true) {
+                setShowProfileMenu(false)
+            }
         };
     
         document.addEventListener('click', handleDocumentClick);
@@ -46,14 +46,19 @@ export default function NavBar() {
           document.removeEventListener('click', handleDocumentClick);
         };
       }, []);
+
+      const handleLogoClick = () => {
+        toMainMenu();
+      }
     
     return (
         <>
-            <header className="p-1 justify-center flex items-center bg-neutral-50">
+            <header className="p-1 justify-center flex items-center bg-neutral-50 sticky top-0 z-50">
                 <div className="container justify-between flex px-2 md:py-2 py-1">
-                    <div className="flex gap-2 items-center relative">
+                    <div className="flex gap-2 items-center relative cursor-pointer"
+                    onClick={handleLogoClick}>
                         <img src="/creacosm_logo.png" className="md:h-12 h-10 aspect-square"/>
-                        <p className="capitalize md:text-3xl text-2xl creacosm font-light">
+                        <p className="capitalize md:text-3xl text-2xl sm:inline hidden creacosm font-light">
                             Créa
                             <span className="text-[#0065ae]">cosm</span>
                         </p>

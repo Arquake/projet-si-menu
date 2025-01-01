@@ -132,7 +132,8 @@
               "title": "Bookmarks"
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "horizontal",
@@ -221,7 +222,7 @@
       "command-palette:Open command palette": false
     }
   },
-  "active": "d40a739f618d84c0",
+  "active": "736096e48e9cced3",
   "lastOpenFiles": [
     "Tokens.md",
     "FinishedGames.md",

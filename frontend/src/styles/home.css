@@ -50,12 +50,12 @@
 }
 
 .escape-game {
-    @apply xl:text-8xl lg:text-7xl sm:text-5xl text-3xl text-blue-800;
+    @apply xl:text-8xl lg:text-7xl sm:text-5xl text-blue-800;
     animation: forwards ease-in-out escapeGame 800ms;
 }
 
 .escape-game-bottom {
-    @apply text-neutral-500 xl:text-2xl lg:text-xl sm:text-lg text-base sm:pl-2 opacity-0;
+    @apply text-neutral-500 xl:text-2xl lg:text-xl sm:text-lg text-xs sm:pl-2 opacity-0;
     animation: forwards ease-in-out escapeGame 800ms;
     animation-delay: 150ms;
 }
@@ -76,7 +76,7 @@
 
 .escape-lotion {
     @apply absolute z-0
-    top-0 -left-5 translate-y-3 h-5
+    top-0 -left-4 translate-y-1 h-4
     sm:top-1 sm:-left-7 sm:h-7
     lg:top-4 lg:-left-9 lg:h-10
     xl:top-6 xl:-left-12 xl:h-14;
@@ -102,7 +102,7 @@
 
 .escape-lips {
     @apply absolute z-0 opacity-0
-    top-0 translate-y-3 left-[12.25rem] h-5
+    top-0 translate-y-1 left-[6.5rem] h-4
     sm:top-1 sm:translate-y-3 sm:h-7 sm:left-[19.75rem]
     md:-translate-x-10 md:left-[22.25rem]
     lg:top-4 lg:translate-x-0 lg:h-9 lg:left-[29.5rem]

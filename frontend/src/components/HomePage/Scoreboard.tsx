@@ -1,5 +1,5 @@
 import "./../../styles/scoreboard.css"
-import {useRef, useState} from 'react'
+import React, {useRef, useState} from 'react'
 
 export default function Scoreboard () {
 
@@ -44,9 +44,42 @@ export default function Scoreboard () {
         <>
             <div className="w-full py-8 flex items-center justify-center bg-blue-600">
                 <div className="container grid grid-cols-2 gap-16">
-                    <div id="scoreboard">
-                        <div className="bg-neutral-100 p-1">
-
+                    <div id="scoreboard" className="flex items-center justify-center">
+                        <div className="bg-neutral-100 pt-4 pb-6 px-6 flex flex-col
+                        rounded-2xl shadow-lg w-full">
+                            <p className="text-center py-4 text-3xl pb-6">Meilleurs Scores</p>
+                            <div className="px-8 flex gap-1 scoreboard-tab">
+                                <div className="active">
+                                    <p>Tout</p>
+                                </div>
+                                <div>
+                                    <p>Mois</p>
+                                </div>
+                                <div>
+                                    <p>Semaine</p>
+                                </div>
+                            </div>
+                            <div className="border-2 border-neutral-300 pt-1 rounded-xl">
+                                <div className="grid grid-cols-4 gap-4 px-4 text-lg font-semibold">
+                                    <p className="col-span-2">Joueur</p>
+                                    <p>Temps</p>
+                                    <p>Score</p>
+                                </div>
+                                {
+                                    Array.from({ length: 5 }, (_, i) => (
+                                        <React.Fragment key={i}>
+                                            <div className="border-t-2 border-neutral-300 w-full self-center" />
+                                            <div className="px-4">
+                                                <div className="grid grid-cols-4 gap-4 pt-2 pb-0.5">
+                                                    <p className="col-span-2">moi</p>
+                                                    <p>5:14:40</p>
+                                                    <p>2000000</p>
+                                                </div>
+                                            </div>
+                                        </React.Fragment>
+                                    ))
+                                }
+                            </div>
                         </div>
                     </div>
 
@@ -90,7 +123,7 @@ export default function Scoreboard () {
             <svg xmlns="http://www.w3.org/2000/svg" width="0" height="0" className="absolute">
                 <defs>
                     <clipPath id="svg-clip">
-                        <path className="scale-75"
+                        <path className="scale-100"
                         fill="#474bff" d="M393,308.5Q319,377,238,380.5Q157,384,114,312Q71,240,102,147Q133,54,230.5,71Q328,88,397.5,164Q467,240,393,308.5Z" />
                     </clipPath>
                 </defs>

@@ -27,7 +27,7 @@ DROP TABLE IF EXISTS Users, Projects;
 CREATE TABLE Users (
     id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
     username VARCHAR(32) UNIQUE NOT NULL CHECK (username ~ '^[\w]{4,32}$'),
-    email VARCHAR(256) UNIQUE NOT NULL CHECK (email ~ '^[\w\-\.]+@(?:[\w-]+\.)+[\w-]{2,4}$'),
+    email VARCHAR(256) UNIQUE NOT NULL CHECK (email ~ '^[\w\-\.]+@(?:[\w-]+\.)+[a-zA-Z]{2,63}$'),
     password VARCHAR NOT NULL
 );
 
@@ -176,9 +176,9 @@ VALUES
 
 
 -- Regroupe les parties en cours par stage puis leur date de début, leur id et enfin leur score
--- Et ensuite les tris de façon ascendante par leur date de début
+-- Et ensuite les tri de façon ascendante par leur date de début
 --
--- permet de récupérer les partie en cours et en attente au tout début du lancement du serveur si certaines n'étaient pas fini
+-- permet de récupérer les parties en cours et en attente au tout début du lancement du serveur si certaines n'étaient pas fini
 
 SELECT currentStage, startedAt, id, score, MIN(startedAt) AS min_startedAt
 FROM OngoingGames

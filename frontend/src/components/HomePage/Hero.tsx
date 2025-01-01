@@ -9,7 +9,7 @@ export default function Hero () {
                     <div className="absolute grid grid-cols-8 grid-rows-8 w-full h-full">
                         <div className="sm:space-y-1 col-span-4 col-start-2 row-start-2
                         xl:-translate-x-10 md:translate-x-0 sm:-translate-x-8 
-                        md:translate-y-0 sm:-translate-y-2">
+                        md:translate-y-0 -translate-y-0 -space-y-1">
                             <div className="escape-game">
                                 <p>Escape Game</p>
                                 <img src={lotion} className="escape-lotion"/>

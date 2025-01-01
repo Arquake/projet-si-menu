@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import NotFound from "./404";
 import Game from "./Game";
 import MainMenu from "./MainMenu";
@@ -60,15 +60,29 @@ export default function Home () {
 
     return (
         <>
-            <div className="w-screen h-screen flex flex-col">
+            <div className="w-screen min-h-screen flex flex-col">
+              <div className="flex-initial">
                 <NavBar/>
-
+              </div>
+                
+                <div className="flex-1">
                 {
                     currentPath == 0? <MainMenu />
                     : currentPath == 1? <Parameter />
                     : currentPath == 2? <Game />
                     : <NotFound />
                 }
+                </div>
+                
+                {
+                    
+                    currentPath != 2?
+                    <footer className="w-full bg-neutral-50 flex-initial px-4 py-4">
+                      <p>Contactez-nous</p>
+                    </footer>
+                    : <></>
+                }
+                
             </div>
         </>
     )

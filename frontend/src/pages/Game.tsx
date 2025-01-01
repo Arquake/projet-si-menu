@@ -177,7 +177,7 @@ export default function Game() {
 
     return (
         <>
-            <div className="grid grid-cols-3 gap-4 container self-center pt-12">
+            <div className="grid grid-cols-3 gap-4 container self-center pt-6">
                 {fetchError === true? 
                     <div className="self-justify-center self-center flex flex-col items-center justify-center pt-8 text-2xl col-span-full">
                         <p>
@@ -198,12 +198,13 @@ export default function Game() {
                     </div>
                 :
                     <>
-                        <aside className="flex flex-col w-fit gap-2 col-span-1">
+                        <aside className="w-full md:col-span-1 col-span-full row-start-2">
                             {
-                                
-                                projectList.map((element) => {
+                                gameEnded || playerTimedOut || true?
+                                <></>
+                                : projectList.map((element) => {
                                     return (
-                                        <div className="py-1 px-4 rounded-full bg-neutral-50 border border-blue-500 flex gap-4 items-center" key={element.name}>
+                                        <div className="pt-2 pb-3 px-4 bg-neutral-50 border-t-2 border-neutral-300 flex gap-4 items-center justify-center" key={element.name}>
                                             <p className="justify-self-start">
                                                 {element.name}
                                             </p>
@@ -223,31 +224,32 @@ export default function Game() {
                             }
                         </aside>
 
-                        <div key={etape!.name} className="self-center justify-self-center text-center">
+                        <div key={etape!.name} className="self-center justify-self-center text-center col-span-full pb-4">
                             {
-                                gameEnded || playerTimedOut?
+                                gameEnded || playerTimedOut || true?
                                     <>
                                         {
                                             playerTimedOut?
                                             <p>Vous avez été TO</p>
-                                            : <></>
+                                            : 
+                                            <p>Découvrez votre score !</p>
                                         }
-                                        <p>Découvrez votre score !</p>
+                                        
                                     </>
                                 : <>
                                     {
                                         etapeStartTime !== null?
                                         <>
                                             <p>temps restant: <ComputedRemaingTime startDate={etapeStartTime!} onRemainingTimeChange={handleRemainingTimeChange} ticking={gameEnded}/></p>
-                                            <p className="text-2xl">{etape!.name}</p>
-                                            <p className="text-xl">Allez dans la salle {etape!.placement}</p>
-                                            <p className="text-blue-500 underline text-3xl">{etape!.gameId}</p>
+                                            <p className="sm:text-2xl text-xl">{etape!.name}</p>
+                                            <p className="sm:text-xl text-lg">Allez dans la salle {etape!.placement}</p>
+                                            <p className="text-blue-500 underline sm:text-3xl text-2xl">{etape!.gameId}</p>
                                         </>
                                         : playerTurn?
                                         <>
-                                            <p className="text-2xl">{etape!.name}</p>
-                                            <p className="text-xl">Allez dans la salle {etape!.placement}</p>
-                                            <p className="text-blue-500 underline text-3xl">{etape!.gameId}</p>
+                                            <p className="sm:text-2xl text-xl">{etape!.name}</p>
+                                            <p className="sm:text-xl text-lg">Allez dans la salle {etape!.placement}</p>
+                                            <p className="text-blue-500 underline sm:text-3xl text-2xl">{etape!.gameId}</p>
                                         </>
                                         : 
                                         <p>

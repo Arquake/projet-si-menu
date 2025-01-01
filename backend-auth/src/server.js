@@ -222,7 +222,7 @@ app.post('/register', async (req, res) => {
 
         let validity = {username: false, password: false, email: false}
 
-        if ((/^[\w\-\.]+@(?:[\w-]+\.)+[\w-]{2,4}$/).test(email)) {
+        if ((/^[\w\-\.]+@(?:[\w-]+\.)+[a-zA-Z]{2,63}$/).test(email)) {
             validity = {...validity, email: true}
         }
 
