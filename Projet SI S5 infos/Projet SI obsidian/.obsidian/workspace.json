@@ -80,8 +80,7 @@
               "title": "OngoingGame"
             }
           }
-        ],
-        "currentTab": 2
+        ]
       }
     ],
     "direction": "vertical"
@@ -222,11 +221,11 @@
       "command-palette:Open command palette": false
     }
   },
-  "active": "5b595671439b1425",
+  "active": "d40a739f618d84c0",
   "lastOpenFiles": [
-    "OngoingGame.md",
     "Tokens.md",
     "FinishedGames.md",
+    "OngoingGame.md",
     "Users.md",
     "Projects.md",
     "MCD.canvas",

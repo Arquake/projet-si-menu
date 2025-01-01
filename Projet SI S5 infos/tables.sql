@@ -28,7 +28,7 @@ CREATE TABLE Users (
     id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
     username VARCHAR(32) UNIQUE NOT NULL CHECK (username ~ '^[\w]{4,32}$'),
     email VARCHAR(256) UNIQUE NOT NULL CHECK (email ~ '^[\w\-\.]+@(?:[\w-]+\.)+[\w-]{2,4}$'),
-    password VARCHAR(256) NOT NULL
+    password VARCHAR NOT NULL
 );
 
 
