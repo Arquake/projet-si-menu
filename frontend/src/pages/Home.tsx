@@ -65,7 +65,7 @@ export default function Home () {
                 <NavBar/>
               </div>
                 
-                <div className="flex-1">
+                <div className="flex-1 cursor-default">
                 {
                     currentPath == 0? <MainMenu />
                     : currentPath == 1? <Parameter />

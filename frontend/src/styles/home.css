@@ -75,12 +75,11 @@
 }
 
 .escape-lotion {
-    @apply absolute z-0
+    @apply absolute z-0 opacity-0
     top-0 -left-4 translate-y-1 h-4
-    sm:top-1 sm:-left-7 sm:h-7
+    sm:top-3 sm:-left-7 sm:h-7
     lg:top-4 lg:-left-9 lg:h-10
     xl:top-6 xl:-left-12 xl:h-14;
-    @apply opacity-0;
     animation: forwards ease-in-out escapeLotion 600ms;
     animation-delay: 1s;
 }

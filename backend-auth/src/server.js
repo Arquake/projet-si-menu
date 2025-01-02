@@ -48,19 +48,24 @@ const totalProjectNumber = Object.keys(projetQueue).length;
 function playerTimeout(stage) {
     return (
         setTimeout(async ()=> {
-            const onGoingGame = await OngoingModel.getOngoingGameByCode(projetQueue[stage].current.id);
-            ProjectsManager.onGoingGameToFinished(onGoingGame.userid, false, onGoingGame.score, Date.now()-onGoingGame.startedat, onGoingGame.completedstages);
-            io.to(projetQueue[stage].current.id).emit('timeout');
-            projetQueue[stage].startedat = null;
-
-            if(projetQueue[stage].waiting.length === 0) {
-                projetQueue[stage].current = null
+            try {
+                const onGoingGame = await OngoingModel.getOngoingGameByCode(projetQueue[stage].current.id);
+                ProjectsManager.onGoingGameToFinished(onGoingGame.userid, false, onGoingGame.score, Date.now()-onGoingGame.startedat, onGoingGame.completedstages);
+                io.to(projetQueue[stage].current.id).emit('timeout');
+                projetQueue[stage].startedat = null;
+    
+                if(projetQueue[stage].waiting.length === 0) {
+                    projetQueue[stage].current = null
+                }
+                else {
+                    projetQueue[stage].current = projetQueue[stage].waiting[0]
+                    io.to(projetQueue[stage].current.id).emit('playerCanStart');
+                    projetQueue[stage].waiting = projetQueue[stage].waiting.slice(1)
+                    projetQueue[stage].timeout = playerTimeout(stage)
+                }
             }
-            else {
-                projetQueue[stage].current = projetQueue[stage].waiting[0]
-                io.to(projetQueue[stage].current.id).emit('playerCanStart');
-                projetQueue[stage].waiting = projetQueue[stage].waiting.slice(1)
-                projetQueue[stage].timeout = playerTimeout(stage)
+            catch (_) {
+                
             }
         }, TIMEOUT_INTERVAL)
     )
