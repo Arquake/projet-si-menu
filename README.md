@@ -26,9 +26,17 @@
     </li>
 </ul>
 
+## A run dans postgres
+`tables.sql`
+
+Sans les inserts de OngoingGames, FinishedGames, Users, Tokens
+
+Et sans les query
+
+
 ## A run dans express js
 <code>
-    npx prisma migrate dev
+    npx prisma db pull
 </code>
 
 ## Lien vers React
