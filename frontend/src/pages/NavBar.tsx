@@ -53,7 +53,7 @@ export default function NavBar() {
     
     return (
         <>
-            <header className="p-1 justify-center flex items-center bg-neutral-50 sticky top-0 z-50">
+            <header className="p-1 justify-center flex items-center bg-neutral-50">
                 <div className="container justify-between flex px-2 md:py-2 py-1">
                     <div className="flex gap-2 items-center relative cursor-pointer"
                     onClick={handleLogoClick}>

@@ -61,7 +61,7 @@ export default function Home () {
     return (
         <>
             <div className="w-screen min-h-screen flex flex-col">
-              <div className="flex-initial">
+              <div className="flex-initial sticky top-0 z-50">
                 <NavBar/>
               </div>
                 

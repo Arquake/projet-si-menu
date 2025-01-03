@@ -46,7 +46,7 @@ http://localhost:3000/
 
 
 ## Informations supplémentaires
-Une fois les containers lancé les liens sont directement accessibles
+Une fois les containers lancés les liens sont directement accessibles
 
 React :
 <ul>
@@ -54,12 +54,15 @@ React :
     <li>TSX</li>
     <li>Yarn</li>
     <li>version: 18.3.1</li>
+    <li>Zustand</li>
 </ul>
 
 Express js :
 <ul>
     <li>Node 22.8.0</li>
     <li>Vanilla js</li>
+    <li>Socket.io</li>
+    <li>Prisma</li>
 </ul>
 
 ## Pour ajouter des dépendances
