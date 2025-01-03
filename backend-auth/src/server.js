@@ -8,6 +8,7 @@ import ProjectsModel from './Models/ProjectsModel/ProjectsModel.js';
 import OngoingModel from './Models/OngoingModel/OngoingModel.js';
 import { createServer } from "http";
 import { Server } from "socket.io";
+import FinishedGameModel from './Models/FinishedGameModel.js';
 
 
 const app = express();
@@ -463,6 +464,41 @@ app.post('/get-all-projects', TokenManager.verifyJwtToken, async (req,res) => {
     }
 })
 
+app.post('/get-top-ever', async (req,res) => {
+    try {
+        const oneYearAgo = new Date();
+        oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+
+        res.status(200).send(await FinishedGameModel.getTopFive(oneYearAgo))
+    }
+    catch(_) {
+        res.status(500).send('An error has occured on the server')
+    }
+})
+
+app.post('/get-top-month', async (req,res) => {
+    try {
+        const oneMonthAgo = new Date();
+        oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
+
+        res.status(200).send(await FinishedGameModel.getTopFive(oneMonthAgo))
+    }
+    catch(_) {
+        res.status(500).send('An error has occured on the server')
+    }
+})
+
+app.post('/get-top-week', async (req,res) => {
+    try {
+        const oneWeekAgo = new Date();
+        oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+
+        res.status(200).send(await FinishedGameModel.getTopFive(oneWeekAgo))
+    }
+    catch(_) {
+        res.status(500).send('An error has occured on the server')
+    }
+})
 
 
 

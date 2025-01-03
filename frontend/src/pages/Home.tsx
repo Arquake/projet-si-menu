@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import NotFound from "./404";
 import Game from "./Game";
 import MainMenu from "./MainMenu";
@@ -69,7 +69,7 @@ export default function Home () {
                 {
                     currentPath == 0? <MainMenu />
                     : currentPath == 1? <Parameter />
-                    : currentPath == 2? <Game />
+                    : currentPath == 2? <Game/>
                     : <NotFound />
                 }
                 </div>
