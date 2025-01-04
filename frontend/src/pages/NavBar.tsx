@@ -2,12 +2,12 @@ import { useState, useEffect, useRef } from "react";
 import { AuthStatus, useAuth } from "../useHook/useAuth";
 import { ProfileArrowSvg } from "../components/ProfileArrowSvg";
 import "./../styles/navbar.css"
-import { useRouting } from "../useHook/useRouting";
+import { RouteStatus, useRouting } from "../useHook/useRouting";
 
 export default function NavBar() {
 
     const {logout, status} = useAuth();
-    const {toGame, toParameter, toMainMenu, toLoginMenu, toScore} = useRouting();
+    const {toGame, toParameter, toMainMenu, toLoginMenu, toScore, currentRoute} = useRouting();
 
     const handleLogout = () => {
         if (showProfileMenu) {
@@ -18,6 +18,8 @@ export default function NavBar() {
 
     const [showProfileMenu, setShowProfileMenu] = useState(false);
     const showProfileMenuRef = useRef(showProfileMenu);
+
+    const [isPlayingGame, setIsPlayingGame] = useState<boolean>(false)
 
     /**
      *
@@ -32,7 +34,7 @@ export default function NavBar() {
         else {
             toLoginMenu()
         }
-
+        setShowProfileMenu(false)
     }
 
     const handleScore = () => {
@@ -86,6 +88,15 @@ export default function NavBar() {
         };
     }, []);
 
+    useEffect(()=>{
+        if (currentRoute === RouteStatus.Game) {
+            setIsPlayingGame(true)
+        }
+        else if (isPlayingGame) {
+            setIsPlayingGame(false)
+        }
+    },[currentRoute])
+
     return (
         <>
             <header className="p-1 justify-center flex items-center bg-neutral-50">
@@ -99,20 +110,24 @@ export default function NavBar() {
                         </p>
                     </div>
 
-                    <div className="flex justify-center">
-                        <div className="cursor-pointer md:py-2 md:px-6 px-4 rounded-full justify-self-center flex items-center
-                        bg-neutral-100 hover:bg-blue-600 border-2 border-blue-600 hover:border-neutral-50 text-blue-600 hover:text-neutral-50 duration-300"
-                        onClick={handlePlayGame}>
-                            <div className="flex md:gap-2 gap-1 items-center justify-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="md:h-8 h-6 aspect-square">
-                                    <path fill="currentColor" d="M19.266 13.516a1.917 1.917 0 0 0 0-3.032A35.8 35.8 0 0 0 9.35 5.068l-.653-.232c-1.248-.443-2.567.401-2.736 1.69a42.5 42.5 0 0 0 0 10.948c.17 1.289 1.488 2.133 2.736 1.69l.653-.232a35.8 35.8 0 0 0 9.916-5.416"/>
-                                </svg>
-                                <p className="font-semibold md:text-2xl text-xl">
-                                    JOUER
-                                </p>
+                    {
+                        !isPlayingGame &&
+                        <div className="flex justify-center">
+                            <div className="cursor-pointer md:py-2 md:px-6 px-4 rounded-full justify-self-center flex items-center
+                            bg-neutral-100 hover:bg-blue-600 border-2 border-blue-600 hover:border-neutral-50 text-blue-600 hover:text-neutral-50 duration-300"
+                            onClick={handlePlayGame}>
+                                <div className="flex md:gap-2 gap-1 items-center justify-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="md:h-8 h-6 aspect-square">
+                                        <path fill="currentColor" d="M19.266 13.516a1.917 1.917 0 0 0 0-3.032A35.8 35.8 0 0 0 9.35 5.068l-.653-.232c-1.248-.443-2.567.401-2.736 1.69a42.5 42.5 0 0 0 0 10.948c.17 1.289 1.488 2.133 2.736 1.69l.653-.232a35.8 35.8 0 0 0 9.916-5.416"/>
+                                    </svg>
+                                    <p className="font-semibold md:text-2xl text-xl">
+                                        JOUER
+                                    </p>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    }
+                    
                     
                     <div className="flex">
                         <div id="options">

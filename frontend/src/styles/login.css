@@ -4,17 +4,17 @@
 }
 
 .login-to-left {
-    transform: translateX(-100%) scale(.6);
+    transform: translateX(-100%) scale(.6) rotateZ(-6deg);
     opacity: 0;
 }
 
 .register-to-right {
-    transform: translateX(100%) scale(.6);
+    transform: translateX(100%) scale(.6) rotateZ(6deg);
     opacity: 0;
 }
 
 .login-submit-btn {
-    @apply mt-2 p-2 bg-fuchsia-700 text-yellow-300 font-bold text-2xl rounded;
+    @apply mt-2 p-2 bg-blue-700 text-neutral-100 font-bold text-2xl rounded;
 }
 
 .login-form {

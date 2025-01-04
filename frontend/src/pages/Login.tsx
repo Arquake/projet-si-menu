@@ -1,6 +1,6 @@
 import {ChangeEvent, FormEvent, useState} from "react";
 import {useAuth} from "../useHook/useAuth.ts";
-import imagesvg from '../assets/test-svg.svg'
+import loginBg from '../assets/login-bg-2.svg'
 import "../styles/login.css";
 import eye from "/app/src/assets/eye.svg"
 import eyeCross from "/app/src/assets/cross-eye.svg"
@@ -147,11 +147,12 @@ export function Login() {
 
     return (
         <>
-            <div style={{backgroundImage: `url(${imagesvg})`, backgroundSize: 'cover'}} className="h-screen w-full">
+            <div style={{backgroundImage: `url(${loginBg})`, backgroundSize: 'cover'}} className="h-screen w-full">
                 <div className="flex w-full p-8 gap-16 items-center justify-center h-screen relative">
                     <div className={`form ${onLogin?"":"login-to-left"}`}>
-                        <legend className="text-center text-3xl font-semibold">Login</legend>
-                        <p className={`text-red-600 text-center ${loginError? "visible":"invisible"}`}>
+                        <img src="creacosm_logo.png" className="h-12 w-12 mx-auto"/>
+                        <legend className="text-center text-3xl font-semibold">Connexion</legend>
+                        <p className={`text-red-600 text-center ${loginError? "inline":"hidden"}`}>
                             Email ou mot de passe invalide
                         </p>
                         <form onSubmit={handleSubmitLogin} className="login-form">
@@ -162,15 +163,15 @@ export function Login() {
                             </div>
                             
                             <div>
-                                <label htmlFor="password">Password</label>
+                                <label htmlFor="password">Mot de passe</label>
                                 <div className="flex justify-center items-center gap-2">
-                                    <input type={passwordShow?"text":"password"} id="password" placeholder="Password" required={true} name="password" 
+                                    <input type={passwordShow?"text":"password"} id="password" placeholder="Mot de passe" required={true} name="password" 
                                     className={`${loginPasswordValidity && !loginError? "border-transparent":"error-input"} duration-300 input-form flex-1`} value={loginPassword} onChange={handleLoginPasswordChange}/>
 
                                     <img src={passwordShow? eye:eyeCross} className="w-6 h-6 cursor-pointer" onClick={handlePasswordShowChange}/>
                                 </div>
                             </div>
-                            <button type="submit" className="login-submit-btn">Login</button>
+                            <button type="submit" className="login-submit-btn">Se connecter</button>
                         </form>
                         <p className="text-center" onClick={handleLoginChange}>
                             Vous n'avez pas encore de compte? <span className="text-blue-600 underline cursor-pointer">Créez en un!</span>
@@ -178,14 +179,15 @@ export function Login() {
                     </div>
 
                     <div className={`form ${onLogin?"register-to-right":""}`}>
-                        <legend className="text-center text-2xl font-semibold">Register</legend>
-                        <p className={`text-red-600 text-center ${registerError? "visible":"invisible"}`}>
+                        <img src="creacosm_logo.png" className="h-12 w-12 mx-auto"/>
+                        <legend className="text-center text-2xl font-semibold">Créer un compte</legend>
+                        <p className={`text-red-600 text-center ${registerError? "inline":"hidden"}`}>
                             Le nom d'utilisateur ou email est déjà utilisé
                         </p>
                         <form onSubmit={handleSubmitRegister} className="login-form">
                             <div>
-                                <label htmlFor="username">Username</label>
-                                <input type="text" id="username" placeholder="Username" required={true} name="username"
+                                <label htmlFor="username">Pseudo</label>
+                                <input type="text" id="username" placeholder="Pseudo" required={true} name="username"
                                 className={`${registerUsernameValidity && !registerError? "border-transparent":"error-input"} duration-300`} value={registerUsername} onChange={handleRegisterUsernameChange}/>
                             </div>
                             <div>
@@ -194,9 +196,9 @@ export function Login() {
                                 className={`${registerEmailValidity && !registerError? "border-transparent":"error-input"} duration-300`} value={registerEmail} onChange={handleRegisterEmailChange}/>
                             </div>
                             <div>
-                                <label htmlFor="password">Password</label>
+                                <label htmlFor="password">Mot de passe</label>
                                 <div className="flex justify-center items-center gap-2">
-                                    <input type={passwordShow?"text":"password"} id="password" placeholder="Password" required={true} name="password"
+                                    <input type={passwordShow?"text":"password"} id="password" placeholder="Mot de passe" required={true} name="password"
                                     className={`${registerPasswordValidity && !registerError? "border-transparent":"error-input"} duration-300 input-form flex-1`} value={registerPassword} onChange={handleRegisterPasswordChange}/>
                                     <img src={passwordShow? eye:eyeCross} className="w-6 h-6 cursor-pointer" onClick={handlePasswordShowChange}/>
                                 </div>
@@ -224,7 +226,7 @@ export function Login() {
                                     </li>
                                 </ul>
                             </div>
-                            <button type="submit" className="login-submit-btn text-yellow-300">Register</button>
+                            <button type="submit" className="login-submit-btn">Créer</button>
                         </form>
                         <p className="text-center" onClick={handleLoginChange}>
                             Vous avez déjà un compte? <span className="text-blue-600 underline cursor-pointer">Connectez vous!</span>

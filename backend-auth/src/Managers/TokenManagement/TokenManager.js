@@ -48,11 +48,10 @@ const verifyRefreshToken = async (req, res, next) => {
     }
 
     try {
-        // Verify the token
         let token =  jwt.verify(refreshToken, REFRESH_TOKEN_KEY);
         await TokenModel.verifyTokenExistence(token.tokenUid);
         next();
-    } catch (error) {
+    } catch (_) {
         return res.status(401).send('Unauthorized: Invalid token');
     }
 }

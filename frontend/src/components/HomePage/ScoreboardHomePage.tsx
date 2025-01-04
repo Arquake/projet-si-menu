@@ -1,6 +1,5 @@
 import "./../../styles/scoreboard.css"
-import React, {useEffect, useRef, useState} from 'react'
-import { format } from 'date-fns';
+import {useEffect, useRef, useState} from 'react'
 import { useAuth } from "../../useHook/useAuth";
 import ScoreboardAnimation from "./scoreboardAnimation";
 import Leaderboard from "../../interfaces/ILearderboard";
@@ -15,9 +14,6 @@ export default function Scoreboard () {
     const [monthScoreboard, setMonthScoreboard] = useState<Leaderboard[]>([]); 
     const [weekScoreboard, setWeekScoreboard] = useState<Leaderboard[]>([]); 
 
-    const everScoreboardRef = useRef(null); 
-    const monthScoreboardRef = useRef(null); 
-    const weekScoreboardRef = useRef(null); 
     const scoreboardRef = useRef(null);
 
     const [currentScoreboard, setCurrentScoreboard] = useState(0);
@@ -71,13 +67,13 @@ export default function Scoreboard () {
                         rounded-2xl shadow-lg w-full">
                             <p className="text-center py-4 dm:text-3xl text-2xl pb-6">Meilleurs Scores</p>
                             <div className="px-4 flex gap-1 scoreboard-tab">
-                                <div className={(currentScoreboard === 0? "active" : "") + " cursor-pointer"} onClick={() => changeCurrentScoreboard(0)} ref={everScoreboardRef}>
+                                <div className={(currentScoreboard === 0? "active" : "") + " cursor-pointer"} onClick={() => changeCurrentScoreboard(0)}>
                                     <p>Tout</p>
                                 </div>
-                                <div className={(currentScoreboard === 1? "active" : "") + " cursor-pointer"} onClick={() => changeCurrentScoreboard(1)} ref={monthScoreboardRef}>
+                                <div className={(currentScoreboard === 1? "active" : "") + " cursor-pointer"} onClick={() => changeCurrentScoreboard(1)}>
                                     <p>Mois</p>
                                 </div>
-                                <div className={(currentScoreboard === 2? "active" : "") + " cursor-pointer"} onClick={() => changeCurrentScoreboard(2)} ref={weekScoreboardRef}>
+                                <div className={(currentScoreboard === 2? "active" : "") + " cursor-pointer"} onClick={() => changeCurrentScoreboard(2)}>
                                     <p>Semaine</p>
                                 </div>
                             </div>

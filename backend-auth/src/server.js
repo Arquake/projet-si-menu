@@ -260,11 +260,11 @@ app.post('/register', async (req, res) => {
  * take a refresh token from an authorization header and remove it from the db
  * whatever code it returns user have to disconnect
  */
-app.post('/logout', TokenManager.verifyRefreshToken, (req, res) => {
+app.post('/logout', TokenManager.verifyRefreshToken, async (req, res) => {
     try {
         const refreshToken = (req.headers.authorization).split(' ')[1];
         const tokenId = TokenManager.refreshTokenInfo(refreshToken).tokenUid;
-        TokenModel.invalidateToken(tokenId);
+        await TokenModel.invalidateToken(tokenId);
         res.status(200).send();
     }
     catch (_) {
@@ -500,7 +500,50 @@ app.post('/get-top-week', async (req,res) => {
     }
 })
 
+app.post('/personnal-top-ever', TokenManager.verifyJwtToken, async (req,res) => {
+    try {
+        const token = (req.headers.authorization).split(' ')[1];
+        const tokenInfo = TokenManager.jwtInfo(token);
 
+        const oneYearAgo = new Date();
+        oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+
+        res.status(200).send(await FinishedGameModel.getTopOfUser(oneYearAgo, tokenInfo.uid))
+    }
+    catch(_) {
+        res.status(500).send('An error has occured on the server')
+    }
+})
+
+app.post('/personnal-top-month', TokenManager.verifyJwtToken, async (req,res) => {
+    try {
+        const token = (req.headers.authorization).split(' ')[1];
+        const tokenInfo = TokenManager.jwtInfo(token);
+        
+        const oneMonthAgo = new Date();
+        oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
+
+        res.status(200).send(await FinishedGameModel.getTopOfUser(oneMonthAgo, tokenInfo.uid))
+    }
+    catch(_) {
+        res.status(500).send('An error has occured on the server')
+    }
+})
+
+app.post('/personnal-top-week', TokenManager.verifyJwtToken, async (req,res) => {
+    try {
+        const token = (req.headers.authorization).split(' ')[1];
+        const tokenInfo = TokenManager.jwtInfo(token);
+        
+        const oneWeekAgo = new Date();
+        oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+
+        res.status(200).send(await FinishedGameModel.getTopOfUser(oneWeekAgo, tokenInfo.uid))
+    }
+    catch(_) {
+        res.status(500).send('An error has occured on the server')
+    }
+})
 
 
 

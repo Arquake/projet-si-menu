@@ -118,13 +118,11 @@ export default function Game() {
 
                     const allProjects: ProjectsList[] = await getAllGames();
                     setProjectList(allProjects.sort((a,b)=> a.placement - b.placement));
-                    console.log(allProjects.sort((a,b)=> a.placement - b.placement))
                     socketRef.current!.emit('joinRoom', res.gameId)
                 }
             } else {
                 const allProjects: ProjectsList[] = await getAllGames();
                 setProjectList(allProjects.sort((a,b)=> a.placement - b.placement));
-                console.log(allProjects.sort((a,b)=> a.placement - b.placement))
                 socketRef.current!.emit('joinRoom', res.gameId)
             }
         } catch (error) {

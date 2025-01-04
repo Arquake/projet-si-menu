@@ -51,41 +51,31 @@ export function useRouting() {
           break;
       }
     }
+  
     setCurrentRoute(newRoute);
   }, [status]);
 
-  const toGame = useCallback(() => {
-    window.history.pushState({}, "", "/game");
-    updateRouteStatus();
-  }, [updateRouteStatus]);
-
-  const toParameter = useCallback(() => {
-    window.history.pushState({}, "", "/parameter");
-    updateRouteStatus();
-  }, [updateRouteStatus]);
-
-  const toMainMenu = useCallback(() => {
-    window.history.pushState({}, "", "/");
-    updateRouteStatus();
-  }, [updateRouteStatus]);
-
-  const toLoginMenu = useCallback(() => {
-    window.history.pushState({}, "", "/login");
-    updateRouteStatus();
-  }, [updateRouteStatus]);
-
-  const toScore = useCallback(() => {
-    window.history.pushState({}, "", "/score");
-    updateRouteStatus();
-  }, [updateRouteStatus]);
+  const navigateTo = useCallback(
+    (path: string) => {
+      if (window.location.pathname !== path) {
+        window.history.pushState({}, "", path);
+        updateRouteStatus();
+      }
+    },
+    [updateRouteStatus]
+  );
+  
+  const toGame = () => navigateTo("/game");
+  const toParameter = () => navigateTo("/parameter");
+  const toMainMenu = () => navigateTo("/");
+  const toLoginMenu = () => navigateTo("/login");
+  const toScore = () => navigateTo("/score");
 
 
   useEffect(() => {
     updateRouteStatus();
 
-    const handlePopState = () => updateRouteStatus();
-
-    window.addEventListener("popstate", handlePopState);
+    window.addEventListener("popstate", updateRouteStatus);
 
     const originalPushState = window.history.pushState;
     const originalReplaceState = window.history.replaceState;
@@ -97,11 +87,10 @@ export function useRouting() {
 
     window.history.replaceState = function (...args) {
       originalReplaceState.apply(window.history, args);
-      updateRouteStatus();
     };
 
     return () => {
-      window.removeEventListener("popstate", handlePopState);
+      window.removeEventListener("popstate", updateRouteStatus);
       window.history.pushState = originalPushState;
       window.history.replaceState = originalReplaceState;
     };

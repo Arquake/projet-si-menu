@@ -29,7 +29,7 @@ export default function Home() {
             <NavBar />
           </div>
 
-          <div className="flex-1 cursor-default">
+          <div className="flex-1 cursor-default bg-neutral-50">
             {currentRoute === RouteStatus.MainMenu ? (
               <MainMenu />
             ) : currentRoute === RouteStatus.Parameter ? (

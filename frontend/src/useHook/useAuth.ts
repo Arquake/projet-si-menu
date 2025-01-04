@@ -40,7 +40,7 @@ export function useAuth() {
                 return res.json();
             })
             .then((data) => {
-                setAccount({...data, username: localStorage.getItem("username")});
+                setAccount({jwt: data.jwt, refreshToken: data.refreshToken, username: localStorage.getItem("username") ||''});
                 localStorage.setItem('jwt', data.jwt);
                 localStorage.setItem('refreshToken', data.refreshToken);
             })
@@ -83,7 +83,7 @@ export function useAuth() {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${account?.refreshToken || ''}`
+                'Authorization': `Bearer ${account!.refreshToken}`
             }
         })
         .then(()=> {
