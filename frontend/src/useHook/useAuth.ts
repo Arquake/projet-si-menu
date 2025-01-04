@@ -46,8 +46,6 @@ export function useAuth() {
             })
             .catch(()=> {
                 setAccount(null);
-                localStorage.removeItem('jwt');
-                localStorage.removeItem('refreshToken');
             });
     }, [])
 
@@ -152,8 +150,6 @@ export function useAuth() {
             async (res) => {
                 if (res.status === 401) {
                     setAccount(null);
-                    localStorage.removeItem('jwt');
-                    localStorage.removeItem('refreshToken');
                     throw new Error('invalid refresh token')
                 }
                 else {

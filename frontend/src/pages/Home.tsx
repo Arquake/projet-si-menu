@@ -1,89 +1,53 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import NotFound from "./404";
 import Game from "./Game";
 import MainMenu from "./MainMenu";
 import NavBar from "./NavBar"
 import Parameter from "./Parameter";
 import "/app/src/styles/home.css"
+import { useAuth } from "../useHook/useAuth";
+import { Login } from "./Login";
+import { RouteStatus, useRouting } from "../useHook/useRouting";
+import Score from "./Score";
 
 
+export default function Home() {
+  const { status } = useAuth();
+  const { currentRoute, updateRouteStatus } = useRouting();
 
-export default function Home () {
+  useEffect(() => {
+    updateRouteStatus();
+  }, [status, updateRouteStatus]);
 
-    const [currentPath, setCurrentPath] = useState(0)
+  return (
+    <>
+      {currentRoute === RouteStatus.Login ? (
+        <Login />
+      ) : (
+        <div className="w-screen min-h-screen flex flex-col">
+          <div className="flex-initial sticky top-0 z-50">
+            <NavBar />
+          </div>
 
-    useEffect(() => {
-        const updatePath = () => {
-          switch (window.location.pathname) {
-            case "/":
-              setCurrentPath(0);
-              break;
-            case "/parameter":
-              setCurrentPath(1);
-              break;
-            case "/game":
-              setCurrentPath(2);
-              break;
-            default:
-              setCurrentPath(-1);
-              break;
-          }
-        };
-    
-        // Run on initial render
-        updatePath();
-    
-        // Listen for popstate events
-        window.addEventListener("popstate", updatePath);
-    
-        // Monkey-patch pushState and replaceState to detect manual updates
-        const originalPushState = window.history.pushState;
-        const originalReplaceState = window.history.replaceState;
-    
-        window.history.pushState = function (...args) {
-          originalPushState.apply(window.history, args);
-          updatePath();
-        };
-    
-        window.history.replaceState = function (...args) {
-          originalReplaceState.apply(window.history, args);
-          updatePath();
-        };
-    
-        // Cleanup
-        return () => {
-          window.removeEventListener("popstate", updatePath);
-          window.history.pushState = originalPushState;
-          window.history.replaceState = originalReplaceState;
-        };
-      }, []);
+          <div className="flex-1 cursor-default">
+            {currentRoute === RouteStatus.MainMenu ? (
+              <MainMenu />
+            ) : currentRoute === RouteStatus.Parameter ? (
+              <Parameter />
+            ) : currentRoute === RouteStatus.Game ? (
+              <Game />
+            ) : currentRoute === RouteStatus.Score ? (
+              <Score />
+            ) : (
+              <NotFound />
+            )}
+          </div>
 
-    return (
-        <>
-            <div className="w-screen min-h-screen flex flex-col">
-              <div className="flex-initial sticky top-0 z-50">
-                <NavBar/>
-              </div>
-                
-                <div className="flex-1 cursor-default">
-                {
-                    currentPath == 0? <MainMenu />
-                    : currentPath == 1? <Parameter />
-                    : currentPath == 2? <Game/>
-                    : <NotFound />
-                }
-                </div>
-                
-                {
-                    
-                    currentPath != 2?
-                    <footer className="w-full bg-neutral-50 flex-initial px-4 py-4">
-                      <p>Contactez-nous</p>
-                    </footer>
-                    : <></>
-                }
-                
-            </div>
-        </>
-    )
+          <footer className="w-full bg-neutral-50 flex-initial px-4 py-6">
+            <p>Contactez-nous</p>
+          </footer>
+        </div>
+      )}
+    </>
+  );
 }

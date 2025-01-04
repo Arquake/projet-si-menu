@@ -4,10 +4,13 @@ import imagesvg from '../assets/test-svg.svg'
 import "../styles/login.css";
 import eye from "/app/src/assets/eye.svg"
 import eyeCross from "/app/src/assets/cross-eye.svg"
+import { useRouting } from "../useHook/useRouting.ts";
 
 export function Login() {
 
     const {login, register} = useAuth();
+
+    const {toMainMenu} = useRouting();
 
     const [onLogin, setOnlogin] = useState(true);
     const handleLoginChange = () => {
@@ -82,6 +85,8 @@ export function Login() {
             .then((data)=>{
                 if (!data) {
                     setLoginError(true)
+                } else {
+                    toMainMenu()
                 }
             })
         }
@@ -133,6 +138,8 @@ export function Login() {
             .then((data)=>{
                 if (data !== true) {
                     setRegisterError(true);
+                } else {
+                    toMainMenu()
                 }
             })
         }

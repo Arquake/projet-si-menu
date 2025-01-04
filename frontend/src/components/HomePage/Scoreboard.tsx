@@ -3,13 +3,9 @@ import React, {useEffect, useRef, useState} from 'react'
 import { format } from 'date-fns';
 import { useAuth } from "../../useHook/useAuth";
 import ScoreboardAnimation from "./scoreboardAnimation";
+import Leaderboard from "../../interfaces/ILearderboard";
+import ScoreboardComponent from "../ScoreboardComponent";
 
-
-interface Leaderboard {
-    username: string,
-    time: Date,
-    score: number
-}
 
 export default function Scoreboard () {
 
@@ -86,39 +82,7 @@ export default function Scoreboard () {
                                 </div>
                             </div>
                             <div className="border-2 border-neutral-300 pt-1 rounded-xl">
-                                <div className="grid lg:grid-cols-4 md:grid-cols-5 grid-cols-3 gap-4 px-4 
-                                md:text-lg font-semibold">
-                                    <p className="md:col-span-2 truncate">Joueur</p>
-                                    <p className="lg:col-span-1 md:col-span-2">Temps</p>
-                                    <p>Score</p>
-                                </div>
-                                {
-                                    getCurrentScoreboard().map((element, i) => (
-                                        <React.Fragment key={i}>
-                                            <div className="border-t-2 border-neutral-300 w-full self-center" />
-                                            <div className="px-4 md:text-base text-sm">
-                                                <div className="grid lg:grid-cols-4 md:grid-cols-5 grid-cols-3 gap-4 pt-2 pb-0.5">
-                                                    {
-                                                    element ?
-                                                        <>
-                                                            <p className="md:col-span-2 truncate">{element.username}</p>
-                                                            <p className="md:col-span-2 lg:col-span-1">{format(element.time, 'HH:mm:ss')}</p>
-                                                            <p>{element.score}</p>
-                                                        </>
-
-                                                        : 
-
-                                                        <>
-                                                            <p className="md:col-span-2 truncate text-neutral-400">------</p>
-                                                            <p className="md:col-span-2 lg:col-span-1 text-neutral-400">--:--:--</p>
-                                                            <p className="text-neutral-400">--</p>
-                                                        </>
-                                                    }
-                                                </div>
-                                            </div>
-                                        </React.Fragment>
-                                    ))
-                                }
+                                <ScoreboardComponent scoreBoard={getCurrentScoreboard()} useNames={true}/>
                             </div>
                         </div>
                     </div>

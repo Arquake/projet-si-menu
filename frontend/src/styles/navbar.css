@@ -1,0 +1,29 @@
+@import url('https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap');
+
+.creacosm {
+    font-family: 'Lexend', sans-serif;
+}
+
+.profile-bar {
+    transform: translateY(.1rem) translateX(calc(-75%));
+    @apply absolute duration-500 w-max px-3 shadow-lg;
+    & > * {
+        @apply pr-2 font-semibold py-1 flex gap-2 items-center justify-start hover:text-blue-600 duration-300;
+    }
+
+}
+
+.profile-open {
+    height: calc(auto);
+    @apply border-neutral-200 bg-neutral-100 text-blue-900 overflow-hidden mr-2 py-1 border rounded;
+    & > * {
+        @apply cursor-pointer;
+    }
+}
+
+.profile-close {
+    @apply opacity-0 overflow-hidden py-0 m-0 border-0;
+    & > * {
+        @apply cursor-default;
+    }
+}
