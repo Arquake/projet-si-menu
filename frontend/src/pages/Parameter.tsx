@@ -1,5 +1,6 @@
 import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import { useAuth } from "../useHook/useAuth";
+import getCross from "../components/GetCross";
 
 enum ChangeChoice {
     Username,
@@ -15,13 +16,18 @@ interface UserInfo {
 
 export default function Parameter() {
 
-    const {account, makePostRequest, refreshJwt, updateUsername} = useAuth();
+    const {account, makePostRequest, refreshJwt, updateUsername, logout} = useAuth();
 
     const [userInfo, setUserInfo] = useState<UserInfo>();
     const [newUsername, setNewUserName] = useState<string>("");
     const [newEmail, setNewEmail] = useState<string>("");
     const [newPassword, setNewPassword] = useState<string>("");
     const [oldPassword, setOldPassword] = useState<string>("");
+    const [deletePassword, setDeletePassword] = useState<string>("");
+
+    const [emailValidity, setEmailValidity] = useState(true);
+    const [passwordValidity, setPasswordValidity] = useState(true);
+    const [usernameValidity ,setUsernameValidity] = useState(true);
 
     const [usernameChangeError, setUsernameChangeError] = useState<boolean>(false)
     const [emailChangeError, setEmailChangeError] = useState<boolean>(false)
@@ -48,6 +54,9 @@ export default function Parameter() {
         setNewEmail("")
         setNewPassword("")
         setOldPassword("")
+        setEmailValidity(true)
+        setPasswordValidity(true)
+        setUsernameValidity(true)
     }
 
     useEffect(()=>{
@@ -71,19 +80,10 @@ export default function Parameter() {
         }
     },[])
 
-
     const onSubmitChangeUsername = async (e: FormEvent) => {
         e.preventDefault()
 
-        try {
-            await makePostRequest('/change-name', account?.jwt, {"username": newUsername}, 
-                (res)=>{if (!res.ok) {throw new Error('Network response was not ok');};}
-            )
-            updateUsername(newUsername)
-            setUserInfo({...userInfo!, username: newUsername})
-            handleClosePopUp()
-        }
-        catch (_) {
+        if (usernameValidity) {
             try {
                 await makePostRequest('/change-name', account?.jwt, {"username": newUsername}, 
                     (res)=>{if (!res.ok) {throw new Error('Network response was not ok');};}
@@ -93,23 +93,31 @@ export default function Parameter() {
                 handleClosePopUp()
             }
             catch (_) {
-                setUsernameChangeError(true)
+                await refreshJwt();
+                try {
+                    await makePostRequest('/change-name', account?.jwt, {"username": newUsername}, 
+                        (res)=>{if (!res.ok) {throw new Error('Network response was not ok');};}
+                    )
+                    updateUsername(newUsername)
+                    setUserInfo({...userInfo!, username: newUsername})
+                    handleClosePopUp()
+                }
+                catch (_) {
+                    setUsernameChangeError(true)
+                    setUsernameValidity(false)
+                }
             }
         }
+        else {
+            setUsernameChangeError(true)
+            setUsernameValidity(false)
+        }
     }
-
 
     const onSubmitChangeEmail = async (e: FormEvent) => {
         e.preventDefault()
 
-        try {
-            await makePostRequest('/change-email', account?.jwt, {"email": newEmail}, 
-                (res)=>{if (!res.ok) {throw new Error('Network response was not ok');};}
-            )
-            setUserInfo({...userInfo!, email: newEmail})
-            handleClosePopUp()
-        }
-        catch (_) {
+        if (emailValidity) {
             try {
                 await makePostRequest('/change-email', account?.jwt, {"email": newEmail}, 
                     (res)=>{if (!res.ok) {throw new Error('Network response was not ok');};}
@@ -118,26 +126,110 @@ export default function Parameter() {
                 handleClosePopUp()
             }
             catch (_) {
-                setUsernameChangeError(true)
+                await refreshJwt();
+                try {
+                    await makePostRequest('/change-email', account?.jwt, {"email": newEmail}, 
+                        (res)=>{if (!res.ok) {throw new Error('Network response was not ok');};}
+                    )
+                    setUserInfo({...userInfo!, email: newEmail})
+                    handleClosePopUp()
+                }
+                catch (_) {
+                    setUsernameChangeError(true)
+                    setUsernameValidity(false)
+                }
             }
+        }
+        else {
+            setUsernameChangeError(true)
+            setUsernameValidity(false)
+        }
+    }
+
+    const onSubmitChangePassword = async (e: FormEvent) => {
+        e.preventDefault()
+
+        if(passwordValidity) {
+            try {
+                await makePostRequest('/change-password', account?.jwt, 
+                    {"newPassword": newPassword, "oldPassword": oldPassword}, 
+                    (res)=>{if (!res.ok) {throw new Error('Network response was not ok');};}
+                )
+                handleClosePopUp()
+            }
+            catch (_) {
+                await refreshJwt();
+                try {
+                    await makePostRequest('/change-password', account?.jwt, 
+                        {"newPassword": newPassword, "oldPassword": oldPassword}, 
+                        (res)=>{if (!res.ok) {throw new Error('Network response was not ok');};}
+                    )
+                    handleClosePopUp()
+                }
+                catch (_) {
+                    setPasswordChangeError(true)
+                    setPasswordValidity(false)
+                }
+            }
+        }
+        else {
+            setPasswordChangeError(true)
+            setPasswordValidity(false)
         }
     }
 
     const handleNewUsernameChange = (e: ChangeEvent<HTMLInputElement>) => {
         setNewUserName(e.target.value)
+        if ((/^[\w]{4,32}$/).test(e.target.value)) {setUsernameValidity(true)}
+        else {setUsernameValidity(false)}
     }
 
     const handleNewEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
         setNewEmail(e.target.value)
+        if ((/^[\w\-\.]+@(?:[\w-]+\.)+[\w-]{2,4}$/).test(e.target.value)) {setEmailValidity(true)}
+        else {setEmailValidity(false)}
     }
-
 
     const handleNewPassword = (e: ChangeEvent<HTMLInputElement>) => {
         setNewPassword(e.target.value)
+        if ((/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{10,32}$/).test(e.target.value) && e.target.value !== oldPassword) {
+            setPasswordValidity(true)
+        }
+        else {setPasswordValidity(false)}
     }
 
     const handleOldPassword = (e: ChangeEvent<HTMLInputElement>) => {
         setOldPassword(e.target.value)
+    }
+
+    const handleDelete = (e: ChangeEvent<HTMLInputElement>) => {
+        setDeletePassword(e.target.value)
+        if(deleteError) {setDeleteError(false)}
+    }
+
+    const onSubmitChangeDelete = async (e: FormEvent) => {
+        e.preventDefault()
+
+        if (!deleteError) {
+            try {
+                await makePostRequest('/delete-account', account?.jwt, {"password": deletePassword}, 
+                    (res)=>{if (!res.ok) {throw new Error('Network response was not ok');};}
+                )
+                logout()
+            }
+            catch (_) {
+                await refreshJwt();
+                try {
+                    await makePostRequest('/delete-account', account?.jwt, {"password": deletePassword}, 
+                        (res)=>{if (!res.ok) {throw new Error('Network response was not ok');};}
+                    )
+                    logout()
+                }
+                catch (_) {
+                    setDeleteError(true)
+                }
+            }
+        }
     }
 
     return (
@@ -148,50 +240,93 @@ export default function Parameter() {
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 15 15" className="h-5 cursor-pointer" onClick={handleClosePopUp}>
                         <path fill="currentColor" d="M3.64 2.27L7.5 6.13l3.84-3.84A.92.92 0 0 1 12 2a1 1 0 0 1 1 1a.9.9 0 0 1-.27.66L8.84 7.5l3.89 3.89A.9.9 0 0 1 13 12a1 1 0 0 1-1 1a.92.92 0 0 1-.69-.27L7.5 8.87l-3.85 3.85A.92.92 0 0 1 3 13a1 1 0 0 1-1-1a.9.9 0 0 1 .27-.66L6.16 7.5L2.27 3.61A.9.9 0 0 1 2 3a1 1 0 0 1 1-1c.24.003.47.1.64.27"/>
                     </svg>
-                    <div className="pl-2">
+                    <div className="px-2 pb-2">
                         {
                             changeChoiceType === ChangeChoice.Username?(
                                 <>
                                     <p className="text-center text-xl px-8">Changer votre pseudo</p>
                                     {
                                         usernameChangeError && 
-                                        <p className="text-red-900 border-2 border-red-500 bg-red-200
+                                        <p className="text-red-900 border-2 border-red-400 bg-red-100
                                         py-1 px-4 rounded-lg">
                                             Veuillez rentrer un pseudo valide et non utilisé
-                                            </p>
+                                        </p>
                                     }
                                     <form className="flex flex-col pt-4" onSubmit={onSubmitChangeUsername}>
                                         <label>Nouveau Pseudo :</label>
-                                        <input placeholder="Nouveau pseudo" className="px-2" onChange={handleNewUsernameChange}/>
+                                        <input placeholder="Nouveau pseudo" className={`duration-300 rounded-md pl-2 p-0.5 border-2 ${usernameValidity? "" : "border-red-400 bg-red-100"}`} onChange={handleNewUsernameChange}/>
                                         <button className="bg-blue-600 hover:bg-blue-700 duration-300 text-neutral-50 rounded-lg py-1 font-semibold mt-4">Changer!</button>
                                     </form>  
                                 </>
                             ): changeChoiceType === ChangeChoice.Email?(
                                 <>
+                                    {
+                                        emailChangeError && 
+                                        <p className="text-red-900 border-2 border-red-400 bg-red-100
+                                        py-1 px-4 rounded-lg">
+                                            Veuillez rentrer un email valide et non utilisé
+                                        </p>
+                                    }
                                     <p className="text-center text-xl px-8">Changer votre email</p>
                                     <form className="flex flex-col pt-4" onSubmit={onSubmitChangeEmail}>
                                         <label>Nouveau email :</label>
-                                        <input placeholder="Nouveau email" className="px-2" onChange={handleNewEmailChange}/>
+                                        <input placeholder="Nouveau email" className={`duration-300 rounded-md pl-2 p-0.5 border-2 ${emailValidity? "" : "border-red-400 bg-red-100"}`} onChange={handleNewEmailChange}/>
                                         <button className="bg-blue-600 hover:bg-blue-700 duration-300 text-neutral-50 rounded-lg py-1 font-semibold mt-4">Changer!</button>
                                     </form>  
                                 </>
                             ): changeChoiceType === ChangeChoice.Password?(
                                 <>
+                                    {
+                                        passwordChangeError && 
+                                        <p className="text-red-900 border-2 border-red-400 bg-red-100
+                                        py-1 px-4 rounded-lg">
+                                            L'ancien ou nouveau mot de passe est invalide
+                                        </p>
+                                    }
                                     <p className="text-center text-xl px-8">Changer votre mot de passe</p>
-                                    <form className="flex flex-col pt-4">
+                                    <form className="flex flex-col pt-4" onSubmit={onSubmitChangePassword}>
                                         <label>Ancien mot de passe :</label>
-                                        <input placeholder="Ancien mot de passe" className="px-2" onChange={handleNewPassword}/>
+                                        <input placeholder="Ancien mot de passe" className={`duration-300 rounded-md pl-2 p-0.5 border-2 ${passwordValidity? "" : "border-red-400 bg-red-100"}`} onChange={handleOldPassword}/>
                                         <label>Nouveau mot de passe :</label>
-                                        <input placeholder="Nouveau mot de passe" className="px-2" onChange={handleOldPassword}/>
+                                        <input placeholder="Nouveau mot de passe" className={`duration-300 rounded-md pl-2 p-0.5 border-2 ${passwordValidity? "" : "border-red-400 bg-red-100"}`} onChange={handleNewPassword}/>
                                         <button className="bg-blue-600 hover:bg-blue-700 duration-300 text-neutral-50 rounded-lg py-1 font-semibold mt-4">Changer!</button>
                                     </form>  
+                                    <ul className="password-check-list pt-2 space-y-1">
+                                    <li className={`${newPassword.length>=10? "text-green-500":"text-red-600"}`}>
+                                        {getCross(newPassword.length>=10)}
+                                        <p>Au moins 10 caractère de long</p>
+                                    </li>
+                                    <li className={`${(/[a-z]/).test(newPassword)? "text-green-500":"text-red-600"}`}>
+                                        {getCross((/[a-z]/).test(newPassword))}
+                                        <p>Au moins une minuscule</p>
+                                    </li>
+                                    <li className={`${(/[A-Z]/).test(newPassword)? "text-green-500":"text-red-600"}`}>
+                                        {getCross((/[A-Z]/).test(newPassword))}
+                                        <p>Au moins une majuscule A-{">"}Z</p>
+                                    </li>
+                                    <li className={`${(/[@$!%*?&]/).test(newPassword)? "text-green-500":"text-red-600"}`}>
+                                        {getCross((/[@$!%*?&]/).test(newPassword))}
+                                        <p>Au moins un caractère spécial @$!%*?&</p>
+                                    </li>
+                                    <li className={`${(/[1-9]/).test(newPassword)? "text-green-500":"text-red-600"}`}>
+                                        {getCross((/[1-9]/).test(newPassword))}
+                                        <p>Au moins un chiffre</p>
+                                    </li>
+                                </ul>
                                 </>
                             ): (
                                 <>
+                                    {
+                                        deleteError && 
+                                        <p className="text-red-900 border-2 border-red-400 bg-red-100
+                                        py-1 px-4 rounded-lg">
+                                            Le mot de passe donné est invalide
+                                        </p>
+                                    }
                                     <p className="text-center text-xl px-8">Supprimer votre compte</p>
-                                    <form className="flex flex-col pt-4">
+                                    <form className="flex flex-col pt-4" onSubmit={onSubmitChangeDelete}>
                                         <label>Mot de passe :</label>
-                                        <input placeholder="Mot de passe" className="px-2"/>
+                                        <input placeholder="Mot de passe" className={`duration-300 rounded-md pl-2 p-0.5 border-2 ${deleteError? "border-red-400 bg-red-100" : ""}`} onChange={handleDelete}/>
                                         <button className="bg-red-600 hover:bg-red-700 duration-300 text-neutral-50 rounded-lg py-1 font-semibold mt-4">Supprimer</button>
                                     </form> 
                                 </>

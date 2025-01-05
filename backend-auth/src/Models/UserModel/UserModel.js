@@ -83,10 +83,59 @@ async function changeEmail(userid, newEmail) {
     }
 }
 
+async function getPasswordById(userid) {
+    try {
+        return await prisma.users.findFirstOrThrow({
+            where: {
+                id: userid,
+            },
+            select: {
+                password: true,
+            }
+        })
+    }
+    catch (_) {
+        throw new Error('No user found');
+    }
+}
+
+
+async function changePassword(userid, newPassword) {
+    try {
+        return await prisma.users.update({
+            where: {
+                id: userid,
+            },
+            data: {
+                password: newPassword
+            }
+        })
+    }
+    catch (_) {
+        throw new Error('No user found');
+    }
+}
+
+async function deleteAccount(userId) {
+    try {
+        return await prisma.users.delete({
+            where: {
+                id: userid,
+            }
+        })
+    }
+    catch (_) {
+        throw new Error('No user found');
+    }
+}
+
 export default {
     createUser,
     getUserByEmail,
     getUserInfoById,
     changeUsername,
-    changeEmail
+    changeEmail,
+    getPasswordById,
+    changePassword,
+    deleteAccount
 }

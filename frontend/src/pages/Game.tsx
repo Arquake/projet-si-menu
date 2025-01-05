@@ -3,6 +3,7 @@ import { useAuth } from "../useHook/useAuth";
 import ComputedRemaingTime from "../components/ComputedRemainingTime"
 import { io, Socket } from 'socket.io-client';
 import Confetti from 'react-confetti';
+import { useNavigate } from "react-router-dom";
 
 
 interface Etape {
@@ -25,8 +26,6 @@ interface ProjectsList {
     order: number
 }
 
-//const audio = new Audio('');
-
 export default function Game() {
 
     const {makePostRequest, refreshJwt, account} = useAuth();
@@ -40,6 +39,8 @@ export default function Game() {
     const fetchErrorCode = useRef(500);
 
     const [gameEnded, setGameEnded] = useState(false);
+
+    const navigate = useNavigate()
 
     const [remainingTimeFromChild, setRemainingTimeFromChild] = useState<number>();
 
@@ -148,7 +149,6 @@ export default function Game() {
             socketRef.current = io('http://localhost:3000');
     
             socketRef.current.on('stageValidation', (e) => {
-                //audio.play()
                 setEtape(e)
                 setEtapeStartTime(null)
                 setPlayerTurn(false)
@@ -173,6 +173,10 @@ export default function Game() {
             });
         }
     };
+
+    const handleToScore = () => {
+        navigate("/score");
+    }
 
     return (
         <>
@@ -260,16 +264,16 @@ export default function Game() {
                                                                         Votre score est de :
                                                                     </p>
                                                                     <p className="sm:text-3xl text-2xl">
-                                                                        100 000
+                                                                        //TODO Faire le socket pour get le score
                                                                     </p>
                                                                 </div>
 
                                                                 <div className="pt-6">
                                                                     <button className="sm:py-2 py-1 sm:px-8 px-6 hover:bg-blue-700 bg-blue-600
                                                                     text-neutral-50 font-semibold sm:text-xl text-lg rounded-lg shadow-lg
-                                                                    duration-300">
+                                                                    duration-300" onClick={handleToScore}>
                                                                         Voir vos score
-                                                                        </button>
+                                                                    </button>
                                                                 </div>
                                                             </div>
                                                         </div>

@@ -8,7 +8,7 @@ function App() {
 
     useEffect(() => {
         tokenAuthenticate()
-    }, []);
+    }, [tokenAuthenticate]);
 
     return (
         <>

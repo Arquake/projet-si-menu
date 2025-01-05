@@ -2,17 +2,20 @@ import { useState, useEffect, useRef } from "react";
 import { AuthStatus, useAuth } from "../useHook/useAuth";
 import { ProfileArrowSvg } from "../components/ProfileArrowSvg";
 import "./../styles/navbar.css"
-import { RouteStatus, useRouting } from "../useHook/useRouting";
+import { useLocation, useNavigate } from "react-router-dom";
 
 export default function NavBar() {
 
+    const navigate = useNavigate();
+
     const {logout, status} = useAuth();
-    const {toGame, toParameter, toMainMenu, toLoginMenu, toScore, currentRoute} = useRouting();
+
+    const location = useLocation();
 
     const handleLogout = () => {
         if (showProfileMenu) {
             logout()
-            toMainMenu()
+            navigate("/");
         }
     };
 
@@ -21,38 +24,27 @@ export default function NavBar() {
 
     const [isPlayingGame, setIsPlayingGame] = useState<boolean>(false)
 
-    /**
-     *
-     * Utilise la fonction donnée si l'utilisateur est connecté
-     * sinon l'utilisateur est redirigé vers la page de login
-     * @param func la fonction à utiliser si le compte est authentifié
-     */
-    const useFuncOrLogin = (func: () => void) => {
-        if (status === AuthStatus.Authenticated) {
-            func();
-        }
-        else {
-            toLoginMenu()
-        }
-        setShowProfileMenu(false)
-    }
-
     const handleScore = () => {
-        useFuncOrLogin(toScore)
+        if (showProfileMenu) {
+            navigate("/score");
+            setShowProfileMenu(false)
+        }
     }
 
     const handlePlayGame = () => {
-        useFuncOrLogin(toGame)
+        navigate("/game");
+        setShowProfileMenu(false)
     }
 
     const handleParameter = () => {
         if (showProfileMenu) {
-            useFuncOrLogin(toParameter)
+            navigate("/parameter");
+            setShowProfileMenu(false)
         }
     }
 
     const handleLogoClick = () => {
-        toMainMenu();
+        navigate("/");
     }
     
     const handleAccountButton = () => {
@@ -60,7 +52,7 @@ export default function NavBar() {
     }
 
     const handleLogin = () => {
-        toLoginMenu()
+        navigate("/login");
     }
     
 
@@ -89,18 +81,18 @@ export default function NavBar() {
     }, []);
 
     useEffect(()=>{
-        if (currentRoute === RouteStatus.Game) {
+        if (location.pathname === "/game") {
             setIsPlayingGame(true)
         }
         else if (isPlayingGame) {
             setIsPlayingGame(false)
         }
-    },[currentRoute])
+    },[location.pathname])
 
     return (
         <>
             <header className="p-1 justify-center flex items-center bg-neutral-50">
-                <div className="container justify-between flex px-2 md:py-2 py-1">
+                <div className="container grid grid-cols-3 px-2 md:py-2 py-1">
                     <div className="flex gap-2 items-center relative cursor-pointer"
                     onClick={handleLogoClick}>
                         <img src="/creacosm_logo.png" className="md:h-12 h-10 aspect-square"/>
@@ -129,7 +121,7 @@ export default function NavBar() {
                     }
                     
                     
-                    <div className="flex">
+                    <div className="flex justify-self-end">
                         <div id="options">
                             {
                                 status === AuthStatus.Authenticated?

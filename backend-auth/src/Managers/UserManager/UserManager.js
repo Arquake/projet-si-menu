@@ -48,11 +48,26 @@ async function changeEmail(userId, email) {
     await UserModel.changeEmail(userId, email)
 }
 
+async function getPasswordById(userId) {
+    return await UserModel.getPasswordById(userId)
+}
+
+async function changePassword(userId, newPassword) {
+    await UserModel.changePassword(userId, newPassword)
+}
+
+async function deleteAccount(userId) {
+    await UserModel.deleteAccount(userId)
+}
+
 
 export default {
     login,
     register,
     getPersonnalInfo,
     changeUsername,
-    changeEmail
+    changeEmail,
+    getPasswordById,
+    changePassword,
+    deleteAccount
 }

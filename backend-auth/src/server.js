@@ -9,6 +9,7 @@ import OngoingModel from './Models/OngoingModel/OngoingModel.js';
 import { createServer } from "http";
 import { Server } from "socket.io";
 import FinishedGameModel from './Models/FinishedGameModel.js';
+import argon2 from 'argon2';
 
 
 const app = express();
@@ -600,6 +601,68 @@ app.post('/change-email', TokenManager.verifyJwtToken, async (req,res) => {
     }
 })
 
+app.post('/change-password', TokenManager.verifyJwtToken, async (req,res) => {
+    try {
+        const token = (req.headers.authorization).split(' ')[1];
+        const tokenInfo = TokenManager.jwtInfo(token);
+
+        const oldPassword = req.body.oldPassword;
+        const newPassword = req.body.newPassword;
+
+        if (newPassword === null) {
+            res.status(400).send()
+        }
+        else {
+            try {
+                const user = await UserManager.getPasswordById(tokenInfo.uid)
+                if(await argon2.verify(user.password, oldPassword)) {
+                    await UserManager.changePassword(tokenInfo.uid, await argon2.hash(newPassword))
+                    res.status(200).send()
+                }
+                else {
+                    res.status(401).send()
+                }
+            }
+            catch (_) {
+                res.status(401).send()
+            }
+        }
+    }
+    catch(_) {
+        res.status(500).send('An error has occured on the server')
+    }
+})
+
+app.post('/delete-account', TokenManager.verifyJwtToken, async (req,res) => {
+    try {
+        const token = (req.headers.authorization).split(' ')[1];
+        const tokenInfo = TokenManager.jwtInfo(token);
+
+        const password = req.body.password;
+
+        if (password === null) {
+            res.status(400).send()
+        }
+        else {
+            try {
+                const user = await UserManager.getPasswordById(tokenInfo.uid)
+                if(await argon2.verify(user.password, password)) {
+                    await UserManager.deleteAccount(tokenInfo.uid)
+                    res.status(200).send()
+                }
+                else {
+                    res.status(401).send()
+                }
+            }
+            catch (_) {
+                res.status(401).send()
+            }
+        }
+    }
+    catch(_) {
+        res.status(500).send('An error has occured on the server')
+    }
+})
 
 
 server.listen(PORT, () => {
