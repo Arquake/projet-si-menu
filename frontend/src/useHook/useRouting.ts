@@ -85,9 +85,6 @@ export function useRouting() {
       updateRouteStatus();
     };
 
-    window.history.replaceState = function (...args) {
-      originalReplaceState.apply(window.history, args);
-    };
 
     return () => {
       window.removeEventListener("popstate", updateRouteStatus);

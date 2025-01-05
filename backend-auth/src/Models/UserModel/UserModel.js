@@ -31,7 +31,62 @@ async function getUserByEmail(email) {
     }
 }
 
+
+async function getUserInfoById(userid) {
+    try {
+        return await prisma.users.findUniqueOrThrow({
+            where: {
+                id: userid,
+            },
+            select: {
+                username: true,
+                email: true
+            }
+        })
+    }
+    catch (_) {
+        throw new Error('No user found');
+    }
+}
+
+
+async function changeUsername(userid, newUserName) {
+    try {
+        return await prisma.users.update({
+            where: {
+                id: userid,
+            },
+            data: {
+                username: newUserName
+            }
+        })
+    }
+    catch (_) {
+        throw new Error('No user found');
+    }
+}
+
+
+async function changeEmail(userid, newEmail) {
+    try {
+        return await prisma.users.update({
+            where: {
+                id: userid,
+            },
+            data: {
+                email: newEmail
+            }
+        })
+    }
+    catch (_) {
+        throw new Error('No user found');
+    }
+}
+
 export default {
     createUser,
-    getUserByEmail
+    getUserByEmail,
+    getUserInfoById,
+    changeUsername,
+    changeEmail
 }

@@ -83,7 +83,7 @@ export function useAuth() {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${account!.refreshToken}`
+                'Authorization': `Bearer ${account?.refreshToken || localStorage.getItem('refreshToken')}`
             }
         })
         .then(()=> {
@@ -164,6 +164,9 @@ export function useAuth() {
         )
     }, [])
 
+    const updateUsername = useCallback((newUsername: string)=>{
+        setAccount({...account!, username: newUsername})
+    },[])
 
     return {
         account,
@@ -173,6 +176,7 @@ export function useAuth() {
         logout,
         register,
         makePostRequest,
-        refreshJwt
+        refreshJwt,
+        updateUsername
     }
 }

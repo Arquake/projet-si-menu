@@ -545,6 +545,61 @@ app.post('/personnal-top-week', TokenManager.verifyJwtToken, async (req,res) => 
     }
 })
 
+app.post('/get-personnal-info', TokenManager.verifyJwtToken, async (req,res) => {
+    try {
+        const token = (req.headers.authorization).split(' ')[1];
+        const tokenInfo = TokenManager.jwtInfo(token);
+
+        res.status(200).send(await UserManager.getPersonnalInfo(tokenInfo.uid))
+    }
+    catch(_) {
+        res.status(500).send('An error has occured on the server')
+    }
+})
+
+
+app.post('/change-name', TokenManager.verifyJwtToken, async (req,res) => {
+    try {
+        const token = (req.headers.authorization).split(' ')[1];
+        const tokenInfo = TokenManager.jwtInfo(token);
+
+        const newUsername = req.body.username;
+
+        if (newUsername === null) {
+            res.status(400).send()
+        }
+        else {
+            await UserManager.changeUsername(tokenInfo.uid, newUsername)
+            res.status(200).send()
+        }
+    }
+    catch(_) {
+        res.status(500).send('An error has occured on the server')
+    }
+})
+
+
+app.post('/change-email', TokenManager.verifyJwtToken, async (req,res) => {
+    try {
+        const token = (req.headers.authorization).split(' ')[1];
+        const tokenInfo = TokenManager.jwtInfo(token);
+
+        const newEmail = req.body.email;
+
+        if (newEmail === null) {
+            res.status(400).send()
+        }
+        else {
+            await UserManager.changeEmail(tokenInfo.uid, newEmail)
+            res.status(200).send()
+        }
+    }
+    catch(error) {
+        console.log(error)
+        res.status(500).send('An error has occured on the server')
+    }
+})
+
 
 
 server.listen(PORT, () => {

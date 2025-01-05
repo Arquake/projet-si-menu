@@ -36,7 +36,23 @@ async function register(username, email, password) {
 }
 
 
+async function getPersonnalInfo(userId) {
+    return await UserModel.getUserInfoById(userId);
+}
+
+async function changeUsername(userId, username) {
+    await UserModel.changeUsername(userId, username)
+}
+
+async function changeEmail(userId, email) {
+    await UserModel.changeEmail(userId, email)
+}
+
+
 export default {
     login,
-    register
+    register,
+    getPersonnalInfo,
+    changeUsername,
+    changeEmail
 }
