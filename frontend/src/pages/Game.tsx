@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react"
+import { useEffect, useState, useRef } from "react"
 import { useAuth } from "../useHook/useAuth";
 import ComputedRemaingTime from "../components/ComputedRemainingTime"
 import { io, Socket } from 'socket.io-client';
@@ -45,6 +45,8 @@ export default function Game() {
     const [remainingTimeFromChild, setRemainingTimeFromChild] = useState<number>();
 
     const socketRef = useRef<Socket | null>(null);
+
+    const [finalScore, setFinalScore] = useState<number>(0)
 
     const [etapeStartTime, setEtapeStartTime] = useState<Date|null>(null);
     const [playerTurn, setPlayerTurn] = useState<boolean>(false)
@@ -154,8 +156,9 @@ export default function Game() {
                 setPlayerTurn(false)
             });
 
-            socketRef.current.on('endGame', () => {
+            socketRef.current.on('endGame', (score) => {
               setGameEnded(true)
+              setFinalScore(score)
             });
 
             socketRef.current.on('startEtape', (date)=>{
@@ -176,6 +179,10 @@ export default function Game() {
 
     const handleToScore = () => {
         navigate("/score");
+    }
+
+    const formatedFinalScore = () => {
+        return (finalScore.toString()).replace(/\B(?=(\d{3})+(?!\d))/g, ' ')
     }
 
     return (
@@ -264,7 +271,7 @@ export default function Game() {
                                                                         Votre score est de :
                                                                     </p>
                                                                     <p className="sm:text-3xl text-2xl">
-                                                                        //TODO Faire le socket pour get le score
+                                                                        {formatedFinalScore()}
                                                                     </p>
                                                                 </div>
 

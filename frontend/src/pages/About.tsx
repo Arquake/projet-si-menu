@@ -1,11 +1,11 @@
 export default function About() {
   return (
     <div className="container">
-      <div className="pt-8 md:px-2 px-8">
+      <div className="py-8 md:px-2 px-8">
         <h1 className="lg:text-3xl text-2xl font-bold text-blue-600 pb-4 tracking-tight">
           Qu'est ce que Creacosm ?
         </h1>
-        <div className="indent-8 lg:text-xl sm:text-lg text-neutral-900 space-y-6 sm:leading-6 leading-5 opacity-90">
+        <div className="indent-8 lg:text-lg sm:text-base text-neutral-900 space-y-6 sm:leading-6 leading-5 opacity-90">
           <p>
             Créacosm est une marque française de cosmétiques innovants, créée par
             des étudiants de l’Université d’Orléans. Issue d’une collaboration

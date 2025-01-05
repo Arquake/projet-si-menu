@@ -120,7 +120,7 @@ async function deleteAccount(userId) {
     try {
         return await prisma.users.delete({
             where: {
-                id: userid,
+                id: userId,
             }
         })
     }

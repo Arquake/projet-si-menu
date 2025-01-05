@@ -1,6 +1,8 @@
 import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import { useAuth } from "../useHook/useAuth";
 import getCross from "../components/GetCross";
+import eye from "/app/src/assets/eye.svg"
+import eyeCross from "/app/src/assets/cross-eye.svg"
 
 enum ChangeChoice {
     Username,
@@ -24,6 +26,9 @@ export default function Parameter() {
     const [newPassword, setNewPassword] = useState<string>("");
     const [oldPassword, setOldPassword] = useState<string>("");
     const [deletePassword, setDeletePassword] = useState<string>("");
+    const [oldPasswordShow, setOldPasswordShow] = useState<boolean>(false);
+    const [newPasswordShow, setNewPasswordShow] = useState<boolean>(false);
+    const [deletePasswordShow, setDeletePasswordShow] = useState<boolean>(false);
 
     const [emailValidity, setEmailValidity] = useState(true);
     const [passwordValidity, setPasswordValidity] = useState(true);
@@ -54,6 +59,7 @@ export default function Parameter() {
         setNewEmail("")
         setNewPassword("")
         setOldPassword("")
+        setDeletePassword("")
         setEmailValidity(true)
         setPasswordValidity(true)
         setUsernameValidity(true)
@@ -232,6 +238,18 @@ export default function Parameter() {
         }
     }
 
+    const handleOldPasswordShowChange = () => {
+        setOldPasswordShow(!oldPasswordShow)
+    }
+
+    const handleNewPasswordShowChange = () => {
+        setNewPasswordShow(!newPasswordShow)
+    }
+
+    const handleDeletePasswordShowChange = () => {
+        setDeletePasswordShow(!deletePasswordShow)
+    }
+
     return (
         <>
             <div className={`${popUpWindow? "opacity-100":"pointer-events-none opacity-0"} flex absolute h-full w-full bg-neutral-500 bg-opacity-70
@@ -254,7 +272,10 @@ export default function Parameter() {
                                     }
                                     <form className="flex flex-col pt-4" onSubmit={onSubmitChangeUsername}>
                                         <label>Nouveau Pseudo :</label>
-                                        <input placeholder="Nouveau pseudo" className={`duration-300 rounded-md pl-2 p-0.5 border-2 ${usernameValidity? "" : "border-red-400 bg-red-100"}`} onChange={handleNewUsernameChange}/>
+                                        <input placeholder="Nouveau pseudo" 
+                                        value={newUsername}
+                                        className={`duration-300 rounded-md pl-2 p-0.5 border-2 ${usernameValidity? "" : "border-red-400 bg-red-100"}`}
+                                        onChange={handleNewUsernameChange}/>
                                         <button className="bg-blue-600 hover:bg-blue-700 duration-300 text-neutral-50 rounded-lg py-1 font-semibold mt-4">Changer!</button>
                                     </form>  
                                 </>
@@ -270,7 +291,10 @@ export default function Parameter() {
                                     <p className="text-center text-xl px-8">Changer votre email</p>
                                     <form className="flex flex-col pt-4" onSubmit={onSubmitChangeEmail}>
                                         <label>Nouveau email :</label>
-                                        <input placeholder="Nouveau email" className={`duration-300 rounded-md pl-2 p-0.5 border-2 ${emailValidity? "" : "border-red-400 bg-red-100"}`} onChange={handleNewEmailChange}/>
+                                        <input placeholder="Nouveau email" 
+                                        value={newEmail}
+                                        className={`duration-300 rounded-md pl-2 p-0.5 border-2 ${emailValidity? "" : "border-red-400 bg-red-100"}`} 
+                                        onChange={handleNewEmailChange}/>
                                         <button className="bg-blue-600 hover:bg-blue-700 duration-300 text-neutral-50 rounded-lg py-1 font-semibold mt-4">Changer!</button>
                                     </form>  
                                 </>
@@ -286,9 +310,23 @@ export default function Parameter() {
                                     <p className="text-center text-xl px-8">Changer votre mot de passe</p>
                                     <form className="flex flex-col pt-4" onSubmit={onSubmitChangePassword}>
                                         <label>Ancien mot de passe :</label>
-                                        <input placeholder="Ancien mot de passe" className={`duration-300 rounded-md pl-2 p-0.5 border-2 ${passwordValidity? "" : "border-red-400 bg-red-100"}`} onChange={handleOldPassword}/>
+                                        <div className="flex gap-1 items-center">
+                                            <input placeholder="Ancien mot de passe" 
+                                            value={oldPassword}
+                                            className={`duration-300 rounded-md pl-2 p-0.5 border-2 flex-1 ${passwordValidity? "" : "border-red-400 bg-red-100"}`} 
+                                            onChange={handleOldPassword}
+                                            type={oldPasswordShow? "text" : "password"} />
+                                            <img src={oldPasswordShow? eye:eyeCross} className="w-6 h-6 cursor-pointer" onClick={handleOldPasswordShowChange}/>
+                                        </div>
                                         <label>Nouveau mot de passe :</label>
-                                        <input placeholder="Nouveau mot de passe" className={`duration-300 rounded-md pl-2 p-0.5 border-2 ${passwordValidity? "" : "border-red-400 bg-red-100"}`} onChange={handleNewPassword}/>
+                                        <div className="flex gap-1 items-center">
+                                            <input placeholder="Nouveau mot de passe" 
+                                            value={newPassword}
+                                            className={`duration-300 rounded-md pl-2 p-0.5 border-2 flex-1 ${passwordValidity? "" : "border-red-400 bg-red-100"}`} 
+                                            onChange={handleNewPassword}
+                                            type={newPasswordShow? "text" : "password"} />
+                                            <img src={newPasswordShow? eye:eyeCross} className="w-6 h-6 cursor-pointer" onClick={handleNewPasswordShowChange}/>
+                                        </div>
                                         <button className="bg-blue-600 hover:bg-blue-700 duration-300 text-neutral-50 rounded-lg py-1 font-semibold mt-4">Changer!</button>
                                     </form>  
                                     <ul className="password-check-list pt-2 space-y-1">
@@ -326,7 +364,15 @@ export default function Parameter() {
                                     <p className="text-center text-xl px-8">Supprimer votre compte</p>
                                     <form className="flex flex-col pt-4" onSubmit={onSubmitChangeDelete}>
                                         <label>Mot de passe :</label>
-                                        <input placeholder="Mot de passe" className={`duration-300 rounded-md pl-2 p-0.5 border-2 ${deleteError? "border-red-400 bg-red-100" : ""}`} onChange={handleDelete}/>
+                                        
+                                        <div className="flex gap-1 items-center">
+                                            <input placeholder="Mot de passe" 
+                                            value={deletePassword}
+                                            className={`duration-300 rounded-md pl-2 p-0.5 border-2 flex-1 ${deleteError? "border-red-400 bg-red-100" : ""}`} 
+                                            onChange={handleDelete}
+                                            type={deletePasswordShow? "text" : "password"} />
+                                            <img src={deletePasswordShow? eye:eyeCross} className="w-6 h-6 cursor-pointer" onClick={handleDeletePasswordShowChange}/>
+                                        </div>
                                         <button className="bg-red-600 hover:bg-red-700 duration-300 text-neutral-50 rounded-lg py-1 font-semibold mt-4">Supprimer</button>
                                     </form> 
                                 </>

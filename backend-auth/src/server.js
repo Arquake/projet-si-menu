@@ -396,8 +396,8 @@ app.post('/validate-stage', async (req,res) => {
 
         await moveGameNextStage(onGoingGame.currentstage, completedStage);
         if (onGoingGame.currentstage === totalProjectNumber) {
-            ProjectsManager.onGoingGameToFinished(onGoingGame.userid, true, await OngoingModel.getOngoingScoreByCode(onGoingGame.id), Date.now()-onGoingGame.startedat, onGoingGame.completedstages);
-            io.to(onGoingGame.id).emit('endGame');
+            const finishedGame = await ProjectsManager.onGoingGameToFinished(onGoingGame.userid, true, await OngoingModel.getOngoingScoreByCode(onGoingGame.id), Date.now()-onGoingGame.startedat, onGoingGame.completedstages);
+            io.to(onGoingGame.id).emit('endGame', finishedGame.score);
         }
         else {
             await ProjectsManager.setNextGame(onGoingGame.id, onGoingGame.completedstages);
@@ -642,6 +642,7 @@ app.post('/delete-account', TokenManager.verifyJwtToken, async (req,res) => {
 
         if (password === null) {
             res.status(400).send()
+            console.log("400")
         }
         else {
             try {
@@ -651,15 +652,19 @@ app.post('/delete-account', TokenManager.verifyJwtToken, async (req,res) => {
                     res.status(200).send()
                 }
                 else {
+                    console.log("401-1")
                     res.status(401).send()
                 }
             }
-            catch (_) {
+            catch (error) {
+                console.log(error)
+                console.log("401-2")
                 res.status(401).send()
             }
         }
     }
     catch(_) {
+        console.log("500")
         res.status(500).send('An error has occured on the server')
     }
 })

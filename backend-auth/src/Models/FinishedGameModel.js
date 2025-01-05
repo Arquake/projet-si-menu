@@ -3,7 +3,7 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 async function createFinishedGame(userId, stage, finished, score, timeSpent, validated) {
-    await prisma.finishedgames.create({
+    return await prisma.finishedgames.create({
         data: {
             userid: userId,
             stage: stage,

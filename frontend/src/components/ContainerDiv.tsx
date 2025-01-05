@@ -16,8 +16,22 @@ export default function ContainerDiv ({children}: ContainerProps) {
             {children}
           </div>
 
-          <footer className="w-full bg-neutral-50 flex-initial px-4 py-6">
-            <p>Contactez-nous</p>
+          <footer className="w-full bg-neutral-100 flex-initial px-8 py-4 grid grid-cols-2 gap-2 md:text-base sm:text-sm text-xs">
+            <div className="flex flex-col">
+              <p>Contactez-nous:</p>
+              <a href="tel:+33238567811" className="text-blue-400 underline">
+                +33 02.38.56.78.11
+              </a>
+              <a href="mailto:cosmetosciences@univ-orleans.fr" className="text-blue-400 underline">
+                cosmetosciences@univ-orleans.fr
+              </a>
+            </div>
+            <div className="flex flex-col justify-self-end">
+              <p>Bâtiment de Physique Chimie</p>
+              <p>Porte 228</p>
+              <p>Rue de Chartres - BP 6749</p>
+              <p>45067 ORLEANS CEDEX 2</p>
+            </div>
           </footer>
         </div>
     </>
