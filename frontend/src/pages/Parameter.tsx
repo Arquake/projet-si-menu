@@ -252,7 +252,7 @@ export default function Parameter() {
 
     return (
         <>
-            <div className={`${popUpWindow? "opacity-100":"pointer-events-none opacity-0"} flex absolute h-full w-full bg-neutral-500 bg-opacity-70
+            <div className={`${popUpWindow? "opacity-100":"pointer-events-none opacity-0"} top-0 flex absolute h-full w-full bg-neutral-500 bg-opacity-70
             items-center justify-center z-20 duration-200`}>
                 <div className="rounded-lg p-2 bg-neutral-50 shadow-md">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 15 15" className="h-5 cursor-pointer" onClick={handleClosePopUp}>

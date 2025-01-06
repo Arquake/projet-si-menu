@@ -158,7 +158,6 @@ io.on('connection', (socket) => {
 
     // Join a room
     socket.on('joinRoom', (codeId) => {
-        console.log(codeId + ' joined')
         socket.join(codeId);
 
         if(playerCurrentInAStage(codeId)) {
@@ -166,7 +165,6 @@ io.on('connection', (socket) => {
             const stage = getStageByCurrent(codeId)
             if (stage !== null && projetQueue[stage].startedat !== null) {
                 io.to(codeId).emit('startEtape', getStartDateOrNow(stage));
-                console.log('startedGame : ', codeId)
             }
         }
         
@@ -335,8 +333,7 @@ app.post('/create-game', TokenManager.verifyJwtToken, async (req,res)=> {
             io.to(game.id).emit('playerCanStart');
         }
     }
-    catch(error) {
-        console.log("create game", error)
+    catch(_) {
         res.status(429).send("une partie est déjà en cours")
     }
 })
@@ -595,8 +592,7 @@ app.post('/change-email', TokenManager.verifyJwtToken, async (req,res) => {
             res.status(200).send()
         }
     }
-    catch(error) {
-        console.log(error)
+    catch(_) {
         res.status(500).send('An error has occured on the server')
     }
 })
@@ -642,7 +638,6 @@ app.post('/delete-account', TokenManager.verifyJwtToken, async (req,res) => {
 
         if (password === null) {
             res.status(400).send()
-            console.log("400")
         }
         else {
             try {
@@ -652,19 +647,15 @@ app.post('/delete-account', TokenManager.verifyJwtToken, async (req,res) => {
                     res.status(200).send()
                 }
                 else {
-                    console.log("401-1")
                     res.status(401).send()
                 }
             }
-            catch (error) {
-                console.log(error)
-                console.log("401-2")
+            catch (_) {
                 res.status(401).send()
             }
         }
     }
     catch(_) {
-        console.log("500")
         res.status(500).send('An error has occured on the server')
     }
 })
