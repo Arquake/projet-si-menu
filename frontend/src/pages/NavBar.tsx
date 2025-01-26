@@ -92,7 +92,7 @@ export default function NavBar() {
     return (
         <>
             <header className="p-1 justify-center flex items-center bg-neutral-50">
-                <div className="container grid grid-cols-3 px-2 md:py-2 py-1">
+                <div className="container grid px-2 md:py-2 py-1" style={{gridTemplateColumns: isPlayingGame ? 'repeat(2, 1fr)' : 'repeat(3, 1fr)'}}>
                     <div className="flex gap-2 items-center relative cursor-pointer"
                     onClick={handleLogoClick}>
                         <img src="/creacosm_logo.png" className="md:h-12 h-10 aspect-square"/>
