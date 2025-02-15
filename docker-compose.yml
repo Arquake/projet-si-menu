@@ -25,14 +25,14 @@ services:
   frontend:
     build:
       context: .
-      dockerfile: docker/Dockerfile.frontend  # Path to your Dockerfile
+      dockerfile: docker/Dockerfile.frontend
     container_name: react_frontend_menu
     ports:
-      - "5173:5173"  # Map container port to host port
+      - "5173:5173" 
     volumes:
-      - ./frontend:/app  # Bind mount the frontend directory to the container
-      - /app/node_modules  # Optional: Prevent the host from using the container's node_modules
-    command: ["yarn", "dev"]  # Start the Vite development server
+      - ./frontend:/app
+      - /app/node_modules 
+    command: ["yarn", "dev"]
     environment:
       NODE_ENV: development
       VITE_FETCH_API: "http://localhost:8081"
@@ -59,8 +59,8 @@ services:
     image: nginx:stable
     container_name: nginx_proxy
     ports:
-      - "8081:8081"  # Backend menu proxy
-      - "8082:8082"  # Frontend menu proxy
+      - "8081:8081"  # Expose backend externally
+      - "8082:8082"  # Expose frontend externally
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
     depends_on:
@@ -68,6 +68,7 @@ services:
       - frontend
     networks:
       - my_network
+
 
 
 
