@@ -3,7 +3,7 @@ import OngoingModel from "../../Models/OngoingModel/OngoingModel.js";
 import ProjectsModel from "../../Models/ProjectsModel/ProjectsModel.js";
 
 
-const DEVMODE = process.env.DEVMODE || true
+const DEVMODE = false
 
 async function getAllProjects() {
     const projects = await ProjectsModel.getAllProjects()

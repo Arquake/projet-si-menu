@@ -135,34 +135,51 @@ VALUES
 
 -- Ajout des projets
 
+
+-- ignorer tout les mots de passe et utiliser ceux là :
+
+-- fmJYravPGbIwwnbUeNsF83ZC
+-- 836Ns5tJsKfGnbP5jaQrHOpC
+-- V1Gsg62q7DU4FQQYGWAIBNXr
+-- xu6bg0EmGpztrO1uSuml46DV
+-- hyh1j0eC3SpEFV9h6reGVqyM
+-- KGx8JtdNUBd6xAsBrsNIWsur
+-- tADVXzYQUYmYW55A6o6jWbC2
+-- r35o55iT5xzYVtmPBfoiwBg9
+-- DkC3NFFtYQ7ft44LN8r8285E
+-- tSEW0i7C29yXgoRJiHMv3hyb
+-- C6tKZm7EDd3dwLY18LgrZxVD
+-- pp7RFuMGcHuwlBpes9JhdPoL
+-- rsxnWbSiYhsl2dcmUqGY9dkq
+
 INSERT INTO Projects (placement, "order", url, name, description, authors, privateKey) 
 VALUES 
     -- mdp : ?U9Up&@6qWP*D0G4p6WPts9d*rScnL4jGg9/Th6Acbywy$HXAnVUT4Z5A6&-bMRboarJf+SRr-*ZAOCStpnc%$eI09P83RY@ICtyBJpAARcj*EEZ3jtc?GR-HjoX/TZtlok6*vMytYPOslMG!c56rtdo%okrABx!HEAaXRIV*$434na9nRmUWPrE@B-UA45ecsMrg%7R5605d*NuiEyi0K-!C8+p0l/Xk$d-wrg-OnopFc1eI!q4BKV@E8FNtjF%
-  ('salle 1', 1, 'https://google.fr', 'test 1', 'desc 1', '{ADJAS HICHAM, AFKIR AYOUB, BENABIDI MOHAMED-ANAS, BIYIHA BIKONDI EMERIC}', '$argon2id$v=19$m=65536,t=3,p=4$XKDNeWdvLoDdAnvJ2jwumw$fnJYo6uA6KOR5wKVQTxWENXlLFfLH8ksizqt13982bc'),
+  ('salle 1', 1, 'https://google.fr', 'test 1', 'desc 1', '{ADJAS HICHAM, AFKIR AYOUB, BENABIDI MOHAMED-ANAS, BIYIHA BIKONDI EMERIC}', '$argon2id$v=19$m=65536,t=3,p=4$YyEAS5p0fOVLuos8o3++uQ$k4oMg1/y2Y5U2MZLVbLO4LDFOX0npjlD8F3Af9IcZP8'),
   -- mdp : +Wv1*+$e8b?7-5exT%qLR?la?+Hg$vk/sp@f2qm+f&qej6qMY4Y26guJkhmBi5h@*TbSLX*J2skHl/Za?3qK&w+UFE1NVA!bvx/*t6pju7D78P*cneX27htms5ZOdyjZMKyOROxXW@qQ?1Xph!gXr$Svr3j-ayhYWsFdZn8*5VLxIbH/jraSCwgeQ-EvUESdL0k-UQIt/NmU@XF*w/xhG6UbYbZU*C598w$dFfH00-rIcomrWCWybDuXJls5/-9b
-  ('salle 2', 2, 'https://example.com', 'test 2', 'desc 2', '{AHAMAT MOUSSA ABDELKERIM, EL BUSHABATI REDWAN, IBRAHIM ELMI KENEDID, MOHAMAD ALI}', '$argon2id$v=19$m=65536,t=3,p=4$B7e+U8lnj1/45zfNY1BokQ$msaiwhj1Q70mEaFmOf5gMd/4IdWaMnO8wvvYEdEyziE'),
+  ('salle 2', 2, 'https://example.com', 'test 2', 'desc 2', '{AHAMAT MOUSSA ABDELKERIM, EL BUSHABATI REDWAN, IBRAHIM ELMI KENEDID, MOHAMAD ALI}', '$argon2id$v=19$m=65536,t=3,p=4$y+I5Zpz/dEAASjJoBMWoiA$YLA/z9uBpSh8zFwqjDeP3w3YtFfCPS99kp0RCjRpIO8'),
   -- mdp : EUHt?UWDg135kc7$6mAt!e4z*TKt!aFJTucga2gCfQxd?mc*185BCu8fe4dCiIOQq%GjOhR8yG97Cq0*gwM8*BK!el*BamaD*IgBJ?L24q0K+P/Q2TV3b0E*aDL!8A-bU3V$E8M?FniV97tOXMjlt3e1Ii2Q?4HbH0*t*U$OIqU%aUxsF$?iu%n3bcHqZzP-!E*J%X*S8MCWRz1d@f+4P6&C1m1TJDyd&b5h?778m*eC$S3ly@4fDMUgJlcu7!5k
-  ('salle 3', 3, 'https://yahoo.com', 'test 3', 'desc 3', '{BARHOUMI YUSRA, BELBAZ BELKAIS MELINA, BEN ABDALLAH WALA, EL BELAIZI CHAIMAE}', '$argon2id$v=19$m=65536,t=3,p=4$3Lq7p7PR6Spm73+WuBFt6w$0uWd7uEHaQRAgS+Hf+AAn9poAV8+Ymp4BR6jVeW+JGE'),
+  ('salle 3', 3, 'https://yahoo.com', 'test 3', 'desc 3', '{BARHOUMI YUSRA, BELBAZ BELKAIS MELINA, BEN ABDALLAH WALA, EL BELAIZI CHAIMAE}', '$argon2id$v=19$m=65536,t=3,p=4$vSLG6n653dG+/hClOx8wkg$z278GFKyTvOJPbmMm3L0IIVAWxUvTOERNXLpz5eR4l4'),
   -- mdp : 87b/YSO+1+%NxQ*PHBoKKwZ9?HcgJaYRwpwh!T/vf4i*@cclyd9LI7x*EuS@l2ZKUk/zccn&clEJXjBg2iTyQGh015Z6QuktDt&bwjqDLZrgxi/Glje5U/O3+Iiusv1@V%H6Qx42Atr-3yTBcCbkiNt!%kR9g!K45i+Y7Uliltl6h4i$jGGjCyGRYHCAK@UcMyuL4Cri/0@1C5Eeq4m5LF8cf$%+puqohdP1EE2I6M5&jQkx-+NkdYQ+OoGygte8
-  ('salle 4', 4, 'https://bing.com', 'test 4', 'desc 4', '{BOUDIAF MOHAMMED ACHRAF, BRUMAIRE QUENTIN, CRESPEAU BENJAMIN, GOUASMI YASSINE ABDENNOUR}', '$argon2id$v=19$m=65536,t=3,p=4$r9paKuRlPoyP7D1CM4xCWg$0p86Hcz+cUrRvbH5vLTN+cKQxuS3wE8RyulIk8L7yBc'),
+  ('salle 4', 4, 'https://bing.com', 'test 4', 'desc 4', '{BOUDIAF MOHAMMED ACHRAF, BRUMAIRE QUENTIN, CRESPEAU BENJAMIN, GOUASMI YASSINE ABDENNOUR}', '$argon2id$v=19$m=65536,t=3,p=4$CLtBIQDMPkcDolsBpe+6rA$xejDi6o18g4bqkTgPtzrawtq5kIbhBZDl+nR/XvWA7w'),
   -- mdp : v!%UMiVFWtWqnawVUBOW*HMYMMf%-1VMb+hBU!n46tox&wed%O+!mCI5LnUVRigWsFYYYvKPrmpTa2!YcqOYu0+YK3pg4pgkUBqJFsvS-SKpXjlk%nMI-9k7E!lsb-9&*mb6nlz/FxQGeAy*F+$n$wI23-nf1BLKHbmD!QsmAs3fR!Ftu5tdPNcbC05Q+u37Jjk?cS!@pABy$*SIm*%*UL4tmb!qEIuud*2-R6JT+m3!n0AyC0sy/rW1+2G5oMmK
-  ('salle 5', 5, 'https://duckduckgo.com', 'test 5', 'desc 5', '{ABHARI NISRINE, DEMARET SULLIVAN, FOUCHER THOMAS, SUKIENNIK ZINEB}', '$argon2id$v=19$m=65536,t=3,p=4$il3/gtHtwcyS5lNV8/bm4Q$OdwEcsoMY1ZACsB2iLKT0n8pPi31IB6CNr0zb7RPMxg'),
+  ('salle 5', 5, 'https://duckduckgo.com', 'test 5', 'desc 5', '{ABHARI NISRINE, DEMARET SULLIVAN, FOUCHER THOMAS, SUKIENNIK ZINEB}', '$argon2id$v=19$m=65536,t=3,p=4$ijDmB9JRr2tBJEoePvfQLQ$OyH0kRgm6B7hmjW4JpbIFmotL7HuMqZpkjr6kdJpH/o'),
   -- mdp : Xp?WKlbBXFb4e5abrjYunZqGo*TUM5*XhId18ra!p0zm?PKfln!wBFjDG6EPwzbJIF*9*o41NzMFnqZ5UixLvP%$KAxi2T%r@d*fl?f?cpGpq/jgw$pd5+1N&YhlwT4NbHvWh6MiStqHjWPx7!o0rjuVLJYFX-LtAKngJUP6FEf7ZK4qG@1p@X-X*1%/eX&iRO@9WRzvTTAqI9!2tT8h--7uzp3JhQCGdopQGAojp8sIfibnAxqIVVfWjvUGaR6A
-  ('salle 6', 6, 'https://store.steampowered.com/', 'test 6', 'desc 6', '{DIAGNE BAYE CHEIKH, DINCER TAYYIB, GUEYE BINTA, POUYE ABDOUL AZIZ}', '$argon2id$v=19$m=65536,t=3,p=4$9sH7SKwuX6KmFS2n1b0b+Q$1ul56BVqdr5YfgKMzC5kZ4s+st+VechdmVw/QPit5As'),
+  ('salle 6', 6, 'https://store.steampowered.com/', 'test 6', 'desc 6', '{DIAGNE BAYE CHEIKH, DINCER TAYYIB, GUEYE BINTA, POUYE ABDOUL AZIZ}', '$argon2id$v=19$m=65536,t=3,p=4$AMpcw6ryBKdIr8WeNAJQfw$FHoR68EShKjDKuYQ3Gp3MzSlFY5h3zbWyHLBdvDvkk0'),
   -- mdp : fy8JF*FB9Cdc2I1l2bWucL@kV0g43z*j9DM*PGKnC8fToC7FUfn4NmbU?FPj1Tuf26&iwd+J&Fu&kLboTsPxUp4sWB+j!D*yu5u3GFA7?*8PL-hrkCOH3vkvz34M%JCEzp&0R&Zgl%C/BN@g1Zcljzv?*2sE*BYWJ*W/tM%QwaJuCqUu3!Y8SoamPAHjgokAxsyj8Fk*xU7RyPSTcSqIh*xK$FCjIvjvLrVGC5fb/oUx*0*M8BQ+!!do6eO6v/S6
-  ('salle 7', 7, 'https://youtube.com', 'test 7', 'desc 7', '{BEE THIBAULT, GASSE MATIS, LECLERC GALLOIS THEO, PEREZ BENJAMIN}', '$argon2id$v=19$m=65536,t=3,p=4$T2Orr39ih2/UuBloLXJB1Q$+dzvk/UuNuA/qpHsPRaFdoe7x8mkfpWNF0NylJ0ISTU'),
+  ('salle 7', 7, 'https://youtube.com', 'test 7', 'desc 7', '{BEE THIBAULT, GASSE MATIS, LECLERC GALLOIS THEO, PEREZ BENJAMIN}', '$argon2id$v=19$m=65536,t=3,p=4$n2zLllV//KniJHntN5GRkg$YXhoMyVWCUWDvxb/n8z+elvtp/Pe1L0zy/DOo7BW81w'),
   -- mdp : nz7$Xt?VpNk&-$MOu?2z*+6&xVj0vTL7qaaWOzYNeULmCP54!NOoM-?LVxXfIpae6D91J?t&a*QB-Y9IpXxd?!71bcHcLZ?jJEngG2w@/vHAkF6XUa*?rx5$D*oPe%06W8**-rX%C5JG!T9YPd48*Z-VYtfO4+KRsuHuaA7eW8/w-j95C-yMbJEF?K*w2Q7ektgylhhw9z?zlR%j?+UDsNgg/C*R6vmkJ7snkHDdYfhUATBlmmOCiGM&m4/7hF/S
-  ('salle 8', 8, 'https://facebook.com', 'test 8', 'desc 8', '{EL MADANI AMINA, MANAR NADA, OKBA SALMA}', '$argon2id$v=19$m=65536,t=3,p=4$ljnl70Hlp7ZfP3BUDPX5LA$9UYTQ+EFLm4cNRn2kzReeI7wPj6MbOAkHYLAdxQKV7M'),
+  ('salle 8', 8, 'https://facebook.com', 'test 8', 'desc 8', '{EL MADANI AMINA, MANAR NADA, OKBA SALMA}', '$argon2id$v=19$m=65536,t=3,p=4$W7WCaHAAzXgCIzuXPY/VqQ$4DhW9ZgKwGPvVzbieDcyKT485iEbAfwXSd1OFHxNMA8'),
   -- mdp : MnHk0j?*Xg-/aao@29Kudv1pnoHWyEzF9ST3x6g58m*C7AZEOl9FAw5eQ4MUzWmNakH25jGF+NqwhAd9N%ufL9820odmCNjG?!zSC!*jmlnzGJ2x%ICg*Y&jEe5r1mx*Y38D@w&B!-+t/PrDyKJDVnPyRU*y45-sMY0Fmp*Wa8ijxVv*x&Kt9xqsjJATwYHaB/$!lROYhr5EB+3hLtArwJ43Hx!!?jRZZpmcIEjQEllOYwP*3s$A0Ms3-berkzXH
-  ('salle 9', 9, 'https://twitter.com', 'test 9', 'desc 9', '{BELKADI ASMAA, ECHCHATBI HASNAA, HABBAK YASMINE, MAZLANI DOHA}', '$argon2id$v=19$m=65536,t=3,p=4$ea3MhhPJjuS9nZoQC45Owg$+84+9y6Z97CEHBDtb9eFq3lvXsMSj2AzWrER45w3D9E'),
+  ('salle 9', 9, 'https://twitter.com', 'test 9', 'desc 9', '{BELKADI ASMAA, ECHCHATBI HASNAA, HABBAK YASMINE, MAZLANI DOHA}', '$argon2id$v=19$m=65536,t=3,p=4$XSQljyRZFjWLbmY5Kuu0Zg$RJzGVr91sbxfc/1vvanGbzBNtJWnmuUjQ23G9jthutg'),
   -- mdp : K!MC$rglEDW@9pQl0?%8?VV6nXLOTeV!9V%Qu?h1Q64S+%J/9Iy!VqC8G*bFCr8q+CCf*ki9*qDtfMCZE*M6E-ejKMA13Iy9/TbJSdZ8yvdQneL6Z2Eb-Box8x*Cy*0@DFxZi&8iMKfoKYJPUhSh@yOMSZ&I%yZBIT$FPyRGdhpSyfg%-!HoTHGS400-1CK-+EAEHPecL8l%HrkhQZl3m0TF1MUEw5Gg&zXv/7m9nwiMQ@8SuTO9F&NAA7yO8PcV
-  ('salle 10', 10, 'https://instagram.com', 'test 10', 'desc 10', '{BAZHAR AMAL, MAZER HIBAT ALLAH, METROUH NINA, ZENASNI AMINA}', '$argon2id$v=19$m=65536,t=3,p=4$/IRoWeId/qBTnBeB2tVpnQ$amWctCX+Uq5dwhXlX3yBdFy43MDqpBgRV6SkXqAuwEA'),
+  ('salle 10', 10, 'https://instagram.com', 'test 10', 'desc 10', '{BAZHAR AMAL, MAZER HIBAT ALLAH, METROUH NINA, ZENASNI AMINA}', '$argon2id$v=19$m=65536,t=3,p=4$6PRUqtNt8WjCXDJHwA3wBw$VbW6IB9X4tHLkdmMiJgdfU2u2R732ATGR9dCNeIoj38'),
   -- mdp : 04EG3RO6XY-eMSZ/qeasJ*aVxgXQICs50m5Wp3YGJV*wFImjj2v?P2Pea7kHd-1YLFc?2ud$nUF+80QII+YNd5TNV8h/uyYmj2M5vr4m991JBxar*9yZd!-ms-LL57ofpD*FMI/HSviZvU9vjO&tGlokoYYCo$8dR9Bcr&a6?pjBtiUZQ/gWVnneFUiWL%bH1wc%aVIEBW&HXvJus6Z7TsC$X$D@VGanES4iFqOc*Bkn1U$AvwNm2MUIDUW4ifvn
-  ('salle 11', 11, 'https://linkedin.com', 'test 11', 'desc 11', '{DRAILY ESTEBAN, GOMADO KOFFI HILD, GONNET VINCENT, GOUDAL ARTHUR}', '$argon2id$v=19$m=65536,t=3,p=4$OeXEnEyVDXJJkr3n8pu6eQ$/YTYXP4Ga5RWY9vCHXVRF2dBlAiCE+ojOEQBVuSU15s'),
+  ('salle 11', 11, 'https://linkedin.com', 'test 11', 'desc 11', '{DRAILY ESTEBAN, GOMADO KOFFI HILD, GONNET VINCENT, GOUDAL ARTHUR}', '$argon2id$v=19$m=65536,t=3,p=4$H+IXE8Z79RWq+R5uiQLPmA$8dof8jNoEJR1zoeJJEHGdD/HxhdYldrquJjB2TUJj/M'),
   -- mdp : RrI6MJ90uSq$Orj9@NB$aGlMYKL*Rh&HwGvzq&HME1Zls/eOj3nScehuXOwb-wsL2cMU&G-M++D8O*&*goH8Y%6fR@$4+/4+Kte*I@-/W29T-9pAsUf2SHuwpjz8KNBQhZQHiRT!RR8OEmo4IdtyW6bRZ@i6UQcuxZHj-x1k1fhuClDr!UF5SX0RvV+b1k3&w8Gm0SXBbfk32PqCGGGl0jw6l*OhSAflts$ApJpoA%O/2n!o2YdB$m3s2g@2PLYD
-  ('salle 12', 12, 'https://reddit.com', 'test 12', 'desc 12', '{NADOT ANTONY, NDJABENGUE DOUMBENENYDAVID GEOFRET, PEREZ ENZO, PETEL ROMAIN}', '$argon2id$v=19$m=65536,t=3,p=4$ZbenGOdtGRKyCtd2qVUz7g$bd1jnPRnfpk8TG3JYlCqWwjwEMlEpiRGZjIblf4vmvo'),
+  ('salle 12', 12, 'https://reddit.com', 'test 12', 'desc 12', '{NADOT ANTONY, NDJABENGUE DOUMBENENYDAVID GEOFRET, PEREZ ENZO, PETEL ROMAIN}', '$argon2id$v=19$m=65536,t=3,p=4$0gXQua74VonezQ4JJnkKIw$0XA2Awsj7tzuMwCfHTGBfjk3lQVpm2Sm2CJpN7yZc3Q'),
   -- mdp : !1pbiQXP$83?sSv2Q$h46?NJNVsFHv2&TuzBrDdhT0r@u8kZLJQgpb/ML1c9Di/w/FEp*p!ihTq+Z*WSu%oR*8H*y?7kChc*QRrraKAwxA7JNqXNHSk9/*1DRJqG/C5OhIkakj-vhX6?j*wqoKD1ww%HR77QELud1*/+@E3vN2ff%va2KpVH&@uWtK$pwo5p%n1nFZ?1Dx*cgC1f!rFD5*VzbR4edg!/DwWm$*J5DNKJdY05/%THk&nOgYgwjPm!
-  ('salle 13', 13, 'https://tiktok.com', 'test 13', 'desc 13', '{BABA AHMET, FOFANA ABDOULAHI, HANI SELIM, MAOULANA FAYAD}', '$argon2id$v=19$m=65536,t=3,p=4$jBhkGO8aV0x0G1srHoQDjw$Y5ZLNGQe6QhV6fF42hLVJLTi5x9Ya3VZo4xxhh/kxuI');
+  ('salle 13', 13, 'https://tiktok.com', 'test 13', 'desc 13', '{BABA AHMET, FOFANA ABDOULAHI, HANI SELIM, MAOULANA FAYAD}', '$argon2id$v=19$m=65536,t=3,p=4$WA6Lyu13XzPViRkc5ve9vg$Ui2a/o98FLlFO7gsr4BFanLnW2wUvlWzV2izUWEOxAQ');
 
 
 -- Ajout de parties finies
