@@ -7,7 +7,7 @@ export enum AuthStatus {
     Guest = 2,
 }
 
-const apiUrl: string = import.meta.env.VITE_FETCH_API;
+const apiUrl: string = "http://localhost:3000";// import.meta.env.VITE_FETCH_API;
 
 export function useAuth() {
     const {account, setAccount} = userStore();

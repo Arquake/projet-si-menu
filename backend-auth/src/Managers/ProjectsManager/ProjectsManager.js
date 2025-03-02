@@ -1,6 +1,7 @@
 import FinishedGameModel from "../../Models/FinishedGameModel.js";
 import OngoingModel from "../../Models/OngoingModel/OngoingModel.js";
 import ProjectsModel from "../../Models/ProjectsModel/ProjectsModel.js";
+import argon2 from 'argon2';
 
 
 const DEVMODE = false
@@ -23,7 +24,7 @@ async function createNewGame(userId, arrayLength) {
 
 async function getProjectInfo(userId) {
     const currentGame = await OngoingModel.getOngoingGameByUserId(userId)
-    const project = await ProjectsModel.getProjecyById(currentGame.currentstage)
+    const project = await ProjectsModel.getProjectByStage(currentGame.currentstage)
 
     return {name: project.name, description: project.description, authors: project.authors, url: project.url, placement: project.placement, order: project.order, gameId:currentGame.id, currentstage:currentGame.currentstage}
 }
@@ -54,9 +55,10 @@ async function onGoingGameToFinished(userId, finished, score, timeSpent, complet
 
 async function verifyProjectPk(projectId, pk) {
 
-    const project = await ProjectsModel.getProjecyById(projectId)
+    const project = await ProjectsModel.getProjectByStage(projectId)
 
     if (!DEVMODE) {
+        console.log(pk, project.privatekey)
         argon2.verify(project.privatekey, pk);
     }
 

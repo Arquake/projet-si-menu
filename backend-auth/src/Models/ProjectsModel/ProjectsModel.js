@@ -15,17 +15,6 @@ async function getAllProjects() {
     }
 }
 
-/**
- * get the project by his ID
- */
-async function getProjecyById(projectId) {
-    return await prisma.projects.findUniqueOrThrow({
-        where: {
-            id: projectId
-        }
-    })
-}
-
 
 async function getProjectByOrder(order) {
     return await prisma.projects.findFirstOrThrow({
@@ -35,9 +24,17 @@ async function getProjectByOrder(order) {
     })
 }
 
+async function getProjectByStage(projectStage) {
+    return await prisma.projects.findFirstOrThrow({
+        where: {
+            order: projectStage
+        }
+    })
+}
+
 
 export default {
     getAllProjects,
-    getProjecyById,
-    getProjectByOrder
+    getProjectByOrder,
+    getProjectByStage
 }

@@ -114,6 +114,8 @@ const addPlayerToQueue = (gameId) => {
 }
 
 const playerIsCurrentInStage = (gameId, stage) => {
+    console.log(stage)
+    console.log(projetQueue)
     return projetQueue[stage].current.id === gameId
 }
 
@@ -294,7 +296,6 @@ app.post('/refresh-jwt', TokenManager.verifyRefreshToken, (req, res) => {
     }
 });
 
-
 /**
  * take a jwt and the application private key
  * return a 200 if valid and a 401 if the credentials aren't valid
@@ -303,7 +304,6 @@ app.post('/refresh-jwt', TokenManager.verifyRefreshToken, (req, res) => {
 app.post('/get-client-validity', TokenManager.verifyAppJwt, (req,res) => {
     res.status(200).send();
 });
-
 
 /**
  * take a user id and the application id
@@ -320,7 +320,6 @@ app.post('/generate-specific', TokenManager.verifyJwtToken, (req,res) => {
         res.status(400).send('Unauthorized');
     }
 });
-
 
 app.post('/create-game', TokenManager.verifyJwtToken, async (req,res)=> {
     try {
@@ -363,11 +362,11 @@ app.post('/get-ongoing-player-game', TokenManager.verifyJwtToken, async(req,res)
             io.to(game.id).emit('playerCanStart');
         }
     }
-    catch(_) {
+    catch(error) {
+        console.log(error)
         res.status(400).send()
     }
 })
-
 
 /**
  * validate that the player has ended his game stage
@@ -432,20 +431,21 @@ app.post('/validate-stage', async (req,res) => {
 app.post('/get-code-validity', async (req,res) => {
     try {
         const projectsCredentials = (req.headers.authorization).split(' ');
-        const projectId = parseInt(projectsCredentials[1]);
+        const projectOrder = parseInt(projectsCredentials[1]);
         const pk = projectsCredentials[2];
 
-        const project = await ProjectsManager.verifyProjectPk(projectId, pk)
+        await ProjectsManager.verifyProjectPk(projectOrder, pk)
 
         const code = req.body.code;
-        if (!playerIsCurrentInStage(code, project.order)) {
+        if (!playerIsCurrentInStage(code, projectOrder)) {
             throw new Error('Game is not current');
         }
         await OngoingModel.getOngoingGameByCode(code)
-        io.to(code).emit('startEtape', getStartDateOrNow(project.order));
+        io.to(code).emit('startEtape', getStartDateOrNow(projectOrder));
         res.status(200).send({})
     }
     catch (error) {
+        console.log(error)
         res.status(401).send()
     }
 })
@@ -555,7 +555,6 @@ app.post('/get-personnal-info', TokenManager.verifyJwtToken, async (req,res) => 
     }
 })
 
-
 app.post('/change-name', TokenManager.verifyJwtToken, async (req,res) => {
     try {
         const token = (req.headers.authorization).split(' ')[1];
@@ -575,7 +574,6 @@ app.post('/change-name', TokenManager.verifyJwtToken, async (req,res) => {
         res.status(500).send('An error has occured on the server')
     }
 })
-
 
 app.post('/change-email', TokenManager.verifyJwtToken, async (req,res) => {
     try {
