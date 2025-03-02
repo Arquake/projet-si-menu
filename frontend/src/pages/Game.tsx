@@ -44,6 +44,8 @@ export default function Game() {
 
     const [remainingTimeFromChild, setRemainingTimeFromChild] = useState<number>();
 
+    const [introduction, setIntroduction] = useState<boolean>(false);
+
     const socketRef = useRef<Socket | null>(null);
 
     const [finalScore, setFinalScore] = useState<number>(0)
@@ -117,6 +119,8 @@ export default function Game() {
 
                 if (fetchErrorRef.current) {
                     res = await createGame();
+                    setIntroduction(true);
+                    setTimeout(()=>{setIntroduction(false)}, 15000)
                     setEtape(res);
 
                     const allProjects: ProjectsList[] = await getAllGames();
@@ -206,6 +210,15 @@ export default function Game() {
                                     <path fill="currentColor" d="M2 8a6 6 0 1 1 6 6a.5.5 0 0 0 0 1a7 7 0 1 0-7-7a.5.5 0 0 0 1 0"/>
                                 </svg>
                             </div>
+                        </div>
+                    : introduction?
+                        <div className="self-justify-center self-center flex flex-col items-center justify-center pt-8 text-2xl col-span-full">
+                            <p>
+                                Vous avez perdu le dernier produit Creacosm et devez le présenter
+                            </p>
+                            <p>
+                                Recréez le de 0 en réussissant les étapes de création !
+                            </p>
                         </div>
                     :
                         <>
