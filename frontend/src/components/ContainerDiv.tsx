@@ -20,15 +20,15 @@ export default function ContainerDiv ({children}: ContainerProps) {
             <div className="flex flex-col">
               <p>Contactez-nous:</p>
               <a href="tel:+33238567811" className="text-blue-400 underline">
-                +33 02.38.56.78.11
+                +33 02.38.49.47.05
               </a>
-              <a href="mailto:cosmetosciences@univ-orleans.fr" className="text-blue-400 underline">
-                cosmetosciences@univ-orleans.fr
+              <a href="mailto:welabcosmetic@univ-orleans.fr" className="text-blue-400 underline">
+                welabcosmetic@univ-orleans.fr
               </a>
             </div>
             <div className="flex flex-col justify-self-end">
               <p>Bâtiment de Physique Chimie</p>
-              <p>Porte 228</p>
+              <p>Porte 232</p>
               <p>Rue de Chartres - BP 6749</p>
               <p>45067 ORLEANS CEDEX 2</p>
             </div>
