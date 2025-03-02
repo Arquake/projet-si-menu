@@ -249,7 +249,7 @@ export default function Game() {
                                         <>
                                             {
                                                 playerTimedOut?
-                                                <p>Vous avez été TO</p>
+                                                <p className="text-2xl text-neutral-50">Vous avez été Time-out</p>
                                                 : 
                                                 <>
                                                     {gameEnded && <Confetti gravity={0.05} numberOfPieces={100}/>}
@@ -302,7 +302,7 @@ export default function Game() {
                                             <>
                                                 <p className="sm:text-2xl text-xl">{etape!.name}</p>
                                                 <p className="sm:text-xl text-lg">Allez dans la salle {etape!.placement}</p>
-                                                <p className="text-blue-500 underline sm:text-3xl text-2xl">{etape!.gameId}</p>
+                                                <a className="text-blue-500 underline sm:text-3xl text-2xl cursor-pointer" href={etape!.url+'?codeId='+etape!.gameId}>{etape!.gameId}</a>
                                             </>
                                             : 
                                             <p>
