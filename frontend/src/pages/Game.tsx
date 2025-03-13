@@ -212,13 +212,23 @@ export default function Game() {
                             </div>
                         </div>
                     : introduction?
-                        <div className="self-justify-center self-center flex flex-col items-center justify-center pt-8 text-2xl col-span-full">
+                        <div className="self-justify-center self-center flex flex-col gap-4 items-left justify-left pt-8 text-2xl col-span-full px-4">
                             <p>
-                                Vous avez perdu le dernier produit Creacosm et devez le présenter
+                                Vous êtes à 1h du lancement officiel du prochain produit Créacosm de l'université d'Orléans et vous avez égaré le produit de présentation.
                             </p>
                             <p>
-                                Recréez le de 0 en réussissant les étapes de création !
+                                Vous devez retrouver les ingrédients et compiler les étapes de production pour pouvoir confier le prototype au président de l'université. 
                             </p>
+                            <p>
+                                Vous avez 1h pour retrouver les éléments avant l'ouverture du rideau !
+                            </p>
+                            
+                        
+                            <div className="flex justify-center items-center pt-16">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" className="animate-spin h-16">
+                                    <path fill="currentColor" d="M8 0A8 8 0 0 0 .002 7.812C.094 4.033 2.968 1 6.5 1C10.09 1 13 4.134 13 8a1.5 1.5 0 0 0 3 0a8 8 0 0 0-8-8m0 16a8 8 0 0 0 7.998-7.812C15.906 11.967 13.032 15 9.5 15C5.91 15 3 11.866 3 8a1.5 1.5 0 0 0-3 0a8 8 0 0 0 8 8"/>
+                                </svg>
+                            </div>
                         </div>
                     :
                         <>
@@ -273,7 +283,7 @@ export default function Game() {
                                                                     Bravo!
                                                                 </p>
                                                                 <p className="sm:text-3xl text-2xl opacity-90 fo nt-normal">
-                                                                    Vous vous êtes échappé
+                                                                    Vous avez sauvé le lancement!
                                                                 </p>
                                                             </div>
 

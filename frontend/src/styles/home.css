@@ -35,6 +35,12 @@
     animation-delay: 150ms;
 }
 
+.univ-bottom {
+    @apply text-neutral-500 lg:text-[.8rem] sm:text-[.7rem] text-[.6rem] sm:pl-2;
+    animation: forwards ease-in-out escapeGame 800ms;
+    animation-delay: 150ms;
+}
+
 @keyframes escapeLotion {
     from {
         @apply -rotate-90 opacity-0

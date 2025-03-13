@@ -7,14 +7,7 @@ export default function About() {
         </h1>
         <div className="indent-8 lg:text-lg sm:text-base text-neutral-900 space-y-6 sm:leading-6 leading-5 opacity-90">
           <p>
-            Créacosm est une marque française de cosmétiques innovants, créée par
-            des étudiants de l’Université d’Orléans. Issue d’une collaboration
-            unique avec des enseignants-chercheurs et des industriels locaux, elle
-            a pour mission de concevoir des produits qui allient science, nature
-            et beauté, tout en respectant l’environnement et des valeurs éthiques.
-            Grâce à une recherche continue et à des ingrédients soigneusement
-            sélectionnés, Créacosm propose des solutions cosmétiques qui célèbrent
-            une beauté naturelle et durable.
+          Le projet CREACOSM a pour ambition de créer une gamme de produits cosmétiques aux couleurs de l’université d’Orléans. Son succès repose sur la collaboration d’étudiants issus de diverses formations(Chimie, Marketing, Mécanique, etc.), qui travaillent ensemble en mode projet pour mener à bien leurs missions, alliant ainsi expertise et innovation. Cette crème pour les mains au parfum de rose combine soin et sensorialité. De l’idéation à sa production, elle a été développée par des étudiants de l’Université d’Orléans avec l’aide d’experts de la filière cosmétiques. Sa force est d’allier technicité et créativité, à l’image de l’excellente pluridisciplinarité de nos étudiants.
           </p>
           <p>
             Cet escape game a été conçu pour célébrer le lancement d'une nouvelle

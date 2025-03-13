@@ -18,6 +18,7 @@ export default function Hero () {
                             <p className="escape-game-bottom">
                                 Par Créacosm
                             </p>
+                            <p className="univ-bottom">Une marque de l'université d'Orléans</p>
                         </div>
                     </div>
                     
