@@ -14,6 +14,7 @@ import argon2 from 'argon2';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const HOST = "0.0.0.0";
 const TIMEOUT_INTERVAL = process.env.TIMEOUT_INTERVAL || 15*60*1000
 app.use(express.json());
 app.use(cors())
@@ -659,6 +660,6 @@ app.post('/delete-account', TokenManager.verifyJwtToken, async (req,res) => {
 })
 
 
-server.listen(PORT, '0.0.0.0', () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
+server.listen(PORT, HOST, () => {
+    console.log(`Server is running on http://${HOST}:${PORT}`);
 });
