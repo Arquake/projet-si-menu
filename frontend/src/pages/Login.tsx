@@ -17,8 +17,6 @@ export function Login() {
         setOnlogin(!onLogin);
         setPasswordShow(false)
         if (onLogin) {
-            setRegisterEmailValidity(true);
-            setRegisterEmail("");
             setRegisterPasswordValidity(true);
             setRegisterPassword("");
             setRegisterUsernameValidity(true);
@@ -27,8 +25,8 @@ export function Login() {
         }
         else {
             setLoginError(false);
-            setLoginEmailValidity(true);
-            setLoginEmail("");
+            setLoginPseudoValidity(true);
+            setLoginPseudo("");
             setLoginPasswordValidity(true);
             setLoginPassword("");
         }
@@ -40,19 +38,19 @@ export function Login() {
     }
 
     const [loginError, setLoginError] = useState(false)
-    const [loginEmailValidity, setLoginEmailValidity] = useState(true);
-    const [loginEmail, setLoginEmail] = useState("");
+    const [loginPseudoValidity, setLoginPseudoValidity] = useState(true);
+    const [loginPseudo, setLoginPseudo] = useState("");
     const [loginPasswordValidity, setLoginPasswordValidity] = useState(true);
     const [loginPassword, setLoginPassword] = useState("");
 
     /**
-     * vérifie à chaque carractère tapé la validité de la chaine de caractère pour qu'elle corresponde à un email
+     * vérifie à chaque carractère tapé la validité de la chaine de caractère pour qu'elle corresponde à un username
      * @param event l'evènement pour en récupérer sa valeur
      */
-    const handleLoginEmailChange = (event: ChangeEvent<HTMLInputElement>) => {
-        setLoginEmail(event.target.value)
-        if ((/^[\w\-\.]+@(?:[\w-]+\.)+[\w-]{2,4}$/).test(event.target.value)) {setLoginEmailValidity(true)}
-        else {setLoginEmailValidity(false)}
+    const handleLoginPseudoChange = (event: ChangeEvent<HTMLInputElement>) => {
+        setLoginPseudo(event.target.value)
+        if ((/^[\w]{4,32}$/).test(event.target.value)) {setLoginPseudoValidity(true)}
+        else {setLoginPseudoValidity(false)}
         if(loginError){setLoginError(false)}
     }
 
@@ -74,12 +72,12 @@ export function Login() {
     const handleSubmitLogin = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         const data = new FormData(e.currentTarget);
-        const email = data.get('email')!.toString();
         const password = data.get('password')!.toString();
+        const username = data.get('pseudo')!.toString();
 
-        if (loginEmailValidity && loginPasswordValidity && !loginError) {
+        if (loginPseudoValidity && loginPasswordValidity && !loginError) {
             login(
-                email,
+                username,
                 password,
             )
             .then((data)=>{
@@ -97,8 +95,6 @@ export function Login() {
 
 
     const [registerError, setRegisterError] = useState(false);
-    const [registerEmailValidity, setRegisterEmailValidity] = useState(true);
-    const [registerEmail, setRegisterEmail] = useState("");
     const [registerPasswordValidity, setRegisterPasswordValidity] = useState(true);
     const [registerPassword, setRegisterPassword] = useState("");
     const [registerUsernameValidity ,setRegisterUsernameValidity] = useState(true);
@@ -118,20 +114,12 @@ export function Login() {
         if (registerError) {setRegisterError(false);}
     }
 
-    const handleRegisterEmailChange = (event: ChangeEvent<HTMLInputElement>) => {
-        setRegisterEmail(event.target.value)
-        if ((/^[\w\-\.]+@(?:[\w-]+\.)+[\w-]{2,4}$/).test(event.target.value)) {setRegisterEmailValidity(true)}
-        else {setRegisterEmailValidity(false)}
-        if (registerError) {setRegisterError(false);}
-    }
-
     const handleSubmitRegister = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         const data = new FormData(e.currentTarget);
         
-        if (registerEmailValidity && registerPasswordValidity && registerUsernameValidity) {
+        if (registerPasswordValidity && registerUsernameValidity) {
             register(
-                data.get('email')!.toString(),
                 data.get('username')!.toString(),
                 data.get('password')!.toString(),
             )
@@ -153,13 +141,13 @@ export function Login() {
                         <img src="creacosm_logo.png" className="h-12 w-12 mx-auto"/>
                         <legend className="text-center text-3xl font-semibold">Connexion</legend>
                         <p className={`text-red-600 text-center ${loginError? "inline":"hidden"}`}>
-                            Email ou mot de passe invalide
+                            Pseudo ou mot de passe invalide
                         </p>
                         <form onSubmit={handleSubmitLogin} className="login-form">
                             <div>
-                                <label htmlFor="email">Email</label>
-                                <input type="text" id="email" placeholder="Email" required={true} 
-                                className={`${loginEmailValidity && !loginError? "border-transparent":"error-input"} duration-300`} name="email" value={loginEmail} onChange={handleLoginEmailChange}/>
+                                <label htmlFor="username">Pseudo</label>
+                                <input type="text" id="pseudo" placeholder="Pseudo" required={true} 
+                                className={`${loginPseudoValidity && !loginError? "border-transparent":"error-input"} duration-300`} name="pseudo" value={loginPseudo} onChange={handleLoginPseudoChange}/>
                             </div>
                             
                             <div>
@@ -182,18 +170,13 @@ export function Login() {
                         <img src="creacosm_logo.png" className="h-12 w-12 mx-auto"/>
                         <legend className="text-center text-2xl font-semibold">Créer un compte</legend>
                         <p className={`text-red-600 text-center ${registerError? "inline":"hidden"}`}>
-                            Le nom d'utilisateur ou email est déjà utilisé
+                            Le nom d'utilisateur ou pseudo est déjà utilisé
                         </p>
                         <form onSubmit={handleSubmitRegister} className="login-form">
                             <div>
                                 <label htmlFor="username">Pseudo</label>
                                 <input type="text" id="username" placeholder="Pseudo" required={true} name="username"
                                 className={`${registerUsernameValidity && !registerError? "border-transparent":"error-input"} duration-300`} value={registerUsername} onChange={handleRegisterUsernameChange}/>
-                            </div>
-                            <div>
-                                <label htmlFor="email">Email</label>
-                                <input type="text" id="email" placeholder="Email" required={true} name="email"
-                                className={`${registerEmailValidity && !registerError? "border-transparent":"error-input"} duration-300`} value={registerEmail} onChange={handleRegisterEmailChange}/>
                             </div>
                             <div>
                                 <label htmlFor="password">Mot de passe</label>

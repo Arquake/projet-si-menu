@@ -3,12 +3,12 @@ import UserModel from "../../Models/UserModel/UserModel.js";
 import TokenManager from "../TokenManagement/TokenManager.js";
 
 /**
- * take the user's email and password and verify if they match then it returns the user infos
- * @param email
+ * take the username and password and verify if they match then it returns the user infos
+ * @param username
  * @param password
  */
-async function login(email, password) {
-    let user = await UserModel.getUserByEmail(email);
+async function login(username, password) {
+    let user = await UserModel.getUserByUsername(username);
     if(!await argon2.verify(user.password, password)){throw new Error('Invalid password')}
     const newJwt = TokenManager.generateJwt(user.id);
     const newRefreshtoken = await TokenManager.generateRefreshToken(user.id);
@@ -18,14 +18,13 @@ async function login(email, password) {
 /**
  * create the user and give back the jwt and refresh token for the user
  * @param username the username of the user
- * @param email the email of the user
  * @param password the password of the user
  * @return {Promise<{jwt: (*), refreshToken: (*)}>} The jwt and refresh token of the user
  */
-async function register(username, email, password) {
+async function register(username, password) {
     try {
         let hashedPassword = await argon2.hash(password);
-        let newUser = await UserModel.createUser(username, email, hashedPassword);
+        let newUser = await UserModel.createUser(username, hashedPassword);
         let refreshToken = await TokenManager.generateRefreshToken(newUser.id);
         let jwt = TokenManager.generateJwt(newUser.id);
         return {refreshToken: refreshToken, jwt: jwt};
@@ -42,10 +41,6 @@ async function getPersonnalInfo(userId) {
 
 async function changeUsername(userId, username) {
     await UserModel.changeUsername(userId, username)
-}
-
-async function changeEmail(userId, email) {
-    await UserModel.changeEmail(userId, email)
 }
 
 async function getPasswordById(userId) {
@@ -66,7 +61,6 @@ export default {
     register,
     getPersonnalInfo,
     changeUsername,
-    changeEmail,
     getPasswordById,
     changePassword,
     deleteAccount

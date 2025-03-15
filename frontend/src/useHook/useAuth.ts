@@ -50,14 +50,14 @@ export function useAuth() {
     }, [])
 
 
-    const login = useCallback((email: string, password:string) => {
+    const login = useCallback((username: string, password:string) => {
         return fetch(apiUrl + '/login', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                email: email,
+                username: username,
                 password: password
             })
         })
@@ -93,14 +93,13 @@ export function useAuth() {
         })
     }, [])
 
-    const register = useCallback((email: string, username: string, password:string) => {
+    const register = useCallback((username: string, password:string) => {
         return fetch(apiUrl + '/register', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                email,
                 password,
                 username
             })

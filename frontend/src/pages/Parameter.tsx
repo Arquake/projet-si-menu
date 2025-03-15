@@ -6,14 +6,12 @@ import eyeCross from "/app/src/assets/cross-eye.svg"
 
 enum ChangeChoice {
     Username,
-    Email,
     Password,
     Delete
 }
 
 interface UserInfo {
     username: string,
-    email: string
 }
 
 export default function Parameter() {
@@ -22,7 +20,6 @@ export default function Parameter() {
 
     const [userInfo, setUserInfo] = useState<UserInfo>();
     const [newUsername, setNewUserName] = useState<string>("");
-    const [newEmail, setNewEmail] = useState<string>("");
     const [newPassword, setNewPassword] = useState<string>("");
     const [oldPassword, setOldPassword] = useState<string>("");
     const [deletePassword, setDeletePassword] = useState<string>("");
@@ -30,12 +27,10 @@ export default function Parameter() {
     const [newPasswordShow, setNewPasswordShow] = useState<boolean>(false);
     const [deletePasswordShow, setDeletePasswordShow] = useState<boolean>(false);
 
-    const [emailValidity, setEmailValidity] = useState(true);
     const [passwordValidity, setPasswordValidity] = useState(true);
     const [usernameValidity ,setUsernameValidity] = useState(true);
 
     const [usernameChangeError, setUsernameChangeError] = useState<boolean>(false)
-    const [emailChangeError, setEmailChangeError] = useState<boolean>(false)
     const [passwordChangeError, setPasswordChangeError] = useState<boolean>(false)
     const [deleteError, setDeleteError] = useState<boolean>(false)
 
@@ -52,15 +47,12 @@ export default function Parameter() {
     const handleClosePopUp = () => {
         setPopUpWindow(false)
         setDeleteError(false)
-        setEmailChangeError(false)
         setPasswordChangeError(false)
         setUsernameChangeError(false)
         setNewUserName("")
-        setNewEmail("")
         setNewPassword("")
         setOldPassword("")
         setDeletePassword("")
-        setEmailValidity(true)
         setPasswordValidity(true)
         setUsernameValidity(true)
     }
@@ -120,38 +112,6 @@ export default function Parameter() {
         }
     }
 
-    const onSubmitChangeEmail = async (e: FormEvent) => {
-        e.preventDefault()
-
-        if (emailValidity) {
-            try {
-                await makePostRequest('/change-email', account?.jwt, {"email": newEmail}, 
-                    (res)=>{if (!res.ok) {throw new Error('Network response was not ok');};}
-                )
-                setUserInfo({...userInfo!, email: newEmail})
-                handleClosePopUp()
-            }
-            catch (_) {
-                await refreshJwt();
-                try {
-                    await makePostRequest('/change-email', account?.jwt, {"email": newEmail}, 
-                        (res)=>{if (!res.ok) {throw new Error('Network response was not ok');};}
-                    )
-                    setUserInfo({...userInfo!, email: newEmail})
-                    handleClosePopUp()
-                }
-                catch (_) {
-                    setUsernameChangeError(true)
-                    setUsernameValidity(false)
-                }
-            }
-        }
-        else {
-            setUsernameChangeError(true)
-            setUsernameValidity(false)
-        }
-    }
-
     const onSubmitChangePassword = async (e: FormEvent) => {
         e.preventDefault()
 
@@ -188,12 +148,6 @@ export default function Parameter() {
         setNewUserName(e.target.value)
         if ((/^[\w]{4,32}$/).test(e.target.value)) {setUsernameValidity(true)}
         else {setUsernameValidity(false)}
-    }
-
-    const handleNewEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
-        setNewEmail(e.target.value)
-        if ((/^[\w\-\.]+@(?:[\w-]+\.)+[\w-]{2,4}$/).test(e.target.value)) {setEmailValidity(true)}
-        else {setEmailValidity(false)}
     }
 
     const handleNewPassword = (e: ChangeEvent<HTMLInputElement>) => {
@@ -276,25 +230,6 @@ export default function Parameter() {
                                         value={newUsername}
                                         className={`duration-300 rounded-md pl-2 p-0.5 border-2 ${usernameValidity? "" : "border-red-400 bg-red-100"}`}
                                         onChange={handleNewUsernameChange}/>
-                                        <button className="bg-blue-600 hover:bg-blue-700 duration-300 text-neutral-50 rounded-lg py-1 font-semibold mt-4">Changer!</button>
-                                    </form>  
-                                </>
-                            ): changeChoiceType === ChangeChoice.Email?(
-                                <>
-                                    {
-                                        emailChangeError && 
-                                        <p className="text-red-900 border-2 border-red-400 bg-red-100
-                                        py-1 px-4 rounded-lg">
-                                            Veuillez rentrer un email valide et non utilisé
-                                        </p>
-                                    }
-                                    <p className="text-center text-xl px-8">Changer votre email</p>
-                                    <form className="flex flex-col pt-4" onSubmit={onSubmitChangeEmail}>
-                                        <label>Nouveau email :</label>
-                                        <input placeholder="Nouveau email" 
-                                        value={newEmail}
-                                        className={`duration-300 rounded-md pl-2 p-0.5 border-2 ${emailValidity? "" : "border-red-400 bg-red-100"}`} 
-                                        onChange={handleNewEmailChange}/>
                                         <button className="bg-blue-600 hover:bg-blue-700 duration-300 text-neutral-50 rounded-lg py-1 font-semibold mt-4">Changer!</button>
                                     </form>  
                                 </>
@@ -398,13 +333,6 @@ export default function Parameter() {
                                 <div className="flex gap-2 text-lg items-center">
                                     <p>Pseudo : {userInfo?.username}</p>
                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="h-6 text-blue-600 cursor-pointer" onClick={()=>handleUpdate(ChangeChoice.Username)}>
-                                        <path fill="currentColor" fillRule="evenodd" d="M3.25 22a.75.75 0 0 1 .75-.75h16a.75.75 0 0 1 0 1.5H4a.75.75 0 0 1-.75-.75" clipRule="evenodd"/>
-                                        <path fill="currentColor" d="m11.52 14.929l5.917-5.917a8.2 8.2 0 0 1-2.661-1.787a8.2 8.2 0 0 1-1.788-2.662L7.07 10.48c-.462.462-.693.692-.891.947a5.2 5.2 0 0 0-.599.969c-.139.291-.242.601-.449 1.22l-1.088 3.267a.848.848 0 0 0 1.073 1.073l3.266-1.088c.62-.207.93-.31 1.221-.45q.518-.246.969-.598c.255-.199.485-.43.947-.891m7.56-7.559a3.146 3.146 0 0 0-4.45-4.449l-.71.71l.031.09c.26.749.751 1.732 1.674 2.655A7 7 0 0 0 18.37 8.08z"/>
-                                    </svg>
-                                </div>
-                                <div className="flex gap-2 text-lg items-center">
-                                    <p>Email : {userInfo?.email}</p>
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="h-6 text-blue-600 cursor-pointer" onClick={()=>handleUpdate(ChangeChoice.Email)}>
                                         <path fill="currentColor" fillRule="evenodd" d="M3.25 22a.75.75 0 0 1 .75-.75h16a.75.75 0 0 1 0 1.5H4a.75.75 0 0 1-.75-.75" clipRule="evenodd"/>
                                         <path fill="currentColor" d="m11.52 14.929l5.917-5.917a8.2 8.2 0 0 1-2.661-1.787a8.2 8.2 0 0 1-1.788-2.662L7.07 10.48c-.462.462-.693.692-.891.947a5.2 5.2 0 0 0-.599.969c-.139.291-.242.601-.449 1.22l-1.088 3.267a.848.848 0 0 0 1.073 1.073l3.266-1.088c.62-.207.93-.31 1.221-.45q.518-.246.969-.598c.255-.199.485-.43.947-.891m7.56-7.559a3.146 3.146 0 0 0-4.45-4.449l-.71.71l.031.09c.26.749.751 1.732 1.674 2.655A7 7 0 0 0 18.37 8.08z"/>
                                     </svg>

@@ -2,12 +2,11 @@ import {PrismaClient} from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-async function createUser(username, email, password) {
+async function createUser(username, password) {
     try {
         return await prisma.users.create({
             data: {
                 username,
-                email,
                 password
             }
         })
@@ -18,11 +17,11 @@ async function createUser(username, email, password) {
 }
 
 
-async function getUserByEmail(email) {
+async function getUserByUsername(username) {
     try {
         return await prisma.users.findUniqueOrThrow({
             where: {
-                email,
+                username,
             }
         })
     }
@@ -39,8 +38,7 @@ async function getUserInfoById(userid) {
                 id: userid,
             },
             select: {
-                username: true,
-                email: true
+                username: true
             }
         })
     }
@@ -58,23 +56,6 @@ async function changeUsername(userid, newUserName) {
             },
             data: {
                 username: newUserName
-            }
-        })
-    }
-    catch (_) {
-        throw new Error('No user found');
-    }
-}
-
-
-async function changeEmail(userid, newEmail) {
-    try {
-        return await prisma.users.update({
-            where: {
-                id: userid,
-            },
-            data: {
-                email: newEmail
             }
         })
     }
@@ -131,10 +112,9 @@ async function deleteAccount(userId) {
 
 export default {
     createUser,
-    getUserByEmail,
+    getUserByUsername,
     getUserInfoById,
     changeUsername,
-    changeEmail,
     getPasswordById,
     changePassword,
     deleteAccount

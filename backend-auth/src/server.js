@@ -187,9 +187,9 @@ io.on('connection', (socket) => {
  */
 app.post('/login', async (req, res) => {
     try {
-        const email = req.body.email;
+        const username = req.body.username;
         const password = req.body.password;
-        const data = await UserManager.login(email, password);
+        const data = await UserManager.login(username, password);
         res.status(200).send(data);
     }
     catch (_) {
@@ -226,13 +226,8 @@ app.post('/register', async (req, res) => {
     try {
         let username = req.body.username;
         let password = req.body.password;
-        let email = req.body.email;
 
-        let validity = {username: false, password: false, email: false}
-
-        if ((/^[\w\-\.]+@(?:[\w-]+\.)+[a-zA-Z]{2,63}$/).test(email)) {
-            validity = {...validity, email: true}
-        }
+        let validity = {username: false, password: false}
 
         if ((/^[\w]{4,32}$/).test(username)) {
             validity = {...validity, username: true}
@@ -245,7 +240,7 @@ app.post('/register', async (req, res) => {
         const allTrue = Object.values(validity).every(Boolean);
 
         if (allTrue) {
-            const info = await UserManager.register(username, email, password);
+            const info = await UserManager.register(username, password);
             res.status(200).send(info)
         }
         else {
@@ -568,26 +563,6 @@ app.post('/change-name', TokenManager.verifyJwtToken, async (req,res) => {
         }
         else {
             await UserManager.changeUsername(tokenInfo.uid, newUsername)
-            res.status(200).send()
-        }
-    }
-    catch(_) {
-        res.status(500).send('An error has occured on the server')
-    }
-})
-
-app.post('/change-email', TokenManager.verifyJwtToken, async (req,res) => {
-    try {
-        const token = (req.headers.authorization).split(' ')[1];
-        const tokenInfo = TokenManager.jwtInfo(token);
-
-        const newEmail = req.body.email;
-
-        if (newEmail === null) {
-            res.status(400).send()
-        }
-        else {
-            await UserManager.changeEmail(tokenInfo.uid, newEmail)
             res.status(200).send()
         }
     }

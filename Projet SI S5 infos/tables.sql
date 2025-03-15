@@ -27,7 +27,6 @@ DROP TABLE IF EXISTS Users, Projects;
 CREATE TABLE Users (
     id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
     username VARCHAR(32) UNIQUE NOT NULL CHECK (username ~ '^[\w]{4,32}$'),
-    email VARCHAR(256) UNIQUE NOT NULL CHECK (email ~ '^[\w\-\.]+@(?:[\w-]+\.)+[a-zA-Z]{2,63}$'),
     password VARCHAR NOT NULL
 );
 
@@ -110,33 +109,7 @@ CREATE TABLE FinishedGames (
 -------------------------------------- INSERTS --------------------------------------
 
 
-
--- Ajout d'utilisateurs
-
-INSERT INTO Users (id, username, email, password) 
-VALUES 
-    -- motDEPASSE1@
-    ('25bf73b2-ce07-424b-b8b1-715d053353c2', 'Michael', 'michael@gmail.com', '$argon2id$v=19$m=65536,t=3,p=4$l7IvthrAG9BRgacumpvGpA$T/RZw+wNWbTDLlBjD2nwa+8qaPX38zA27OnbO0QxXoM'),
-    -- motDEPASSE2@
-    ('7a034517-f694-477e-9a83-74f18911bac3', 'Dany', 'dany@gmail.com', '$argon2id$v=19$m=65536,t=3,p=4$d7tCgHpfQ++El+2W9mtZUw$DaUmvU2QiSoLamzWFqG9C6+oV2/LvybLCnCjJgN2+qk'),
-    -- motDEPASSE3@
-    ('b423d376-26be-4069-ba6f-8bf1c31ba2f6', 'DanDan', 'dan@gmail.com', '$argon2id$v=19$m=65536,t=3,p=4$gJ0WbalPDK1bJdWhuo4kBQ$kUdYO9MNQPA47S4nNUxXImdYTVzAqJlvEVywhLNWZUk');
-
-
--- Ajout de token d'utilisateurs
-
-INSERT INTO Tokens (id, createdAt, userUid) 
-VALUES 
-  ('b871f0b4-6a3e-40bd-9c26-c02ccbbf026f', '2024-12-29 16:45:29.233', '7a034517-f694-477e-9a83-74f18911bac3'),
-  ('ca0c1446-0d29-4ad6-819e-eec7e1c16fc9', '2024-12-29 16:21:27.304', 'b423d376-26be-4069-ba6f-8bf1c31ba2f6'),
-  ('d0078270-8488-4435-ae15-98907440a267', '2024-12-29 16:36:27.129', '25bf73b2-ce07-424b-b8b1-715d053353c2'),
-  ('e1f06ed5-cda9-47b0-92b7-3abe824d4a7d', '2024-12-29 16:37:08.02', '25bf73b2-ce07-424b-b8b1-715d053353c2');
-
-
--- Ajout des projets
-
-
--- ignorer tout les mots de passe et utiliser ceux là :
+-- les mots de passe :
 
 -- 1 fmJYravPGbIwwnbUeNsF83ZC
 -- 2 836Ns5tJsKfGnbP5jaQrHOpC
@@ -180,80 +153,3 @@ VALUES
   ('salle 12', 12, 'https://reddit.com', 'test 12', 'desc 12', '{NADOT ANTONY, NDJABENGUE DOUMBENENYDAVID GEOFRET, PEREZ ENZO, PETEL ROMAIN}', '$argon2id$v=19$m=65536,t=3,p=4$0gXQua74VonezQ4JJnkKIw$0XA2Awsj7tzuMwCfHTGBfjk3lQVpm2Sm2CJpN7yZc3Q'),
   -- mdp : rsxnWbSiYhsl2dcmUqGY9dkq
   ('salle 13', 13, 'https://tiktok.com', 'test 13', 'desc 13', '{BABA AHMET, FOFANA ABDOULAHI, HANI SELIM, MAOULANA FAYAD}', '$argon2id$v=19$m=65536,t=3,p=4$WA6Lyu13XzPViRkc5ve9vg$Ui2a/o98FLlFO7gsr4BFanLnW2wUvlWzV2izUWEOxAQ');
-
-
--- Ajout de parties finies
-
-INSERT INTO FinishedGames (id, userId, registeredAt, timeSpentSeconds, stage, score, finished, completedStages) 
-VALUES 
-  (1, 'b423d376-26be-4069-ba6f-8bf1c31ba2f6', '2024-12-29 16:23:23.241', 2337, 1, 9480, true, '{t, t, t, f, f, f, f, t, f, f, f, f, t}'),
-  (2, '25bf73b2-ce07-424b-b8b1-715d053353c2', '2024-12-29 16:39:30.438', 3164, 1, 14470, false, '{t, f, f, t, t, t, t, f, t, f, t, t, f }'),
-  (3, '25bf73b2-ce07-424b-b8b1-715d053353c2', '2024-12-29 16:45:15.6', 3320, 1, 7700, true, '{t, f, f, f, f, t, f, f, t, f, t, t, t}'),
-  (4, '7a034517-f694-477e-9a83-74f18911bac3', '2024-12-29 16:45:36.275', 2736, 1, 12490, true, '{t, t, t, f, f, t, f, f, t, f, t, t, t}');
-
-
--- Ajout de parties en cours
-
-INSERT INTO OngoingGames (id, currentStage, startedAt, userId, score, completedStages) 
-VALUES 
-  (generate_ongoing_game_id(), 1, '2024-12-29 16:45:00', '25bf73b2-ce07-424b-b8b1-715d053353c2', 0, '{f, f, f, f, f, f, f, f, f, f, f, f, f}'),
-  (generate_ongoing_game_id(), 6, '2024-12-29 16:55:00', 'b423d376-26be-4069-ba6f-8bf1c31ba2f6', 8760, '{t, f, t, t, t, f, f, f, f, f, f, f, f}'),
-  (generate_ongoing_game_id(), 12, '2024-12-29 17:05:00', '7a034517-f694-477e-9a83-74f18911bac3', 23460, '{t, t, t, t, t, t, t, t, t, t, t, t, f}');
-
-
-
--------------------------------------- REQUESTS --------------------------------------
-
-
--- Regroupe les parties en cours par stage puis leur date de début, leur id et enfin leur score
--- Et ensuite les tri de façon ascendante par leur date de début
---
--- permet de récupérer les parties en cours et en attente au tout début du lancement du serveur si certaines n'étaient pas fini
-
-SELECT currentStage, startedAt, id, score, MIN(startedAt) AS min_startedAt
-FROM OngoingGames
-GROUP BY currentStage, startedAt, id, score
-ORDER BY min_startedAt ASC;
-
-
--- Met à jour le score de la partie en cours avec l'id ":codeId"
--- et lui ajoute à son score existant ":scoreToAdd" de score
-
-UPDATE OngoingGames
-SET score = score + :scoreToAdd
-WHERE id = :codeId;
-
-
--- Met à jour l'étape actuelle de la partie en cours et les stages complétés pour la partie avec l'id ":gameId"
-
-UPDATE ongoing_games
-SET 
-    currentStage = currentStage + 1,
-    completedStages = :completedStages
-WHERE id = :gameId;
-
-
--- Retourne le projet qui prend place après celui à la place ":currentGameOrder"
--- Limit 1 pour s'assurer qu'une seule ligne est retourné
-
-SELECT *
-FROM projects
-WHERE "order" = :currentGameOrder + 1
-LIMIT 1;
-
-
--- Retourne les 5 meilleurs score de tout les temps fait sur des parties terminées
-
-SELECT *
-FROM FinishedGames
-ORDER BY score DESC
-LIMIT 5;
-
-
--- Pareil que celle au-dessus mais pour la semaine passée
-
-SELECT *
-FROM FinishedGames
-WHERE registeredAt >= NOW() - INTERVAL '7 days'
-ORDER BY score DESC
-LIMIT 5;

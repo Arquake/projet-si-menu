@@ -58,7 +58,6 @@ model tokens {
 model users {
   id            String          @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
   username      String          @unique @db.VarChar(32)
-  email         String          @unique @db.VarChar(256)
   password      String          @db.VarChar
   finishedgames finishedgames[]
   ongoinggames  ongoinggames?
