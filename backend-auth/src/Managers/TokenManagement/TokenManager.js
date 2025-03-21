@@ -103,15 +103,6 @@ function jwtInfo(token) {
 }
 
 /**
- * generate a jwt with the user uid given
- * @param userUid the user uid linked to the jwt
- * @return the jwt created
- */
-function generateAppJwt(userUid, appId) {
-    return jwt.sign({userUid: userUid, appId: appId, iat: Date.now()}, APP_JWT, { expiresIn: APP_JWT_EXPIRATION_TIME });
-}
-
-/**
  * decode the jwt
  * @param token the jwt
  * @return {*} the jwt information
@@ -121,17 +112,6 @@ function appJwtInfo(token) {
     return jwt.verify(token, APP_JWT);
 }
 
-const verifyAppJwt = (req,res,next) => {
-    try {
-        const token = (req.headers.authorization).split(' ')[1];
-        appJwtInfo(token)
-        next();
-    }
-    catch(error) {
-        res.status(400).send("Invalid data")
-    }
-}
-
 
 export default {
     generateJwt,
@@ -139,8 +119,6 @@ export default {
     verifyRefreshToken,
     refreshTokenInfo,
     jwtInfo,
-    generateAppJwt,
     appJwtInfo,
     verifyJwtToken,
-    verifyAppJwt
 };

@@ -15,7 +15,6 @@ import argon2 from 'argon2';
 const app = express();
 const PORT = process.env.PORT || 3000;
 const HOST = "0.0.0.0";
-const TIMEOUT_INTERVAL = process.env.TIMEOUT_INTERVAL || 15*60*1000
 app.use(express.json());
 app.use(cors())
 
@@ -28,51 +27,7 @@ const io = new Server(server, {
     },
   });
 
-
-const allOnGoing = await OngoingModel.getAllOnGoing()
-
-const projetQueue = (await ProjectsModel.getAllProjects()).reduce((acc, element) => {
-    acc[element.order] = { id: element.id, current: null, waiting: [], startedat: null, timeout: null };
-    return acc;
-}, {});
-
-allOnGoing.forEach( game => {
-    if (projetQueue[game.currentstage].current === null) {
-        projetQueue[game.currentstage].current = {id: game.id, score: game.score};
-        projetQueue[game.currentstage].timeout = playerTimeout(game.currentstage);
-    }
-    else {
-        projetQueue[game.currentstage].waiting = [...projetQueue[game.currentstage].waiting, {id: game.id, score: game.score}];
-    }
-})
-
-const totalProjectNumber = Object.keys(projetQueue).length;
-
-function playerTimeout(stage) {
-    return (
-        setTimeout(async ()=> {
-            try {
-                const onGoingGame = await OngoingModel.getOngoingGameByCode(projetQueue[stage].current.id);
-                ProjectsManager.onGoingGameToFinished(onGoingGame.userid, false, onGoingGame.score, Date.now()-onGoingGame.startedat, onGoingGame.completedstages);
-                io.to(projetQueue[stage].current.id).emit('timeout');
-                projetQueue[stage].startedat = null;
-    
-                if(projetQueue[stage].waiting.length === 0) {
-                    projetQueue[stage].current = null
-                }
-                else {
-                    projetQueue[stage].current = projetQueue[stage].waiting[0]
-                    io.to(projetQueue[stage].current.id).emit('playerCanStart');
-                    projetQueue[stage].waiting = projetQueue[stage].waiting.slice(1)
-                    projetQueue[stage].timeout = playerTimeout(stage)
-                }
-            }
-            catch (_) {
-                
-            }
-        }, TIMEOUT_INTERVAL)
-    )
-}
+const totalProjectNumber = (await ProjectsManager.getAllProjects()).length;
 
 const moveGameNextStage = async (stage, completedStage) => {
     if (completedStage) {
@@ -103,54 +58,6 @@ const moveGameNextStage = async (stage, completedStage) => {
     projetQueue[stage].startedat = null
 }
 
-const addPlayerToQueue = (gameId) => {
-    if (projetQueue[1].current === null) {
-        projetQueue[1].current = {id: gameId, score: 0};
-        projetQueue[1].startedat = null
-        projetQueue[1].timeout = playerTimeout(1)
-    }
-    else {
-        projetQueue[1].waiting = [...projetQueue[1].waiting, {id: gameId, score: 0}];
-    }
-}
-
-const playerIsCurrentInStage = (gameId, stage) => {
-    console.log(stage)
-    console.log(projetQueue)
-    return projetQueue[stage].current.id === gameId
-}
-
-const playerCurrentInAStage = (codeId) => {
-    return Object.values(projetQueue).some(stage => stage.current && stage.current.id === codeId);
-}
-
-const getStartDateOrNow = (stage) => {
-    if (projetQueue[stage].startedat === null) {
-        projetQueue[stage].startedat = Date.now();
-        clearTimeout(projetQueue[stage].timeout);
-    }
-    return projetQueue[stage].startedat;
-}
-
-const getStageByCurrent = (codeId) => {
-    for (let i = 1; i <= totalProjectNumber; i += 1) {
-        if(projetQueue[i].current !== null && projetQueue[i].current.id === codeId) {
-            return i;
-        };
-    };
-    return null;
-}
-
-const updateGameScore = async (stage) => {
-    if(projetQueue[stage] !== null) {
-        const endTime = new Date((projetQueue[stage].startedat) + 5*60*1000)
-        const game = await OngoingModel.incrementScoreBy(projetQueue[stage].current.id, Math.max(
-            Math.floor((endTime - new Date())/1000), 0
-        )*10);
-        projetQueue[stage].current.score = game.score;
-    }
-}
-
 
 // ------------------------------- SOCKET PART -------------------------------
 
@@ -165,10 +72,7 @@ io.on('connection', (socket) => {
 
         if(playerCurrentInAStage(codeId)) {
             io.to(codeId).emit('playerCanStart');
-            const stage = getStageByCurrent(codeId)
-            if (stage !== null && projetQueue[stage].startedat !== null) {
-                io.to(codeId).emit('startEtape', getStartDateOrNow(stage));
-            }
+            io.to(codeId).emit('startEtape', getStartDateOrNow(stage));
         }
         
     });
@@ -181,6 +85,10 @@ io.on('connection', (socket) => {
 
 // ------------------------------- CONVENTIONNAL PART -------------------------------
 
+
+/**
+ *    Client authentication and validity api
+ */
 
 /**
  * essaie de connecter l'utilisateur avec ses crédentiels
@@ -292,41 +200,23 @@ app.post('/refresh-jwt', TokenManager.verifyRefreshToken, (req, res) => {
     }
 });
 
-/**
- * take a jwt and the application private key
- * return a 200 if valid and a 401 if the credentials aren't valid
- * used only by subapps
- */
-app.post('/get-client-validity', TokenManager.verifyAppJwt, (req,res) => {
-    res.status(200).send();
-});
+
+
 
 /**
- * take a user id and the application id
- * return a 200 with jwt if valid and a 401 if the credentials aren't valid
+ *     Game api
  */
-app.post('/generate-specific', TokenManager.verifyJwtToken, (req,res) => {
-    try {
-        const body = req.body;
-        const userId = body.useruid;
-        const appId = body.appId;
-        res.status(200).send({jwt: TokenManager.generateAppJwt(userId, appId)});
-    }
-    catch (_) {
-        res.status(400).send('Unauthorized');
-    }
-});
 
+/**
+ *    create a game for the player
+ */
 app.post('/create-game', TokenManager.verifyJwtToken, async (req,res)=> {
     try {
         const token = (req.headers.authorization).split(' ')[1];
         const tokenInfo = TokenManager.jwtInfo(token);
         const game = await ProjectsManager.createNewGame(tokenInfo.uid, totalProjectNumber)
         res.status(200).send({...await ProjectsManager.getProjectInfo(game.userid), time: game.startedat})
-        addPlayerToQueue(game.id)
-        if( playerIsCurrentInStage(game.id, game.currentstage) ) {
-            io.to(game.id).emit('playerCanStart');
-        }
+        io.to(game.id).emit('playerCanStart');
     }
     catch(_) {
         res.status(429).send("une partie est déjà en cours")
@@ -334,7 +224,7 @@ app.post('/create-game', TokenManager.verifyJwtToken, async (req,res)=> {
 })
 
 /**
- * send the ongoin player game to the client
+ * send the ongoing player game to the client
  */
 app.post('/get-ongoing-player-game', TokenManager.verifyJwtToken, async(req,res) => {
     try {
@@ -344,9 +234,9 @@ app.post('/get-ongoing-player-game', TokenManager.verifyJwtToken, async(req,res)
 
         if (game) {
             const currentTime = new Date();
-            const fiveHourBefore = new Date(currentTime.getTime() - 5 * 60 * 60 * 1000);
+            const twoHourBefore = new Date(currentTime.getTime() - 7200);
 
-            if (game.startedat <= fiveHourBefore) {
+            if (game.startedat <= twoHourBefore) {
                 await ProjectsManager.onGoingGameToFinished(game.userid, false, game.score, 7200);
                 game = await ProjectsManager.createNewGame(tokenInfo.uid, totalProjectNumber);
             }
@@ -354,15 +244,32 @@ app.post('/get-ongoing-player-game', TokenManager.verifyJwtToken, async(req,res)
 
         res.status(200).send({...await ProjectsManager.getProjectInfo(tokenInfo.uid), time: game.startedat})
 
-        if( playerIsCurrentInStage(game.id, game.currentstage) ) {
-            io.to(game.id).emit('playerCanStart');
-        }
+        io.to(game.id).emit('playerCanStart');
     }
     catch(error) {
         console.log(error)
         res.status(400).send()
     }
 })
+
+/**
+ * send all projects the app knows
+ */
+app.post('/get-all-projects', TokenManager.verifyJwtToken, async (req,res) => {
+    try {
+        res.status(200).send(await ProjectsManager.getAllProjects())
+    }
+    catch(error) {
+        res.status(500).send("Internal server error")
+    }
+})
+
+
+
+
+/**
+ *    Other projects api
+ */
 
 /**
  * validate that the player has ended his game stage
@@ -446,17 +353,12 @@ app.post('/get-code-validity', async (req,res) => {
     }
 })
 
+
+
+
 /**
- * send all projects the app knows
+ *    Scoreboard api
  */
-app.post('/get-all-projects', TokenManager.verifyJwtToken, async (req,res) => {
-    try {
-        res.status(200).send(await ProjectsManager.getAllProjects())
-    }
-    catch(error) {
-        res.status(500).send("Internal server error")
-    }
-})
 
 app.post('/get-top-ever', async (req,res) => {
     try {
@@ -538,6 +440,13 @@ app.post('/personnal-top-week', TokenManager.verifyJwtToken, async (req,res) => 
         res.status(500).send('An error has occured on the server')
     }
 })
+
+
+
+
+/**
+ *    User personnal informations api
+ */
 
 app.post('/get-personnal-info', TokenManager.verifyJwtToken, async (req,res) => {
     try {
