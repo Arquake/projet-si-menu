@@ -58,7 +58,6 @@ async function verifyProjectPk(projectId, pk) {
     const project = await ProjectsModel.getProjectByStage(projectId)
 
     if (!DEVMODE) {
-        console.log(pk, project.privatekey)
         argon2.verify(project.privatekey, pk);
     }
 

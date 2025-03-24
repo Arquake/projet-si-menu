@@ -31,7 +31,7 @@ export default function ScoreboardComponent ({scoreBoard, useNames}: ScoreboardP
                 {
                     scoreBoard.map((element, i) => (
                         <React.Fragment key={i}>
-                            <div className="px-4 md:text-base text-sm">
+                            <div className="px-4 md:text-base sm:text-sm text-xs">
                                 {
                                     useNames?
                                     <div className="grid lg:grid-cols-4 md:grid-cols-5 grid-cols-3 gap-4 pt-2 pb-0.5">

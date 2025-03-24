@@ -1,4 +1,4 @@
-import './App.css'
+import './app.css'
 import {useAuth} from "./useHook/useAuth.ts";
 import {useEffect} from "react";
 import Home from './pages/Home.tsx';

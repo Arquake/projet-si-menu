@@ -16,7 +16,7 @@ export default function ContainerDiv ({children}: ContainerProps) {
             {children}
           </div>
 
-          <footer className="w-full bg-neutral-100 flex-initial px-8 py-4 grid grid-cols-2 gap-2 md:text-base sm:text-sm text-xs">
+          <footer className="w-full bg-neutral-100 flex-initial sm:px-8 px-4 py-4 grid grid-cols-2 gap-2 md:text-base sm:text-sm text-xs">
             <div className="flex flex-col">
               <p>Contactez-nous:</p>
               <a href="tel:+33238567811" className="text-blue-400 underline">

@@ -7,7 +7,7 @@ const prisma = new PrismaClient();
  * get the project by his ID
  */
 async function getOngoingGameByUserId(userId) {
-    return await prisma.ongoinggames.findUniqueOrThrow({
+    return await prisma.ongoinggames.findUnique({
         where: {
             userid: userId
         }

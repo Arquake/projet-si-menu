@@ -32,40 +32,52 @@ const io = new Server(server, {
 const allOnGoing = await OngoingModel.getAllOnGoing()
 
 const projetQueue = (await ProjectsModel.getAllProjects()).reduce((acc, element) => {
-    acc[element.order] = { id: element.id, current: null, waiting: [], startedat: null, timeout: null };
+    acc[element.order] = { id: element.id, queue: []};
     return acc;
 }, {});
 
-allOnGoing.forEach( game => {
-    if (projetQueue[game.currentstage].current === null) {
-        projetQueue[game.currentstage].current = {id: game.id, score: game.score};
-        projetQueue[game.currentstage].timeout = playerTimeout(game.currentstage);
-    }
-    else {
-        projetQueue[game.currentstage].waiting = [...projetQueue[game.currentstage].waiting, {id: game.id, score: game.score}];
-    }
-})
-
 const totalProjectNumber = Object.keys(projetQueue).length;
 
-function playerTimeout(stage) {
+/**
+ * Récupère l'index de la partie dans sa table stage
+ * @param {*} stage le stage où chercher
+ * @param {*} id l'id de la partie
+ * @returns l'index où la partie se trouve
+ */
+function getGameIndex(stage, codeId) {
+    for (let i = 0; i < projetQueue[stage].queue.length; i++) {
+        if (projetQueue[stage].queue[i].id === codeId) { return i }
+    }
+    return null;
+}
+
+function gameBuilder(gameId) {
+    return {id: gameId, score: 0, startedat: null, timeout: playerTimeout(1, gameId)}
+}
+
+/**
+ * crée une liste des stages avec la liste des jeux en cours dedans
+ */
+allOnGoing.forEach( game => {
+    projetQueue[game.currentstage].queue = [...projetQueue[game.currentstage].queue, {id: game.id, score: game.score, startedat: null, timeout: null}];
+})
+
+
+/**
+ * Crée un set timeout pour déconnecter le joueur si il ne lance pas la partie en 15 minutes
+ * @param {*} stage le stage de la partie
+ * @param {*} id l'id de la partie
+ * @returns une interval pour timeout le joueur
+ */
+function playerTimeout(stage, id) {
     return (
         setTimeout(async ()=> {
             try {
-                const onGoingGame = await OngoingModel.getOngoingGameByCode(projetQueue[stage].current.id);
+                const onGoingGame = await OngoingModel.getOngoingGameByCode(id);
                 ProjectsManager.onGoingGameToFinished(onGoingGame.userid, false, onGoingGame.score, Date.now()-onGoingGame.startedat, onGoingGame.completedstages);
-                io.to(projetQueue[stage].current.id).emit('timeout');
-                projetQueue[stage].startedat = null;
-    
-                if(projetQueue[stage].waiting.length === 0) {
-                    projetQueue[stage].current = null
-                }
-                else {
-                    projetQueue[stage].current = projetQueue[stage].waiting[0]
-                    io.to(projetQueue[stage].current.id).emit('playerCanStart');
-                    projetQueue[stage].waiting = projetQueue[stage].waiting.slice(1)
-                    projetQueue[stage].timeout = playerTimeout(stage)
-                }
+                io.to(id).emit('timeout');
+                let index = getGameIndex(stage, id)
+                projetQueue[stage].queue.splice(index, 1)
             }
             catch (_) {
                 
@@ -74,80 +86,56 @@ function playerTimeout(stage) {
     )
 }
 
-const moveGameNextStage = async (stage, completedStage) => {
+const moveGameNextStage = async (stage, gameId, completedStage) => {
     if (completedStage) {
-        await updateGameScore(stage);
+        await updateGameScore(stage, gameId);
     }
     if(stage < totalProjectNumber) {
-        if(projetQueue[stage+1].current === null) {
-            projetQueue[stage+1].current = projetQueue[stage].current
-            projetQueue[stage+1].startedat = null
-            projetQueue[stage+1].timeout = playerTimeout(stage+1)
-            io.to(projetQueue[stage+1].current.id).emit('playerCanStart');
-        }
-        else {
-            projetQueue[stage+1].waiting = [...projetQueue[stage+1].waiting, projetQueue[stage].current]
-        }
+        let index = getGameIndex(stage, gameId)
+        let game = projetQueue[stage].queue[index]
+        game.startedat = null
+        game.timeout = playerTimeout(stage+1, gameId)
+        projetQueue[stage+1].queue = [...projetQueue[stage+1].queue, game]
+        projetQueue[stage].queue.splice(index, 1)
+        io.to(gameId).emit('playerCanStart');
     }
-
-    if(projetQueue[stage].waiting.length === 0) {
-        projetQueue[stage].current = null
-        projetQueue[stage].timeout = null
-    }
-    else {
-        projetQueue[stage].current = projetQueue[stage].waiting[0]
-        io.to(projetQueue[stage].current.id).emit('playerCanStart');
-        projetQueue[stage].waiting = projetQueue[stage].waiting.slice(1)
-        projetQueue[stage].timeout = playerTimeout(stage)
-    }
-    projetQueue[stage].startedat = null
 }
 
+//fait
 const addPlayerToQueue = (gameId) => {
-    if (projetQueue[1].current === null) {
-        projetQueue[1].current = {id: gameId, score: 0};
-        projetQueue[1].startedat = null
-        projetQueue[1].timeout = playerTimeout(1)
+    projetQueue[1].queue = [...projetQueue[1].queue, gameBuilder(gameId)]
+}
+
+// fait
+const getStartDateOrNow = (stage, gameId) => {
+    let index = getGameIndex(stage, gameId)
+    let queuedGame = projetQueue[stage].queue[index]
+    if (queuedGame.startedat === null) {
+        queuedGame.startedat = Date.now();
+        clearTimeout(queuedGame.timeout);
     }
-    else {
-        projetQueue[1].waiting = [...projetQueue[1].waiting, {id: gameId, score: 0}];
+    return queuedGame.startedat;
+}
+
+// fait
+function getStageByGameId(codeId) {
+    for (let index = 1; index <= totalProjectNumber; index++) {
+        for (let i = 0; i < projetQueue[index].queue.length; i++) {
+            if (projetQueue[index].queue[i].id === codeId) { return index }
+        }
     }
-}
-
-const playerIsCurrentInStage = (gameId, stage) => {
-    console.log(stage)
-    console.log(projetQueue)
-    return projetQueue[stage].current.id === gameId
-}
-
-const playerCurrentInAStage = (codeId) => {
-    return Object.values(projetQueue).some(stage => stage.current && stage.current.id === codeId);
-}
-
-const getStartDateOrNow = (stage) => {
-    if (projetQueue[stage].startedat === null) {
-        projetQueue[stage].startedat = Date.now();
-        clearTimeout(projetQueue[stage].timeout);
-    }
-    return projetQueue[stage].startedat;
-}
-
-const getStageByCurrent = (codeId) => {
-    for (let i = 1; i <= totalProjectNumber; i += 1) {
-        if(projetQueue[i].current !== null && projetQueue[i].current.id === codeId) {
-            return i;
-        };
-    };
     return null;
 }
 
-const updateGameScore = async (stage) => {
-    if(projetQueue[stage] !== null) {
-        const endTime = new Date((projetQueue[stage].startedat) + 5*60*1000)
-        const game = await OngoingModel.incrementScoreBy(projetQueue[stage].current.id, Math.max(
+// fait
+const updateGameScore = async (stage, gameId) => {
+    let gameIndex = getGameIndex(stage, gameId)
+    if(gameIndex !== -1) {
+        const endTime = new Date((projetQueue[stage].queue[gameIndex].startedat) + 5*60*1000)
+        const game = await OngoingModel.incrementScoreBy(gameId, Math.max(
             Math.floor((endTime - new Date())/1000), 0
         )*10);
-        projetQueue[stage].current.score = game.score;
+        projetQueue[stage].queue[gameIndex].score = game.score;
     }
 }
 
@@ -163,12 +151,13 @@ io.on('connection', (socket) => {
     socket.on('joinRoom', (codeId) => {
         socket.join(codeId);
 
-        if(playerCurrentInAStage(codeId)) {
-            io.to(codeId).emit('playerCanStart');
-            const stage = getStageByCurrent(codeId)
-            if (stage !== null && projetQueue[stage].startedat !== null) {
-                io.to(codeId).emit('startEtape', getStartDateOrNow(stage));
-            }
+        io.to(codeId).emit('playerCanStart');
+        const stage = getStageByGameId(codeId)
+        const gameIndex = getGameIndex(stage, codeId)
+        const game = projetQueue[stage].queue[gameIndex]
+
+        if (stage !== null && game.startedat !== null) {
+            io.to(codeId).emit('startEtape', getStartDateOrNow(stage, game.id));
         }
         
     });
@@ -181,6 +170,8 @@ io.on('connection', (socket) => {
 
 // ------------------------------- CONVENTIONNAL PART -------------------------------
 
+
+// ------------------------------- Connexions -------------------------------
 
 /**
  * essaie de connecter l'utilisateur avec ses crédentiels
@@ -301,34 +292,20 @@ app.post('/get-client-validity', TokenManager.verifyAppJwt, (req,res) => {
     res.status(200).send();
 });
 
-/**
- * take a user id and the application id
- * return a 200 with jwt if valid and a 401 if the credentials aren't valid
- */
-app.post('/generate-specific', TokenManager.verifyJwtToken, (req,res) => {
-    try {
-        const body = req.body;
-        const userId = body.useruid;
-        const appId = body.appId;
-        res.status(200).send({jwt: TokenManager.generateAppJwt(userId, appId)});
-    }
-    catch (_) {
-        res.status(400).send('Unauthorized');
-    }
-});
+// ------------------------------- Relatif au jeu -------------------------------
 
 app.post('/create-game', TokenManager.verifyJwtToken, async (req,res)=> {
     try {
         const token = (req.headers.authorization).split(' ')[1];
         const tokenInfo = TokenManager.jwtInfo(token);
         const game = await ProjectsManager.createNewGame(tokenInfo.uid, totalProjectNumber)
-        res.status(200).send({...await ProjectsManager.getProjectInfo(game.userid), time: game.startedat})
         addPlayerToQueue(game.id)
-        if( playerIsCurrentInStage(game.id, game.currentstage) ) {
-            io.to(game.id).emit('playerCanStart');
-        }
+        res.status(200).send({...await ProjectsManager.getProjectInfo(game.userid), time: game.startedat})
+        
+        io.to(game.id).emit('playerCanStart');
     }
-    catch(_) {
+    catch(error) {
+        console.log(error)
         res.status(429).send("une partie est déjà en cours")
     }
 })
@@ -354,15 +331,14 @@ app.post('/get-ongoing-player-game', TokenManager.verifyJwtToken, async(req,res)
 
         res.status(200).send({...await ProjectsManager.getProjectInfo(tokenInfo.uid), time: game.startedat})
 
-        if( playerIsCurrentInStage(game.id, game.currentstage) ) {
-            io.to(game.id).emit('playerCanStart');
-        }
+        io.to(game.id).emit('playerCanStart');
     }
     catch(error) {
-        console.log(error)
         res.status(400).send()
     }
 })
+
+// ------------------------------- Api Rest Pour Externes -------------------------------
 
 /**
  * validate that the player has ended his game stage
@@ -386,7 +362,7 @@ app.post('/validate-stage', async (req,res) => {
 
         onGoingGame.completedstages[onGoingGame.currentstage-1] = completedStage;
 
-        await moveGameNextStage(onGoingGame.currentstage, completedStage);
+        await moveGameNextStage(onGoingGame.currentstage, onGoingGame.id, completedStage);
         if (onGoingGame.currentstage === totalProjectNumber) {
             const finishedGame = await ProjectsManager.onGoingGameToFinished(onGoingGame.userid, true, await OngoingModel.getOngoingScoreByCode(onGoingGame.id), Date.now()-onGoingGame.startedat, onGoingGame.completedstages);
             io.to(onGoingGame.id).emit('endGame', finishedGame.score);
@@ -408,9 +384,7 @@ app.post('/validate-stage', async (req,res) => {
                 }
             );
             
-            if( playerIsCurrentInStage(onGoingGame.id, nextGame.currentstage) ) {
-                io.to(onGoingGame.id).emit('playerCanStart');
-            }
+            io.to(onGoingGame.id).emit('playerCanStart');
         }
         res.status(200).send();
     }
@@ -433,18 +407,16 @@ app.post('/get-code-validity', async (req,res) => {
         await ProjectsManager.verifyProjectPk(projectOrder, pk)
 
         const code = req.body.code;
-        if (!playerIsCurrentInStage(code, projectOrder)) {
-            throw new Error('Game is not current');
-        }
         await OngoingModel.getOngoingGameByCode(code)
-        io.to(code).emit('startEtape', getStartDateOrNow(projectOrder));
+        io.to(code).emit('startEtape', getStartDateOrNow(projectOrder, code));
         res.status(200).send({})
     }
     catch (error) {
-        console.log(error)
         res.status(401).send()
     }
 })
+
+// ------------------------------- Api menu -------------------------------
 
 /**
  * send all projects the app knows
@@ -523,6 +495,8 @@ app.post('/personnal-top-month', TokenManager.verifyJwtToken, async (req,res) =>
         res.status(500).send('An error has occured on the server')
     }
 })
+
+// ------------------------------- User modifications -------------------------------
 
 app.post('/personnal-top-week', TokenManager.verifyJwtToken, async (req,res) => {
     try {
